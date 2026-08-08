@@ -1,0 +1,76 @@
+name: mutual-loan-fund
+
+# Everything is bind-mounted from the host:
+#   - the whole application tree  -> edits on the server take effect immediately
+#   - PostgreSQL data directory   -> ./docker/data/postgres
+#   - nginx logs                  -> ./docker/data/nginx
+#   - Laravel storage / uploads   -> inside ./storage (part of the app mount)
+# There are no named/anonymous Docker volumes, so nothing is hidden from the host.
+
+x-app-base: &app-base
+  build:
+    context: .
+    dockerfile: docker/php/Dockerfile
+    args:
+      APP_UID: ${APP_UID:-1000}
+      APP_GID: ${APP_GID:-1000}
+  image: mutual-loan-fund/php:8.3
+  restart: unless-stopped
+  env_file:
+    - .env
+  volumes:
+    - ./:/var/www/html
+    - ./docker/data/composer-cache:/home/app/.composer/cache
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+  app:
+    <<: *app-base
+    container_name: mlf-app
+    environment:
+      CONTAINER_ROLE: app
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: mlf-web
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/data/nginx:/var/log/nginx
+    depends_on:
+      - app
+
+  db:
+    image: postgres:16-alpine
+    container_name: mlf-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-mutual_loan_fund}
+      POSTGRES_USER: ${DB_USERNAME:-mlf}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mlf_secret}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${DB_PORT_HOST:-5432}:5432"
+    volumes:
+      - ./docker/data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-mlf} -d ${DB_DATABASE:-mutual_loan_fund}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  scheduler:
+    <<: *app-base
+    container_name: mlf-scheduler
+    environment:
+      CONTAINER_ROLE: scheduler
+    depends_on:
+      db:
+        condition: service_healthy
+      app:
+        condition: service_started
