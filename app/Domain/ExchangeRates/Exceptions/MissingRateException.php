@@ -2,6 +2,7 @@
 
 namespace App\Domain\ExchangeRates\Exceptions;
 
+use App\Support\DomainRefusal;
 use Illuminate\Support\Carbon;
 use RuntimeException;
 
@@ -12,7 +13,7 @@ use RuntimeException;
  * exchange rate, because an invented rate would be snapshotted into the ledger
  * and become permanent.
  */
-class MissingRateException extends RuntimeException
+class MissingRateException extends RuntimeException implements DomainRefusal
 {
     public function __construct(public readonly string $unit, public readonly Carbon $date)
     {

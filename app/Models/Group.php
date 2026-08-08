@@ -83,6 +83,11 @@ class Group extends Model
         return $this->hasMany(JournalEntry::class);
     }
 
+    public function receipts(): HasMany
+    {
+        return $this->hasMany(TransactionReceipt::class);
+    }
+
     public function loans(): HasMany
     {
         return $this->hasMany(Loan::class);

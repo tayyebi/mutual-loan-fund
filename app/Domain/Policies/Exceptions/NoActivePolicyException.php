@@ -3,6 +3,7 @@
 namespace App\Domain\Policies\Exceptions;
 
 use App\Models\Group;
+use App\Support\DomainRefusal;
 use RuntimeException;
 
 /**
@@ -10,7 +11,7 @@ use RuntimeException;
  * govern it. Operations are refused rather than falling back to hard-coded
  * defaults, so nothing is ever created under unknown rules.
  */
-class NoActivePolicyException extends RuntimeException
+class NoActivePolicyException extends RuntimeException implements DomainRefusal
 {
     public function __construct(Group $group)
     {

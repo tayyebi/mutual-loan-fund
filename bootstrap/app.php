@@ -2,9 +2,11 @@
 
 use App\Http\Middleware\EnsureGroupAdmin;
 use App\Http\Middleware\ResolveGroupContext;
+use App\Support\DomainRefusal;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,5 +25,18 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo('/login');
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        /*
+        | Domain refusals are answers, not crashes. A missing exchange rate, an
+        | absent policy or a closed period each mean "this operation cannot be
+        | recorded yet", and the operator needs to read that sentence rather
+        | than a stack trace. Nothing was written in any of these cases: the
+        | surrounding database transaction has already rolled back.
+        */
+        $exceptions->render(function (DomainRefusal $e, Request $request) {
+            if ($request->expectsJson()) {
+                return null;
+            }
+
+            return back()->withInput()->withErrors(['operation' => $e->getMessage()]);
+        });
     })->create();

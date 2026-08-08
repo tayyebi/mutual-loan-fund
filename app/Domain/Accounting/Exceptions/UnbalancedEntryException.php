@@ -3,13 +3,14 @@
 namespace App\Domain\Accounting\Exceptions;
 
 use App\Domain\Money\Decimal;
+use App\Support\DomainRefusal;
 use RuntimeException;
 
 /**
  * SUM(debits) must equal SUM(credits) for every posted entry. An entry that
  * fails this check is never written: the surrounding transaction rolls back.
  */
-class UnbalancedEntryException extends RuntimeException
+class UnbalancedEntryException extends RuntimeException implements DomainRefusal
 {
     public function __construct(
         public readonly Decimal $debits,
