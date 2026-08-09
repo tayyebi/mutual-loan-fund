@@ -19,11 +19,15 @@ class User extends Authenticatable
     public const STATUS_ACTIVE = 'active';
     public const STATUS_SUSPENDED = 'suspended';
 
+    public const SYSTEM_ROLE_USER = 'user';
+    public const SYSTEM_ROLE_SYSTEM_ADMIN = 'system_admin';
+
     protected $fillable = [
         'name',
         'email',
         'password',
         'status',
+        'system_role',
     ];
 
     protected $hidden = [
@@ -63,5 +67,14 @@ class User extends Authenticatable
     public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
+    }
+
+    /**
+     * Whether this account administers the platform itself, as opposed to any
+     * one fund. Unrelated to GroupMembership::isAdmin(), which is per-fund.
+     */
+    public function isSystemAdmin(): bool
+    {
+        return $this->system_role === self::SYSTEM_ROLE_SYSTEM_ADMIN;
     }
 }

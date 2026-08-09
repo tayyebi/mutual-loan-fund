@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountingPeriodController;
+use App\Http\Controllers\Admin\AuditController as AdminAuditController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\FundController as AdminFundController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -51,6 +55,30 @@ Route::middleware('auth')->group(function () {
         Route::get('transactions', [ProfileController::class, 'transactions'])->name('transactions');
         Route::get('password', [ProfileController::class, 'editPassword'])->name('password.edit');
         Route::put('password', [ProfileController::class, 'updatePassword'])->name('password.update');
+    });
+
+    /*
+    | Platform operations: user and fund lifecycle across the whole
+    | application, not any one fund's financial data. Restricted to accounts
+    | with User::system_role = system_admin, checked directly on the user
+    | rather than through GroupContext, since nothing here is tenant-scoped.
+    */
+    Route::prefix('admin')->name('admin.')->middleware('system.admin')->group(function () {
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('users/{user}', [AdminUserController::class, 'show'])->name('users.show');
+        Route::post('users/{user}/suspend', [AdminUserController::class, 'suspend'])->name('users.suspend');
+        Route::post('users/{user}/reinstate', [AdminUserController::class, 'reinstate'])->name('users.reinstate');
+        Route::post('users/{user}/promote', [AdminUserController::class, 'promote'])->name('users.promote');
+        Route::post('users/{user}/demote', [AdminUserController::class, 'demote'])->name('users.demote');
+
+        Route::get('funds', [AdminFundController::class, 'index'])->name('funds.index');
+        Route::get('funds/{group}', [AdminFundController::class, 'show'])->name('funds.show');
+        Route::post('funds/{group}/suspend', [AdminFundController::class, 'suspend'])->name('funds.suspend');
+        Route::post('funds/{group}/reinstate', [AdminFundController::class, 'reinstate'])->name('funds.reinstate');
+
+        Route::get('audit', [AdminAuditController::class, 'index'])->name('audit.index');
     });
 
     Route::get('/g/create', [GroupController::class, 'create'])->name('groups.create');

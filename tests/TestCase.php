@@ -8,6 +8,7 @@ use App\Domain\Groups\MembershipService;
 use App\Domain\Money\Decimal;
 use App\Domain\Policies\PolicyConfig;
 use App\Domain\Policies\PolicyService;
+use App\Domain\SystemAdmin\SystemAdminService;
 use App\Domain\Transactions\TransactionService;
 use App\Domain\Treasuries\TreasuryService;
 use App\Models\Group;
@@ -28,6 +29,15 @@ abstract class TestCase extends BaseTestCase
             'password' => 'password-for-tests',
             'status' => User::STATUS_ACTIVE,
         ]);
+    }
+
+    protected function systemAdmin(string $name = 'System Admin', ?string $email = null): User
+    {
+        $user = $this->user($name, $email);
+
+        app(SystemAdminService::class)->promote($user);
+
+        return $user->refresh();
     }
 
     /**

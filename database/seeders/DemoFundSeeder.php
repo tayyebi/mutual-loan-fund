@@ -8,6 +8,7 @@ use App\Domain\Groups\MembershipService;
 use App\Domain\Loans\LoanService;
 use App\Domain\Money\Decimal;
 use App\Domain\Policies\PolicyService;
+use App\Domain\SystemAdmin\SystemAdminService;
 use App\Domain\Transactions\TransactionService;
 use App\Domain\Treasuries\TreasuryService;
 use App\Models\Treasury;
@@ -29,6 +30,11 @@ class DemoFundSeeder extends Seeder
         $mohammad = $this->account('Mohammad', 'mohammad@example.test');
         $ali = $this->account('Ali', 'ali@example.test');
         $sara = $this->account('Sara', 'sara@example.test');
+
+        // So the platform-administration area has something to sign in and see.
+        if (! $mohammad->isSystemAdmin()) {
+            app(SystemAdminService::class)->promote($mohammad);
+        }
 
         // Global valuation data, entered a few days apart so the fallback
         // behaviour is visible in the UI.
@@ -133,7 +139,7 @@ class DemoFundSeeder extends Seeder
             $mohammad
         );
 
-        $this->command?->info('Demo fund ready. Sign in as mohammad@example.test / password (administrator).');
+        $this->command?->info('Demo fund ready. Sign in as mohammad@example.test / password (fund and system administrator).');
     }
 
     private function account(string $name, string $email): User

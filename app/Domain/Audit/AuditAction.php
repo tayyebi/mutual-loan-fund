@@ -8,6 +8,13 @@ namespace App\Domain\Audit;
 final class AuditAction
 {
     public const GROUP_CREATED = 'group.created';
+    public const GROUP_SUSPENDED = 'group.suspended';
+    public const GROUP_REINSTATED = 'group.reinstated';
+
+    public const USER_SUSPENDED = 'user.suspended';
+    public const USER_REINSTATED = 'user.reinstated';
+    public const SYSTEM_ADMIN_GRANTED = 'system_admin.granted';
+    public const SYSTEM_ADMIN_REVOKED = 'system_admin.revoked';
 
     public const MEMBER_REQUESTED = 'member.requested';
     public const MEMBER_APPROVED = 'member.approved';

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureGroupAdmin;
+use App\Http\Middleware\EnsureSystemAdmin;
 use App\Http\Middleware\ResolveGroupContext;
 use App\Support\DomainRefusal;
 use Illuminate\Foundation\Application;
@@ -20,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             // model actually belongs to the group in the URL (tenant isolation).
             'group' => ResolveGroupContext::class,
             'group.admin' => EnsureGroupAdmin::class,
+            'system.admin' => EnsureSystemAdmin::class,
         ]);
 
         $middleware->redirectGuestsTo('/login');

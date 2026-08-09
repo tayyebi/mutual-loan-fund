@@ -8,7 +8,6 @@ use App\Domain\Blockchain\TronGridVerifier;
 use App\Domain\Loans\Listeners\ApplyLoanMovement;
 use App\Domain\Transactions\Events\TransactionVerified;
 use App\Models\Group;
-use App\Models\GroupMembership;
 use App\Models\GroupPolicy as PolicyVersion;
 use App\Models\Loan;
 use App\Models\Transaction;
@@ -51,12 +50,9 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(TransactionVerified::class, ApplyLoanMovement::class);
 
-        // Exchange rates are global data, so the ability to enter them is not
-        // tied to one fund: anyone who administers a fund may maintain them.
-        Gate::define('manage-exchange-rates', fn (User $user) => $user->memberships()
-            ->where('role', GroupMembership::ROLE_ADMIN)
-            ->whereIn('status', [GroupMembership::STATUS_APPROVED, GroupMembership::STATUS_ACTIVE])
-            ->exists());
+        // Exchange rates are global data, shared by every fund, so maintaining
+        // them is a platform responsibility rather than any one fund's.
+        Gate::define('manage-exchange-rates', fn (User $user) => $user->isSystemAdmin());
 
         // Behind the reverse proxy the app only ever speaks HTTPS in production.
         if ($this->app->environment('production')) {

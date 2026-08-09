@@ -147,9 +147,24 @@ it reports that rather than guessing, and the transaction stays pending.
 Either way the `(network, tx_hash)` unique index means the same transfer can
 never be credited twice.
 
+## System administrators
+
+System administrators operate the platform itself — user accounts and funds —
+without reaching into any fund's members, transactions, loans or ledger. There
+is no web-based way to grant the first one, since granting it requires already
+being one:
+
+```bash
+docker compose exec -u 1000:1000 app php artisan admin:promote you@example.org
+```
+
+Register that account through the web interface first, then run the command.
+`admin:demote` reverses it. Once at least one exists, further admins can be
+promoted or demoted from `/admin/users` by any existing system administrator.
+
 ## Exchange rates
 
-Rates are entered by hand at `/exchange-rates` by anyone who administers a fund,
+Rates are entered by hand at `/exchange-rates` by system administrators,
 quoted as *how many units equal one gram of 18K gold*. A market quote in troy
 ounces of 24K gold can be entered instead and is converted mathematically.
 
