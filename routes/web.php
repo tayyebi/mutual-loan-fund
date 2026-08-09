@@ -14,6 +14,7 @@ use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
@@ -40,6 +41,17 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')-
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
+
+    /*
+    | The account's own corner: password and personal activity. Nothing here is
+    | tenant-scoped, which is why it lives outside the /g/{group} prefix.
+    */
+    Route::prefix('p')->name('p.')->group(function () {
+        Route::get('/', [ProfileController::class, 'show'])->name('home');
+        Route::get('transactions', [ProfileController::class, 'transactions'])->name('transactions');
+        Route::get('password', [ProfileController::class, 'editPassword'])->name('password.edit');
+        Route::put('password', [ProfileController::class, 'updatePassword'])->name('password.update');
+    });
 
     Route::get('/g/create', [GroupController::class, 'create'])->name('groups.create');
     Route::post('/g', [GroupController::class, 'store'])->name('groups.store');

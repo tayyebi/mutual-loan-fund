@@ -12,6 +12,7 @@
         <a class="brand" href="{{ route('home') }}">Mutual Loan Fund</a>
         <nav class="masthead-actions">
             <a href="{{ route('exchange-rates.index') }}">Exchange rates</a>
+            <a href="{{ route('p.home') }}">My account</a>
             <span class="muted">{{ auth()->user()->name }}</span>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
