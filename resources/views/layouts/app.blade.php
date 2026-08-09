@@ -13,10 +13,9 @@
         <nav class="masthead-actions">
             <a href="{{ route('exchange-rates.index') }}">Exchange rates</a>
             @if (auth()->user()?->isSystemAdmin())
-                <a href="{{ route('admin.dashboard') }}">Admin</a>
+                <a href="{{ route('admin.dashboard') }}">Site settings</a>
             @endif
-            <a href="{{ route('p.home') }}">My account</a>
-            <span class="muted">{{ auth()->user()->name }}</span>
+            <a href="{{ route('p.home') }}">{{ auth()->user()->name }}</a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="btn-link">Sign out</button>
