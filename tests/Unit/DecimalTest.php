@@ -25,10 +25,19 @@ class DecimalTest extends TestCase
 
     public function test_it_refuses_a_float(): void
     {
-        $this->expectException(\TypeError::class);
+        // Refused explicitly rather than left to the type system: outside
+        // strict_types PHP would coerce 0.1 to int 0 and store a zero.
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('never be a float');
 
-        // @phpstan-ignore-next-line — the point of the test is that this is refused.
         Decimal::of(0.1);
+    }
+
+    public function test_it_refuses_a_float_in_arithmetic_too(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Decimal::of('100')->plus(0.5);
     }
 
     public function test_it_refuses_a_non_numeric_string(): void

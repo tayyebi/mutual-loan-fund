@@ -19,8 +19,10 @@ final class Money implements Stringable
         public readonly string $currency,
     ) {}
 
-    public static function of(int|string|Decimal $amount, string $currency): self
+    public static function of(int|string|float|Decimal $amount, string $currency): self
     {
+        // Decimal::of is what refuses a float; widening the union here just
+        // stops PHP coercing one to int before it gets there.
         return new self(Decimal::of($amount), self::normalizeCurrency($currency));
     }
 
@@ -43,12 +45,12 @@ final class Money implements Stringable
         return new self($this->amount->minus($other->amount), $this->currency);
     }
 
-    public function times(int|string|Decimal $factor): self
+    public function times(int|string|float|Decimal $factor): self
     {
         return new self($this->amount->times($factor), $this->currency);
     }
 
-    public function dividedBy(int|string|Decimal $divisor): self
+    public function dividedBy(int|string|float|Decimal $divisor): self
     {
         return new self($this->amount->dividedBy($divisor), $this->currency);
     }

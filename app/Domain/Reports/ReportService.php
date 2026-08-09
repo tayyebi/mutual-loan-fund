@@ -162,8 +162,11 @@ class ReportService
 
         $statement = $this->costCenterStatement($costCenter, $asOf);
 
-        $byCode = fn (string $code) => $statement
-            ->firstWhere(fn (array $row) => $row['account']->code === $code)['balance'] ?? Decimal::zero();
+        $byCode = function (string $code) use ($statement): Decimal {
+            $row = $statement->first(fn (array $row) => $row['account']->code === $code);
+
+            return $row['balance'] ?? Decimal::zero();
+        };
 
         $contributed = $byCode(Account::FUND_CAPITAL);
         $outstanding = $byCode(Account::LOANS_RECEIVABLE);
@@ -203,13 +206,15 @@ class ReportService
     {
         $valuation = $this->balances->goldValuation($group);
 
-        $outstanding = $this->balances->loanReceivables($group)
-            ->flatMap(fn (array $row) => $row['balances']->all())
-            ->groupBy(fn (Decimal $balance, string $currency) => $currency)
-            ->map(fn (Collection $amounts) => $amounts->reduce(
-                fn (Decimal $carry, Decimal $amount) => $carry->plus($amount),
-                Decimal::zero()
-            ));
+        // Summed explicitly per currency: flattening the per-cost-centre maps
+        // would collapse two members' balances in the same currency into one.
+        $outstanding = collect();
+
+        foreach ($this->balances->loanReceivables($group) as $row) {
+            foreach ($row['balances'] as $currency => $amount) {
+                $outstanding[$currency] = ($outstanding[$currency] ?? Decimal::zero())->plus($amount);
+            }
+        }
 
         return [
             'gold' => $valuation['grams'],

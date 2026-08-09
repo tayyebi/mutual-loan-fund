@@ -27,6 +27,13 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="DB_CONNECTION" value="pgsql"/>
         <env name="DB_DATABASE" value="mutual_loan_fund_test"/>
+        <!--
+            The suite operates USDT funds. A fund whose functional currency is
+            its treasury's currency needs no exchange rate to post, so the tests
+            that are about accounting are not entangled with rate availability.
+            The tests that are about rates set their own functional currency.
+        -->
+        <env name="DEFAULT_FUNCTIONAL_CURRENCY" value="USDT"/>
         <env name="BLOCKCHAIN_VERIFIER" value="manual"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
     </php>

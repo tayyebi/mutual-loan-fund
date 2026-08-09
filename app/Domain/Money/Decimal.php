@@ -28,11 +28,13 @@ final class Decimal implements Stringable
         private readonly int $scale,
     ) {}
 
-    public static function of(int|string|self $value, int $scale = self::MONEY_SCALE): self
+    public static function of(int|string|float|self $value, int $scale = self::MONEY_SCALE): self
     {
         if ($value instanceof self) {
             return $value->withScale($scale);
         }
+
+        self::rejectFloat($value);
 
         $normalized = self::normalize((string) $value);
 
@@ -72,7 +74,7 @@ final class Decimal implements Stringable
         return (bool) preg_match('/^-?\d+(\.\d+)?$/', trim($value));
     }
 
-    public function plus(int|string|self $other): self
+    public function plus(int|string|float|self $other): self
     {
         return new self(
             self::round(bcadd($this->value, self::raw($other), self::WORKING_SCALE), $this->scale),
@@ -80,7 +82,7 @@ final class Decimal implements Stringable
         );
     }
 
-    public function minus(int|string|self $other): self
+    public function minus(int|string|float|self $other): self
     {
         return new self(
             self::round(bcsub($this->value, self::raw($other), self::WORKING_SCALE), $this->scale),
@@ -88,7 +90,7 @@ final class Decimal implements Stringable
         );
     }
 
-    public function times(int|string|self $other): self
+    public function times(int|string|float|self $other): self
     {
         return new self(
             self::round(bcmul($this->value, self::raw($other), self::WORKING_SCALE), $this->scale),
@@ -96,7 +98,7 @@ final class Decimal implements Stringable
         );
     }
 
-    public function dividedBy(int|string|self $divisor, ?int $scale = null): self
+    public function dividedBy(int|string|float|self $divisor, ?int $scale = null): self
     {
         $raw = self::raw($divisor);
 
@@ -115,7 +117,7 @@ final class Decimal implements Stringable
     /**
      * Percentage of this value, e.g. rate 5 means 5%.
      */
-    public function percent(int|string|self $rate): self
+    public function percent(int|string|float|self $rate): self
     {
         return $this->times(self::raw($rate))->dividedBy('100');
     }
@@ -130,32 +132,32 @@ final class Decimal implements Stringable
         return $this->isNegative() ? $this->negated() : $this;
     }
 
-    public function compareTo(int|string|self $other): int
+    public function compareTo(int|string|float|self $other): int
     {
         return bccomp($this->value, self::raw($other), self::WORKING_SCALE);
     }
 
-    public function equals(int|string|self $other): bool
+    public function equals(int|string|float|self $other): bool
     {
         return $this->compareTo($other) === 0;
     }
 
-    public function greaterThan(int|string|self $other): bool
+    public function greaterThan(int|string|float|self $other): bool
     {
         return $this->compareTo($other) === 1;
     }
 
-    public function greaterThanOrEqual(int|string|self $other): bool
+    public function greaterThanOrEqual(int|string|float|self $other): bool
     {
         return $this->compareTo($other) >= 0;
     }
 
-    public function lessThan(int|string|self $other): bool
+    public function lessThan(int|string|float|self $other): bool
     {
         return $this->compareTo($other) === -1;
     }
 
-    public function lessThanOrEqual(int|string|self $other): bool
+    public function lessThanOrEqual(int|string|float|self $other): bool
     {
         return $this->compareTo($other) <= 0;
     }
@@ -232,13 +234,33 @@ final class Decimal implements Stringable
         return $this->value;
     }
 
-    private static function raw(int|string|self $value): string
+    private static function raw(int|string|float|self $value): string
     {
         if ($value instanceof self) {
             return $value->value;
         }
 
+        self::rejectFloat($value);
+
         return self::normalize((string) $value);
+    }
+
+    /**
+     * Floats are accepted by the signature only so they can be refused here.
+     *
+     * Declaring the parameter as int|string would not protect us: outside
+     * strict_types PHP would quietly coerce 0.1 to int 0, and a silently
+     * zeroed amount in a ledger is far worse than an exception.
+     */
+    private static function rejectFloat(mixed $value): void
+    {
+        if (is_float($value)) {
+            throw new InvalidArgumentException(sprintf(
+                'Money must never be a float (received %s). Pass a decimal string such as "%s".',
+                var_export($value, true),
+                rtrim(rtrim(number_format($value, 8, '.', ''), '0'), '.') ?: '0'
+            ));
+        }
     }
 
     private static function normalize(string $value): string
