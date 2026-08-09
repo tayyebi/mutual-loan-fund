@@ -120,7 +120,7 @@ class GoldValuationTest extends TestCase
 
         $rate = $rates->record('USD', null, Carbon::today(), $actor, Decimal::of('3000', Decimal::RATE_SCALE));
 
-        $this->assertSame('72.338663', Decimal::of((string) $rate->units_per_gram_18k)->withScale(6)->toString());
+        $this->assertSame('72.339180', Decimal::of((string) $rate->units_per_gram_18k)->withScale(6)->toString());
         $this->assertTrue(Decimal::of((string) $rate->source_troy_ounce_24k)->equals('3000'));
     }
 }

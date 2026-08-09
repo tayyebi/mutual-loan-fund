@@ -103,9 +103,15 @@ class RateService
             return $amount;
         }
 
-        $grams = $this->quote($from, $date)->toGold($amount);
+        // Through the gold reference in one step: converting via an already
+        // rounded gram amount would carry a double rounding error into the
+        // result.
+        $fromQuote = $this->quote($from, $date);
+        $toQuote = $this->quote($to, $date);
 
-        return $this->quote($to, $date)->fromGold($grams);
+        return $amount
+            ->times($toQuote->unitsPerGram18k)
+            ->dividedBy($fromQuote->unitsPerGram18k, Decimal::MONEY_SCALE);
     }
 
     /**

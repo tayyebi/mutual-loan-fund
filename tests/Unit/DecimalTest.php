@@ -115,10 +115,11 @@ class DecimalTest extends TestCase
             GoldConverter::gram18kPerTroyOunce24k()->withScale(10)->toString()
         );
 
-        // A market quote of 3,000 USD per troy ounce of 24K.
+        // A market quote of 3,000 USD per troy ounce of 24K:
+        // 3000 ÷ 31.1034768 × 0.75 = 72.33917978… per gram of 18K.
         $perGram18k = GoldConverter::troyOunce24kToGram18k(Decimal::of('3000', Decimal::RATE_SCALE));
 
-        $this->assertSame('72.3387', $perGram18k->withScale(4)->toString());
+        $this->assertSame('72.3392', $perGram18k->withScale(4)->toString());
 
         // And back again.
         $this->assertSame(

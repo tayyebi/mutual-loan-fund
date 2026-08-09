@@ -105,6 +105,7 @@ class DoubleEntryTest extends TestCase
         }
 
         $line = $entry->lines->first();
+        $originalDebit = (string) $line->debit;
 
         try {
             $line->update(['debit' => '999999']);
@@ -115,7 +116,7 @@ class DoubleEntryTest extends TestCase
 
         // Nothing reached the database.
         $this->assertNotSame('Rewritten history', $entry->fresh()->description);
-        $this->assertTrue($line->fresh()->debit == $line->debit);
+        $this->assertSame((string) $line->fresh()->debit, $originalDebit);
     }
 
     public function test_a_correction_is_a_reversal_that_leaves_the_original_visible(): void

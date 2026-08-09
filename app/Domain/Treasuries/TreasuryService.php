@@ -32,7 +32,7 @@ class TreasuryService
         $this->assertNetworkMatchesType($attributes);
 
         return DB::transaction(function () use ($group, $attributes, $actor) {
-            $treasury = Treasury::create([
+            $treasury = new Treasury([
                 'group_id' => $group->getKey(),
                 'name' => $attributes['name'],
                 'type' => $attributes['type'],
@@ -41,7 +41,10 @@ class TreasuryService
                 'external_identifier' => $attributes['external_identifier'] ?? null,
                 'status' => Treasury::STATUS_ACTIVE,
             ]);
+            $treasury->setRelation('group', $group);
 
+            // The account is created first: treasuries.account_id is NOT NULL,
+            // so a treasury cannot exist before its ledger account does.
             $account = $this->chart->createTreasuryAccount($treasury);
             $treasury->forceFill(['account_id' => $account->getKey()])->save();
 

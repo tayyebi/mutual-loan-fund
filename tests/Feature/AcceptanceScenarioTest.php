@@ -33,6 +33,12 @@ class AcceptanceScenarioTest extends TestCase
         // 2. Mohammad creates a group.
         $fund = app(GroupService::class)->create($mohammad, 'Friends Fund');
 
+        // The spec has Ali borrowing the day he joins, so the fund's published
+        // policy must enable loans and not impose a membership waiting period.
+        $this->publishPolicy($fund, $mohammad, [
+            'loans' => ['enabled' => '1', 'minimum_membership_days' => '0'],
+        ]);
+
         // 3–5. Ali requests membership, is approved, and receives a cost center.
         $memberships = app(MembershipService::class);
         $aliMembership = $memberships->request($fund, $ali);
