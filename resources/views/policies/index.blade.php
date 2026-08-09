@@ -25,6 +25,18 @@
     </div>
 
     <div class="card">
+        <div class="page-head" style="margin:0">
+            <div>
+                <h3 style="margin:0">Financial framework</h3>
+                <p class="muted small" style="margin:0">
+                    {{ $group->financialFramework?->name ?? 'None selected' }}
+                </p>
+            </div>
+            <a class="btn btn-small" href="{{ route('g.framework.edit', $group) }}">Change…</a>
+        </div>
+    </div>
+
+    <div class="card">
         <div class="table-wrap">
             <table>
                 <thead>

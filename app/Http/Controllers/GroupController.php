@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domain\Groups\GroupService;
 use App\Domain\Groups\MembershipService;
+use App\Models\FinancialFramework;
 use App\Models\Group;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,7 +15,9 @@ class GroupController extends Controller
 {
     public function create(): View
     {
-        return view('groups.create');
+        return view('groups.create', [
+            'frameworks' => FinancialFramework::orderBy('name')->get(),
+        ]);
     }
 
     public function store(Request $request, GroupService $groups): RedirectResponse
@@ -22,13 +25,45 @@ class GroupController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:2000'],
+            'financial_framework_id' => ['nullable', 'exists:financial_frameworks,id'],
         ]);
 
-        $group = $groups->create($request->user(), $data['name'], $data['description'] ?? null);
+        $framework = isset($data['financial_framework_id'])
+            ? FinancialFramework::find($data['financial_framework_id'])
+            : null;
+
+        $group = $groups->create($request->user(), $data['name'], $data['description'] ?? null, $framework);
 
         return redirect()
             ->route('g.dashboard', $group)
             ->with('status', "{$group->name} is ready. Its chart of accounts and policy v1 are in place.");
+    }
+
+    public function editFramework(Group $group): View
+    {
+        return view('groups.framework', [
+            'group' => $group,
+            'frameworks' => FinancialFramework::orderBy('name')->get(),
+        ]);
+    }
+
+    public function updateFramework(Request $request, Group $group, GroupService $groups): RedirectResponse
+    {
+        $data = $request->validate([
+            'financial_framework_id' => ['nullable', 'exists:financial_frameworks,id'],
+        ]);
+
+        $framework = isset($data['financial_framework_id'])
+            ? FinancialFramework::find($data['financial_framework_id'])
+            : null;
+
+        $groups->changeFramework($group, $framework, $request->user());
+
+        return redirect()
+            ->route('g.policies.index', $group)
+            ->with('status', $framework
+                ? "Financial framework set to {$framework->name}."
+                : 'Financial framework cleared.');
     }
 
     /**

@@ -23,6 +23,7 @@ class Group extends Model
         'description',
         'status',
         'created_by',
+        'financial_framework_id',
     ];
 
     public function getRouteKeyName(): string
@@ -33,6 +34,11 @@ class Group extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function financialFramework(): BelongsTo
+    {
+        return $this->belongsTo(FinancialFramework::class);
     }
 
     public function memberships(): HasMany

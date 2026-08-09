@@ -33,6 +33,17 @@
         </div>
     @endif
 
+    @if ($framework_warnings !== [])
+        <div class="alert alert-warn">
+            This policy drifts from your chosen financial framework:
+            <ul>
+                @foreach ($framework_warnings as $message)
+                    <li>{{ $message }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="grid grid-side">
         <div class="grid grid-2">
             @foreach ($config->categories() as $category)

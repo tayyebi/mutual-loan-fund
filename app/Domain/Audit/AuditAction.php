@@ -10,6 +10,7 @@ final class AuditAction
     public const GROUP_CREATED = 'group.created';
     public const GROUP_SUSPENDED = 'group.suspended';
     public const GROUP_REINSTATED = 'group.reinstated';
+    public const GROUP_FRAMEWORK_CHANGED = 'group.framework_changed';
 
     public const USER_SUSPENDED = 'user.suspended';
     public const USER_REINSTATED = 'user.reinstated';

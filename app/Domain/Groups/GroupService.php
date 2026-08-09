@@ -6,6 +6,7 @@ use App\Domain\Accounting\ChartOfAccounts;
 use App\Domain\Audit\AuditAction;
 use App\Domain\Audit\AuditRecorder;
 use App\Domain\Policies\PolicyService;
+use App\Models\FinancialFramework;
 use App\Models\Group;
 use App\Models\GroupMembership;
 use App\Models\User;
@@ -29,15 +30,20 @@ class GroupService
         private readonly AuditRecorder $audit,
     ) {}
 
-    public function create(User $creator, string $name, ?string $description = null): Group
-    {
-        return DB::transaction(function () use ($creator, $name, $description) {
+    public function create(
+        User $creator,
+        string $name,
+        ?string $description = null,
+        ?FinancialFramework $framework = null,
+    ): Group {
+        return DB::transaction(function () use ($creator, $name, $description, $framework) {
             $group = Group::create([
                 'name' => $name,
                 'slug' => $this->uniqueSlug($name),
                 'description' => $description,
                 'status' => Group::STATUS_ACTIVE,
                 'created_by' => $creator->getKey(),
+                'financial_framework_id' => $framework?->getKey(),
             ]);
 
             $this->chart->install($group);
@@ -60,7 +66,31 @@ class GroupService
                 group: $group,
                 actor: $creator,
                 object: $group,
-                new: ['name' => $group->name, 'slug' => $group->slug]
+                new: ['name' => $group->name, 'slug' => $group->slug, 'financial_framework' => $framework?->key]
+            );
+
+            return $group->refresh();
+        });
+    }
+
+    /**
+     * Changing a fund's chosen financial framework after creation. Purely
+     * advisory data — this never touches the fund's actual policy.
+     */
+    public function changeFramework(Group $group, ?FinancialFramework $framework, User $actor): Group
+    {
+        return DB::transaction(function () use ($group, $framework, $actor) {
+            $old = $group->financial_framework_id;
+
+            $group->update(['financial_framework_id' => $framework?->getKey()]);
+
+            $this->audit->record(
+                AuditAction::GROUP_FRAMEWORK_CHANGED,
+                group: $group,
+                actor: $actor,
+                object: $group,
+                old: ['financial_framework_id' => $old],
+                new: ['financial_framework_id' => $framework?->getKey()]
             );
 
             return $group->refresh();

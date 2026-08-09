@@ -47,6 +47,18 @@
                 policy versions.
             </div>
 
+            @if ($framework_warnings !== [])
+                <div class="alert alert-warn" style="margin-top:1rem">
+                    This policy drifts from your chosen financial framework. You can still
+                    publish it — this is informational only.
+                    <ul>
+                        @foreach ($framework_warnings as $message)
+                            <li>{{ $message }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             @if ($errors_from_validator !== [])
                 <div class="alert alert-error">
                     This draft cannot be published yet:

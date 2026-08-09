@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Frameworks\FrameworkComplianceChecker;
 use App\Domain\Policies\Exceptions\PolicyValidationException;
 use App\Domain\Policies\PolicyService;
 use App\Models\Group;
@@ -20,7 +21,7 @@ use RuntimeException;
  */
 class PolicyController extends Controller
 {
-    public function index(Group $group, PolicyService $policies, GroupContext $context): View
+    public function index(Group $group, PolicyService $policies, GroupContext $context, FrameworkComplianceChecker $frameworkChecker): View
     {
         // Members see the rules that govern them; the history and drafts behind
         // them are administrative.
@@ -31,6 +32,7 @@ class PolicyController extends Controller
                 'group' => $group,
                 'policy' => $active,
                 'config' => $active?->toPolicyConfig(),
+                'framework_warnings' => $active ? $frameworkChecker->check($active->toPolicyConfig(), $group->financialFramework) : [],
             ]);
         }
 
@@ -57,7 +59,7 @@ class PolicyController extends Controller
             ->with('status', "Draft v{$draft->version} created from the active policy.");
     }
 
-    public function show(Group $group, GroupPolicy $policy): View
+    public function show(Group $group, GroupPolicy $policy, FrameworkComplianceChecker $frameworkChecker): View
     {
         $this->authorize('view', $policy);
 
@@ -69,10 +71,11 @@ class PolicyController extends Controller
                 'loans' => $policy->loans()->count(),
                 'transactions' => $policy->transactions()->count(),
             ],
+            'framework_warnings' => $frameworkChecker->check($policy->toPolicyConfig(), $group->financialFramework),
         ]);
     }
 
-    public function edit(Group $group, GroupPolicy $policy, PolicyService $policies): View
+    public function edit(Group $group, GroupPolicy $policy, PolicyService $policies, FrameworkComplianceChecker $frameworkChecker): View
     {
         $this->authorize('update', $policy);
 
@@ -81,6 +84,7 @@ class PolicyController extends Controller
             'policy' => $policy,
             'config' => $policy->toPolicyConfig(),
             'errors_from_validator' => $policies->validate($policy->toPolicyConfig()),
+            'framework_warnings' => $frameworkChecker->check($policy->toPolicyConfig(), $group->financialFramework),
         ]);
     }
 
@@ -118,7 +122,7 @@ class PolicyController extends Controller
     /**
      * The confirmation screen: what changes, and what stays as it was.
      */
-    public function confirmPublish(Group $group, GroupPolicy $policy, PolicyService $policies): View
+    public function confirmPublish(Group $group, GroupPolicy $policy, PolicyService $policies, FrameworkComplianceChecker $frameworkChecker): View
     {
         $this->authorize('publish', $policy);
 
@@ -128,6 +132,7 @@ class PolicyController extends Controller
             'changes' => $policies->pendingChanges($policy),
             'active' => $policies->activePolicy($group),
             'errors_from_validator' => $policies->validate($policy->toPolicyConfig()),
+            'framework_warnings' => $frameworkChecker->check($policy->toPolicyConfig(), $group->financialFramework),
         ]);
     }
 

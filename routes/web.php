@@ -182,6 +182,13 @@ Route::middleware('auth')->group(function () {
             Route::get('audit', [AuditController::class, 'index'])
                 ->middleware('group.admin')->name('audit.index');
 
+            // The fund's optional, advisory financial framework — a Group concept,
+            // not a GroupPolicy version, but grouped here for discoverability.
+            Route::middleware('group.admin')->group(function () {
+                Route::get('framework', [GroupController::class, 'editFramework'])->name('framework.edit');
+                Route::put('framework', [GroupController::class, 'updateFramework'])->name('framework.update');
+            });
+
             /*
             | Versioned policies. Versions are addressed by their number, scoped
             | to the group, so /g/a/policies/3 and /g/b/policies/3 are different

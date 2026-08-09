@@ -18,6 +18,17 @@
             an administrator publishes one.
         </div>
     @else
+        @if ($framework_warnings !== [])
+            <div class="alert alert-warn">
+                This fund's rules drift from its chosen financial framework:
+                <ul>
+                    @foreach ($framework_warnings as $message)
+                        <li>{{ $message }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <p class="muted small">Policy v{{ $policy->version }}, active since {{ $policy->effective_from?->format('j M Y') }}.</p>
 
         <div class="grid grid-2">

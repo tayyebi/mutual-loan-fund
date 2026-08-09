@@ -13,6 +13,17 @@
         <a class="btn btn-primary" href="{{ route('g.policies.publish.confirm', [$group, $policy->version]) }}">Publish…</a>
     </div>
 
+    @if ($framework_warnings !== [])
+        <div class="alert alert-warn">
+            This draft drifts from your chosen financial framework:
+            <ul>
+                @foreach ($framework_warnings as $message)
+                    <li>{{ $message }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('g.policies.update', [$group, $policy->version]) }}">
         @csrf
         @method('PUT')
