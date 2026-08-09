@@ -42,6 +42,25 @@ mkdir -p \
 # Only fix ownership of the writable paths; never chown the whole mounted repo.
 chown -R "$RUN_AS" storage bootstrap/cache 2>/dev/null || true
 
+# ---------------------------------------------------------------- ssl cert --
+# A self-signed certificate is generated once and kept in the host-mounted
+# certs directory that nginx serves on port 8088. It is only regenerated when
+# the files are missing (e.g. first boot after a clean checkout), so the
+# certificate persists across container restarts.
+CERTS_DIR=/etc/nginx/certs
+CERT_FILE="$CERTS_DIR/cert.pem"
+KEY_FILE="$CERTS_DIR/key.pem"
+
+if [ ! -f "$CERT_FILE" ] || [ ! -f "$KEY_FILE" ]; then
+    log "generating self-signed TLS certificate into $CERTS_DIR"
+    mkdir -p "$CERTS_DIR"
+    openssl req -x509 -nodes -newkey rsa:4096 -sha256 -days 3650 \
+        -keyout "$KEY_FILE" -out "$CERT_FILE" \
+        -subj "/C=IR/O=Mutual Loan Fund/OU=Self-Signed/CN=localhost" \
+        -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"
+    chmod 600 "$KEY_FILE"
+fi
+
 # -------------------------------------------------------------- dependencies --
 if [ ! -f vendor/autoload.php ] || [ "${COMPOSER_INSTALL_ON_BOOT:-auto}" = "always" ]; then
     log "installing PHP dependencies with composer"
