@@ -9,6 +9,14 @@ FROM php:8.3-fpm-alpine
 
 ARG APP_UID=1000
 ARG APP_GID=1000
+# Point apk at a reachable mirror (e.g. https://mirror.arvancloud.ir/alpine)
+# when dl-cdn.alpinelinux.org is unreachable from the build host.
+ARG ALPINE_MIRROR=https://dl-cdn.alpinelinux.org/alpine
+
+RUN set -eux; \
+    VER=$(cat /etc/alpine-release | cut -d. -f1-2); \
+    printf '%s/v%s/main\n%s/v%s/community\n' \
+        "$ALPINE_MIRROR" "$VER" "$ALPINE_MIRROR" "$VER" > /etc/apk/repositories
 
 RUN apk add --no-cache \
         bash \
