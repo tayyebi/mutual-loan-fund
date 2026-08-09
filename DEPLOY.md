@@ -94,7 +94,12 @@ docker compose restart app       # only needed if composer.json changed
 ```
 
 Because no config, route or view cache is built, a `git pull` alone is enough
-for ordinary code and template changes.
+for ordinary code and template changes. New migrations don't need the restart
+either: the `scheduler` container checks for pending migrations every five
+minutes and applies them on its own (`routes/console.php`), on top of the
+migration run that already happens every time the `app` container boots
+(`docker/php/entrypoint.sh`). A restart just makes a migration take effect
+immediately instead of within a few minutes.
 
 ## Behind a TLS reverse proxy
 
