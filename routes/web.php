@@ -55,6 +55,8 @@ Route::middleware('auth')->group(function () {
         Route::get('transactions', [ProfileController::class, 'transactions'])->name('transactions');
         Route::get('password', [ProfileController::class, 'editPassword'])->name('password.edit');
         Route::put('password', [ProfileController::class, 'updatePassword'])->name('password.update');
+        Route::get('preferences', [ProfileController::class, 'editPreferences'])->name('preferences.edit');
+        Route::put('preferences', [ProfileController::class, 'updatePreferences'])->name('preferences.update');
     });
 
     /*

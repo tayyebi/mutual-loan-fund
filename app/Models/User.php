@@ -28,6 +28,10 @@ class User extends Authenticatable
         'password',
         'status',
         'system_role',
+        'preferred_locale',
+        'preferred_currency',
+        'timezone',
+        'weekend_days',
     ];
 
     protected $hidden = [
@@ -40,6 +44,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'weekend_days' => 'array',
         ];
     }
 

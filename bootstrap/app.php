@@ -3,6 +3,7 @@
 use App\Http\Middleware\EnsureGroupAdmin;
 use App\Http\Middleware\EnsureSystemAdmin;
 use App\Http\Middleware\ResolveGroupContext;
+use App\Http\Middleware\SetLocale;
 use App\Support\DomainRefusal;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -23,6 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'group.admin' => EnsureGroupAdmin::class,
             'system.admin' => EnsureSystemAdmin::class,
         ]);
+
+        // Every page needs a resolved locale, including guest/login screens, so
+        // this runs on the whole 'web' group rather than being aliased on.
+        $middleware->web(append: [SetLocale::class]);
 
         $middleware->redirectGuestsTo('/login');
     })

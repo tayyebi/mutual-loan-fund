@@ -79,7 +79,7 @@
                     <select id="currency" name="currency" required>
                         @foreach ($currencies as $code => $meta)
                             @continue($code === config('fund.gold_unit'))
-                            <option value="{{ $code }}" @selected(old('currency', 'USDT') === $code)>{{ $code }}</option>
+                            <option value="{{ $code }}" @selected(old('currency', auth()->user()->preferred_currency ?? 'USDT') === $code)>{{ $code }}</option>
                         @endforeach
                     </select>
                 </div>

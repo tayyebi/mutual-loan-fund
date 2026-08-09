@@ -528,3 +528,42 @@ textarea { min-height: 4.5rem; resize: vertical; }
     body { background: #fff; }
     .card { border: none; padding: 0; }
 }
+
+/* ------------------------------------------------------------------ rtl */
+/*
+ * Farsi renders right-to-left. Flex/grid row direction already follows
+ * <html dir> automatically; only the hand-set physical left/right
+ * properties below need a mirrored override. No custom font is loaded —
+ * Persian glyphs fall back to the browser's own script fallback, matching
+ * this app's no-external-resources rule.
+ */
+[dir="rtl"] th,
+[dir="rtl"] td {
+    text-align: right;
+}
+
+/* Numeric/tabular columns stay left-aligned even in RTL: financial figures
+   read left-to-right regardless of the surrounding text direction. */
+[dir="rtl"] td.num,
+[dir="rtl"] th.num {
+    text-align: left;
+}
+
+[dir="rtl"] .alert {
+    border-left-width: 1px;
+    border-right-width: 3px;
+}
+
+[dir="rtl"] .alert-ok { border-left-color: var(--border); border-right-color: var(--ok); }
+[dir="rtl"] .alert-error { border-left-color: var(--border); border-right-color: var(--danger); }
+[dir="rtl"] .alert-warn { border-left-color: var(--border); border-right-color: var(--warning); }
+[dir="rtl"] .alert-info { border-left-color: var(--border); border-right-color: var(--accent); }
+
+[dir="rtl"] .alert ul {
+    padding-left: 0;
+    padding-right: 1.1rem;
+}
+
+[dir="rtl"] .table-empty {
+    text-align: center;
+}

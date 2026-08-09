@@ -32,6 +32,9 @@
             <p>
                 <a class="btn" href="{{ route('p.transactions') }}">My transactions</a>
             </p>
+            <p>
+                <a class="btn" href="{{ route('p.preferences.edit') }}">Preferences</a>
+            </p>
             <p style="margin:0">
                 <a class="btn" href="{{ route('p.password.edit') }}">Change password</a>
             </p>
