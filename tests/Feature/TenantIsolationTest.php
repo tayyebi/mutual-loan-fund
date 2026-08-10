@@ -25,11 +25,11 @@ class TenantIsolationTest extends TestCase
         $fundB = $this->fund($bob, 'Fund B');
 
         $this->actingAs($alice)
-            ->get(route('g.dashboard', $fundB))
+            ->get(route('u.dashboard', $fundB))
             // Not 403: a non-member should not even learn the fund exists.
             ->assertNotFound();
 
-        $this->actingAs($alice)->get(route('g.dashboard', $fundA))->assertOk();
+        $this->actingAs($alice)->get(route('u.dashboard', $fundA))->assertOk();
     }
 
     public function test_changing_an_id_in_the_url_cannot_reach_another_funds_records(): void
@@ -48,7 +48,7 @@ class TenantIsolationTest extends TestCase
         // Alice is a legitimate member of fund A, and asks fund A for fund B's
         // transaction. Route model binding finds the row; the middleware rejects it.
         $this->actingAs($alice)
-            ->get(route('g.transactions.show', [$fundA, $contributionB]))
+            ->get(route('u.activity.show', [$fundA, $contributionB]))
             ->assertNotFound();
 
         $accountB = Account::query()->forGroup($fundB)->where('code', Account::FUND_CAPITAL)->firstOrFail();
@@ -66,12 +66,12 @@ class TenantIsolationTest extends TestCase
 
         $this->actingAs($newcomer)->post(route('groups.join', $fund))->assertRedirect();
 
-        $this->actingAs($newcomer)->get(route('g.dashboard', $fund))->assertNotFound();
+        $this->actingAs($newcomer)->get(route('u.dashboard', $fund))->assertNotFound();
 
         $membership = $newcomer->membershipFor($fund);
         app(\App\Domain\Groups\MembershipService::class)->approve($membership, $admin);
 
-        $this->actingAs($newcomer)->get(route('g.dashboard', $fund))->assertOk();
+        $this->actingAs($newcomer)->get(route('u.dashboard', $fund))->assertOk();
     }
 
     public function test_an_ordinary_member_cannot_reach_administrative_screens(): void
@@ -107,10 +107,10 @@ class TenantIsolationTest extends TestCase
         $fund = $this->fund($admin);
         $membership = $this->member($fund, $member, $admin);
 
-        $this->actingAs($member)->get(route('g.dashboard', $fund))->assertOk();
+        $this->actingAs($member)->get(route('u.dashboard', $fund))->assertOk();
 
         app(\App\Domain\Groups\MembershipService::class)->suspend($membership, $admin);
 
-        $this->actingAs($member)->get(route('g.dashboard', $fund))->assertNotFound();
+        $this->actingAs($member)->get(route('u.dashboard', $fund))->assertNotFound();
     }
 }

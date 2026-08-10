@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Access\SurfaceRoute;
 use App\Domain\Money\Decimal;
 use App\Domain\Policies\Exceptions\PolicyViolationException;
 use App\Domain\Reports\ReportService;
@@ -57,7 +58,15 @@ class TransactionController extends Controller
             'type' => $request->query('type', Transaction::TYPE_CONTRIBUTION),
             'treasuries' => $group->treasuries()->where('status', Treasury::STATUS_ACTIVE)->orderBy('name')->get(),
             'loans' => $reports->repayableLoans($context->membership()),
-            'isAdmin' => $context->isAdmin(),
+            /*
+            | Whether to offer the administrative movement types — transfers,
+            | exchanges, standalone fees — decided by *surface*, not by role. An
+            | administrator paying their own money in at /u/{group}/money/contribute
+            | is contributing like anyone else and should be shown the simple
+            | form. The server-side guard in recordAdministrative() still checks
+            | the role, which is the check that actually protects anything.
+            */
+            'isAdmin' => SurfaceRoute::serves('transaction.verify'),
         ]);
     }
 
@@ -116,7 +125,7 @@ class TransactionController extends Controller
         }
 
         return redirect()
-            ->route('g.transactions.show', [$group, $transaction])
+            ->route(SurfaceRoute::name('transaction.show'), [$group, $transaction])
             ->with('status', 'Submitted. It becomes financially effective once an administrator verifies it.');
     }
 

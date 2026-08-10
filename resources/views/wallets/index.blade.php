@@ -39,7 +39,7 @@
                             </td>
                             <td><x-status :value="$wallet->status" /></td>
                             <td>
-                                <form method="POST" action="{{ route('g.wallets.update', [$group, $wallet]) }}">
+                                <form method="POST" action="{{ route('u.wallets.update', [$group, $wallet]) }}">
                                     @csrf
                                     @method('PATCH')
                                     <input type="hidden" name="label" value="{{ $wallet->label }}">
@@ -61,7 +61,7 @@
 
         <div class="card">
             <h2>{{ __('wallets.index.register_heading') }}</h2>
-            <form method="POST" action="{{ route('g.wallets.store', $group) }}">
+            <form method="POST" action="{{ route('u.wallets.store', $group) }}">
                 @csrf
 
                 <div class="field">

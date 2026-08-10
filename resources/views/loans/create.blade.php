@@ -4,10 +4,10 @@
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.loans.index', $group) }}">{{ __('loans.create.breadcrumb') }}</a></p>
+            <p class="breadcrumb"><a href="@surface('loan.index', $group)">{{ __('loans.create.breadcrumb') }}</a></p>
             <h1>{{ __('loans.create.heading') }}</h1>
             <p class="muted small">
-                {{ __('loans.create.intro_prefix') }} <a href="{{ route('g.policies.show', [$group, $policy->version]) }}">v{{ $policy->version }}</a>.
+                {{ __('loans.create.intro_prefix') }} <a href="{{ route('u.fund.rules', $group) }}">v{{ $policy->version }}</a>.
                 {{ __('loans.create.intro_suffix') }}
             </p>
         </div>
@@ -84,7 +84,7 @@
 
             <hr class="divider">
 
-            <form method="POST" action="{{ route('g.loans.store', $group) }}">
+            <form method="POST" action="@surface('loan.store', $group)">
                 @csrf
                 <div class="field-row field-row-3">
                     <div class="field">

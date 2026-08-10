@@ -17,22 +17,72 @@ transaction, and redirects.
 
 ## Tenant model
 
-`Group` (`app/Models/Group.php`) is the tenant boundary — one independent fund. Canonical URL
-prefix is `/g/{group}` (routed by slug); there is deliberately no `/groups/`. Everything under
-that prefix sits behind the `group` middleware (`ResolveGroupContext`, verifies membership and
-that every route-bound model actually belongs to that group — tenant isolation) and, for
-admin-only actions, the additional `group.admin` middleware.
+`Group` (`app/Models/Group.php`) is the tenant boundary — one independent fund, routed by slug.
+Both tenant-scoped prefixes (`/u/{group}`, `/g/{group}` — see below) sit behind the `group`
+middleware (`ResolveGroupContext`, verifies membership and that every route-bound model actually
+belongs to that group — tenant isolation). There is deliberately no `/groups/`.
 
 Membership is `GroupMembership`, with a **per-fund** admin role (`GroupMembership::ROLE_ADMIN`) —
 distinct and unrelated to the **platform-wide** `User::system_role` /
-`User::isSystemAdmin()` introduced for `/admin` operations. The platform-wide system administrator
+`User::isSystemAdmin()` introduced for `/s` operations. The platform-wide system administrator
 manages user/fund lifecycle (suspend, reinstate, promote) and explicitly never reads a fund's own
-financial data (see `app/Http/Controllers/Admin/FundController.php`'s docblock). Don't conflate
+financial data (see `app/Http/Controllers/System/FundController.php`'s docblock). Don't conflate
 the two "administrator" concepts — most of this codebase's own comments say "administrator" to
 mean the per-fund role.
 
 Anyone can create their own fund (`POST /g`) and becomes its admin automatically — group creation
 is not restricted to system administrators.
+
+## Access levels and surfaces
+
+**The URL space is partitioned by access level, one prefix per level, and each prefix is a
+complete experience rather than a filtered view of another.**
+
+| Prefix | Level (`AccessLevel::LEVEL_*`) | Middleware | What it is |
+|---|---|---|---|
+| `/u/{group}` | `member` | `group` | The fund as its members experience it |
+| `/g/{group}` | `fund_admin` | `group` + `group.admin` | Running one fund |
+| `/s` | `system_admin` | `system.admin` | Running the platform |
+
+Route names mirror the prefixes exactly: `u.*`, `g.*`, `s.*`. Outside them sit only auth, `/`
+(the cross-fund home), `/p` (account settings — every account has the same ones, so it is not an
+access level) and `/exchange-rates`.
+
+Levels are **cumulative**: a fund administrator is still an investor and does their own
+contributing and borrowing on `/u`; a system administrator who invests in a fund does the same.
+But holding a higher level never grants reach into a fund: `/u` and `/g` are reachable only
+through a real `GroupMembership`, so a system administrator who is not a member of a fund gets a
+404 on both — `ResolveGroupContext` is unchanged and `/s` never reads a fund's books.
+
+`app/Domain/Access/` is the declarative counterpart of `routes/web.php`, in the same spirit as
+`PolicyConfig::CATEGORIES`:
+
+- `AccessLevel` — the three levels, their `RANK`, and `heldBy(User, GroupContext)`.
+- `Surface` (abstract) + `Surfaces/{Member,FundAdmin,System}Surface` — one class per level
+  declaring its prefix, its landing route, its `sections()` of `NavSection`/`NavItem`, and its
+  `routes()` intent map.
+- `AccessMap::SURFACES` — the registry. **Adding a destination to a level means adding one
+  `NavItem` to one surface's `sections()`, nothing else**; the layout, the surface switcher and
+  the active-state highlighting are all generic over it. `layouts/app.blade.php` builds no link
+  list of its own.
+- `NavigationBuilder` → `Navigation`, resolved by a **view composer** on `layouts.app` (not
+  middleware — `GroupContext` is only populated by route middleware, which runs after the global
+  stack; a composer fires at render time).
+- `SurfaceRoute` + the `@surface` / `@surfaces` Blade directives — for the handful of views
+  rendered by two surfaces (`transactions/*`, `loans/show`, `members/index`, `members/show`).
+  Those views must **never hardcode a route name**: they link by intent
+  (`<a href="@surface('transaction.show', $group, $transaction)">`) and each surface answers with
+  its own route. A surface that does not serve an intent omits it, which makes
+  `@surfaces('transaction.verify')` the right guard for an action inside a shared view — the
+  question is "does this experience do that?", not "does this person hold the role?".
+  Controllers redirecting out of a shared action do the same:
+  `redirect()->route(SurfaceRoute::name('transaction.show'), …)`.
+
+Member-facing strings are written from the member's side ("what you have paid in", not "capital
+contributions") and live in `lang/{en,fa}/member.php`; `lang/{en,fa}/fund.php` backs `/g` and is
+allowed the accounting vocabulary. The books themselves — ledger, chart of accounts, cost
+centres, accounting periods, policy versions and drafts, the accounting reports — are `/g`-only;
+members get the curated read-only `/u/{group}/fund` and `/u/{group}/fund/rules` instead.
 
 ## Domain layout
 
@@ -49,7 +99,8 @@ Where to look for X:
 - Double-entry accounting → `app/Domain/Accounting/`
 - Audit trail → `app/Domain/Audit/`
 - Financial framework presets (advisory rule sets) → `app/Domain/Frameworks/`
-- Routes → the single `routes/web.php`, grouped by the `/g/{group}` prefix
+- Access levels, surfaces and navigation → `app/Domain/Access/`
+- Routes → the single `routes/web.php`, grouped by the `/u`, `/g`, `/s` prefixes
 
 ## Policy system
 
@@ -134,10 +185,16 @@ Deliberate scope boundaries — do not silently expand these:
   only the surrounding words (day/month names, UI strings) are translated via
   `Carbon::translatedFormat()` and the `lang/` files below. Calendar-system conversion is a
   separate, larger feature that has not been attempted.
+- **The webfont is localised, not global.** Vazirmatn is self-hosted from `public/fonts/`
+  (`@font-face` at the top of `public/css/app.css`, three static weights, OFL licence alongside)
+  and selected only on `:root[lang="fa"]` via the `--ui`/`--ui-line` tokens; English keeps the
+  reader's system UI stack and downloads nothing. No CDN, in keeping with the stylesheet's
+  no-external-resources rule.
 
 Translations live under `lang/en/` and `lang/fa/`, one file per `resources/views/` top-level
 subdirectory (`lang/{en,fa}/policies.php` backs every view under `resources/views/policies/`,
-etc.), plus `nav.php` (the shared masthead/nav in `resources/views/layouts/*`), `validation.php`/
+etc.), plus `nav.php` (the masthead, the surface switcher and every `NavItem`/`NavSection` label
+declared in `app/Domain/Access/Surfaces/*`), `validation.php`/
 `auth.php`/`pagination.php`/`passwords.php` (Laravel's own framework strings), and `exceptions.php`
 (every hardcoded message thrown by `app/Domain/**` services and `abort()`/`withErrors()` calls in
 `app/Http/Middleware`/`app/Http/Controllers`). `App\Domain\Policies\Categories\*`'s `PolicyField`

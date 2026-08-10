@@ -45,6 +45,7 @@ return [
         'heading' => 'Loans',
         'intro' => 'Each loan is governed for its whole life by the policy version it was created under.',
         'request_button' => 'Request a loan',
+        'my_borrowing_link' => 'My borrowing',
         'col_reference' => 'Reference',
         'col_member' => 'Member',
         'col_principal' => 'Principal',

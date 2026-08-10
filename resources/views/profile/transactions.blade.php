@@ -26,10 +26,10 @@
                 @forelse ($transactions as $transaction)
                     <tr>
                         <td>
-                            <a href="{{ route('g.dashboard', $transaction->group) }}">{{ $transaction->group->name }}</a>
+                            <a href="{{ route('u.dashboard', $transaction->group) }}">{{ $transaction->group->name }}</a>
                         </td>
                         <td class="num">
-                            <a href="{{ route('g.transactions.show', [$transaction->group, $transaction]) }}">
+                            <a href="{{ route('u.activity.show', [$transaction->group, $transaction]) }}">
                                 <x-datetime :value="$transaction->occurred_on" />
                             </a>
                         </td>
@@ -39,7 +39,7 @@
                         <td class="small">
                             {{ $transaction->typeLabel() }}
                             @if ($transaction->loan)
-                                <br><a class="small" href="{{ route('g.loans.show', [$transaction->group, $transaction->loan]) }}">{{ $transaction->loan->reference }}</a>
+                                <br><a class="small" href="{{ route('u.borrowing.loan', [$transaction->group, $transaction->loan]) }}">{{ $transaction->loan->reference }}</a>
                             @endif
                         </td>
                         <td><x-status :value="$transaction->status" /></td>

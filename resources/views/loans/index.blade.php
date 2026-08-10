@@ -9,7 +9,9 @@
                 {{ __('loans.index.intro') }}
             </p>
         </div>
-        <a class="btn btn-primary" href="{{ route('g.loans.create', $group) }}">{{ __('loans.index.request_button') }}</a>
+        {{-- Requesting a loan is a member's act and lives on /u; this list is
+             the administrator's queue of everyone else's. --}}
+        <a class="btn" href="{{ route('u.borrowing', $group) }}">{{ __('loans.index.my_borrowing_link') }}</a>
     </div>
 
     <div class="card">
@@ -29,13 +31,13 @@
                 <tbody>
                 @forelse ($loans as $loan)
                     <tr>
-                        <td><a href="{{ route('g.loans.show', [$group, $loan]) }}">{{ $loan->reference }}</a></td>
+                        <td><a href="@surface('loan.show', $group, $loan)">{{ $loan->reference }}</a></td>
                         @if ($isAdmin)<td>{{ $loan->member?->displayName() }}</td>@endif
                         <td class="num"><x-amount :value="$loan->principal" :currency="$loan->currency" /></td>
                         <td class="num">{{ rtrim(rtrim($loan->interest_rate, '0'), '.') ?: '0' }}%</td>
                         <td class="num">{{ $loan->term_months }} {{ __('loans.index.term_unit') }}</td>
                         <td class="small">
-                            <a href="{{ route('g.policies.show', [$group, $loan->policyVersion->version]) }}">
+                            <a href="@surface('policy.show', $group, $loan->policyVersion->version)">
                                 v{{ $loan->policyVersion->version }}
                             </a>
                         </td>

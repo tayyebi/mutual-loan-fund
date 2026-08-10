@@ -115,14 +115,6 @@ return [
         'delete_draft' => 'Delete draft',
     ],
 
-    'member' => [
-        'title' => 'Fund rules',
-        'heading' => 'Fund rules',
-        'intro' => 'The rules currently governing new operations. Loans and contributions you already have keep the rules they were created under.',
-        'no_active_policy' => 'This fund has no active policy. New financial operations are refused until an administrator publishes one.',
-        'framework_drift_heading' => "This fund's rules drift from its chosen financial framework:",
-        'active_since' => 'Policy v:version, active since',
-    ],
 
     'publish' => [
         'title' => 'Publish policy v:version',

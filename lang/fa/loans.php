@@ -45,6 +45,7 @@ return [
         'heading' => 'وام‌ها',
         'intro' => 'هر وام در تمام طول عمر خود تابع نسخه سیاست مالی‌ای است که تحت آن ایجاد شده است.',
         'request_button' => 'درخواست وام',
+        'my_borrowing_link' => 'وام‌گیری من',
         'col_reference' => 'شماره پیگیری',
         'col_member' => 'عضو',
         'col_principal' => 'اصل مبلغ',

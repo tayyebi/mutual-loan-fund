@@ -7,7 +7,6 @@ use App\Domain\Policies\Exceptions\PolicyValidationException;
 use App\Domain\Policies\PolicyService;
 use App\Models\Group;
 use App\Models\GroupPolicy;
-use App\Support\GroupContext;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -21,21 +20,13 @@ use RuntimeException;
  */
 class PolicyController extends Controller
 {
-    public function index(Group $group, PolicyService $policies, GroupContext $context, FrameworkComplianceChecker $frameworkChecker): View
+    /**
+     * Version history and drafts — administrative by construction, since this
+     * whole controller now sits behind /g. Members read the rules in force at
+     * /u/{group}/fund/rules, served by App\Http\Controllers\Member\FundController.
+     */
+    public function index(Group $group, PolicyService $policies): View
     {
-        // Members see the rules that govern them; the history and drafts behind
-        // them are administrative.
-        if (! $context->isAdmin()) {
-            $active = $policies->activePolicy($group);
-
-            return view('policies.member', [
-                'group' => $group,
-                'policy' => $active,
-                'config' => $active?->toPolicyConfig(),
-                'framework_warnings' => $active ? $frameworkChecker->check($active->toPolicyConfig(), $group->financialFramework) : [],
-            ]);
-        }
-
         return view('policies.index', [
             'group' => $group,
             'versions' => $policies->history($group),

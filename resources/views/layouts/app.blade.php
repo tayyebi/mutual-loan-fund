@@ -7,15 +7,19 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
+{{--
+    Navigation is not written in this file. $navigation is resolved per request
+    by App\Domain\Access\NavigationBuilder from the surface declarations in
+    App\Domain\Access\AccessMap, so giving an access level a new destination
+    means adding one NavItem there — this layout stays generic over however many
+    surfaces exist and never asks what role the viewer holds.
+--}}
 <header class="masthead">
     <div class="masthead-inner">
         <a class="brand" href="{{ route('home') }}">{{ __('nav.brand') }}</a>
         <nav class="masthead-actions">
             <a href="{{ route('exchange-rates.index') }}">{{ __('nav.exchange_rates') }}</a>
-            @if (auth()->user()?->isSystemAdmin())
-                <a href="{{ route('admin.dashboard') }}">{{ __('nav.site_settings') }}</a>
-            @endif
-            <a href="{{ route('p.home') }}">{{ auth()->user()->name }}</a>
+            <a href="{{ route('p.home') }}">{{ auth()->user()?->name }}</a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="btn-link">{{ __('nav.sign_out') }}</button>
@@ -24,43 +28,44 @@
     </div>
 </header>
 
-@isset($group)
-    <nav class="groupnav">
+@if (($navigation ?? null)?->hasSwitches())
+    {{--
+        The surface switcher. A fund administrator is also an investor, and a
+        system administrator may be one too, so the levels never collapse into
+        one another: this moves between whole experiences rather than revealing
+        extra links inside a single shared one.
+    --}}
+    <nav class="surfaces" aria-label="{{ __('nav.surfaces.aria_label') }}">
+        <div class="surfaces-inner">
+            <ul>
+                @foreach ($navigation->switches as $switch)
+                    <li>
+                        <a href="{{ $switch->href }}"
+                           @if ($switch->current) aria-current="true" @endif>{{ __($switch->label) }}</a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </nav>
+@endif
+
+@if (($navigation ?? null)?->has())
+    <nav class="groupnav" aria-label="{{ __('nav.sections.aria_label') }}">
         <ul>
-            @php($nav = [
-                'g.dashboard' => [__('nav.links.dashboard'), []],
-                'g.transactions.index' => [__('nav.links.activity'), []],
-                'g.loans.index' => [__('nav.links.loans'), []],
-                'g.treasuries.index' => [__('nav.links.treasuries'), []],
-                'g.wallets.index' => [__('nav.links.wallets'), []],
-                'g.members.index' => [__('nav.links.members'), []],
-                'g.policies.index' => [__('nav.links.policies'), []],
-                'g.ledger.index' => [__('nav.links.ledger'), []],
-                'g.accounts.index' => [__('nav.links.accounts'), []],
-                'g.cost-centers.index' => [__('nav.links.cost_centers'), []],
-                'g.reports.index' => [__('nav.links.reports'), []],
-            ])
-            @foreach ($nav as $route => [$label, $params])
-                <li>
-                    <a href="{{ route($route, [$group] + $params) }}"
-                       @if (request()->routeIs($route) || request()->routeIs(str_replace('.index', '.*', $route))) aria-current="page" @endif>
-                        {{ $label }}
-                    </a>
-                </li>
+            @foreach ($navigation->sections as $section)
+                @if ($section->isLabelled())
+                    <li class="navgroup">{{ __($section->label) }}</li>
+                @endif
+                @foreach ($section->items as $item)
+                    <li>
+                        <a href="{{ $navigation->href($item) }}"
+                           @if ($item->isCurrent()) aria-current="page" @endif>{{ __($item->label) }}</a>
+                    </li>
+                @endforeach
             @endforeach
-            @if (($groupContext ?? null)?->isAdmin())
-                <li>
-                    <a href="{{ route('g.periods.index', $group) }}"
-                       @if (request()->routeIs('g.periods.*')) aria-current="page" @endif>{{ __('nav.links.periods') }}</a>
-                </li>
-                <li>
-                    <a href="{{ route('g.audit.index', $group) }}"
-                       @if (request()->routeIs('g.audit.*')) aria-current="page" @endif>{{ __('nav.links.audit') }}</a>
-                </li>
-            @endif
         </ul>
     </nav>
-@endisset
+@endif
 
 <main>
     <div class="container">

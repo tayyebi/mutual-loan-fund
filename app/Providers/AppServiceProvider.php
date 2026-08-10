@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Domain\Access\NavigationBuilder;
+use App\Domain\Access\SurfaceRoute;
 use App\Domain\Blockchain\ChainVerifier;
 use App\Domain\Blockchain\ManualVerifier;
 use App\Domain\Blockchain\TronGridVerifier;
@@ -19,9 +21,11 @@ use App\Policies\PolicyVersionPolicy;
 use App\Policies\TransactionPolicy;
 use App\Policies\WalletPolicy;
 use App\Support\GroupContext;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -49,6 +53,35 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Wallet::class, WalletPolicy::class);
 
         Event::listen(TransactionVerified::class, ApplyLoanMovement::class);
+
+        /*
+        | The layout's navigation is derived from App\Domain\Access rather than
+        | hand-written in Blade. It is resolved by a composer rather than by
+        | middleware because it depends on GroupContext, which route middleware
+        | ('group') only populates after the global stack has already run —
+        | a composer fires at render time, by which point the fund is known.
+        */
+        View::composer('layouts.app', function ($view) {
+            $view->with('navigation', app(NavigationBuilder::class)->build(request()->user()));
+        });
+
+        /*
+        | Views shared by two surfaces link by intent rather than by route name:
+        |
+        |     <a href="@surface('transaction.show', $group, $transaction)">
+        |
+        | so the same template sends a member to /u and an administrator to /g.
+        | @surfaces() is the boolean form, for actions that exist on only one.
+        */
+        Blade::directive(
+            'surface',
+            fn (string $expression) => "<?php echo e(\App\Domain\Access\SurfaceRoute::to({$expression})); ?>",
+        );
+
+        Blade::if(
+            'surfaces',
+            fn (string $intent) => SurfaceRoute::serves($intent),
+        );
 
         // Exchange rates are global data, shared by every fund, so maintaining
         // them is a platform responsibility rather than any one fund's.

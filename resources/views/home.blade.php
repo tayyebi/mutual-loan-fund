@@ -16,7 +16,7 @@
                 <div class="card-head">
                     <h2 style="margin:0">
                         @if ($membership->hasAccess())
-                            <a href="{{ route('g.dashboard', $membership->group) }}">{{ $membership->group->name }}</a>
+                            <a href="{{ route('u.dashboard', $membership->group) }}">{{ $membership->group->name }}</a>
                         @else
                             {{ $membership->group->name }}
                         @endif

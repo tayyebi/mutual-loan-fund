@@ -5,23 +5,54 @@ return [
     'brand' => 'صندوق وام متقابل',
     'default_title' => 'صندوق وام متقابل',
     'exchange_rates' => 'نرخ ارز',
-    'site_settings' => 'تنظیمات سایت',
     'sign_out' => 'خروج',
 
+    'surfaces' => [
+        'aria_label' => 'تغییر نما',
+        'member' => 'نمای من',
+        'fund_admin' => 'مدیریت صندوق',
+        'system_admin' => 'سامانه',
+    ],
+
+    'sections' => [
+        'aria_label' => 'بخش‌ها',
+        'operations' => 'کارهای روزمره',
+        'books' => 'دفاتر',
+        'governance' => 'راهبری',
+    ],
+
     'links' => [
-        'dashboard' => 'داشبورد',
+        'overview' => 'نمای کلی',
+        'money' => 'پول من',
+        'borrowing' => 'وام‌گیری',
+        'the_fund' => 'صندوق',
+        'wallets' => 'کیف پول‌ها',
+
+        'manage' => 'مدیریت',
         'activity' => 'فعالیت',
         'loans' => 'وام‌ها',
-        'treasuries' => 'خزانه‌ها',
-        'wallets' => 'کیف پول‌ها',
         'members' => 'اعضا',
-        'policies' => 'سیاست‌های مالی',
+        'treasuries' => 'خزانه‌ها',
         'ledger' => 'دفتر کل',
         'accounts' => 'حساب‌ها',
         'cost_centers' => 'مراکز هزینه',
-        'reports' => 'گزارش‌ها',
         'periods' => 'دوره‌های مالی',
+        'reports' => 'گزارش‌ها',
+        'policies' => 'سیاست‌های مالی',
+        'framework' => 'چارچوب مالی',
         'audit' => 'حسابرسی',
+
+        'users' => 'کاربران',
+        'funds' => 'صندوق‌ها',
+    ],
+
+    'hints' => [
+        'overview' => 'وضعیت کنونی شما',
+        'money' => 'آنچه پرداخت کرده‌اید و ارزش امروز آن',
+        'borrowing' => 'وام گرفتن، بازپرداخت و بدهی شما',
+        'activity' => 'هر آنچه در این صندوق رخ داده است',
+        'wallets' => 'نشانی‌هایی که از آن‌ها پرداخت می‌کنید',
+        'the_fund' => 'وضعیت صندوق و قواعد آن',
     ],
 
 ];

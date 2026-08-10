@@ -7,11 +7,17 @@
             <h1>{{ __('members.index.heading') }}</h1>
             <p class="muted small">{{ __('members.index.intro') }}</p>
         </div>
-        @if ($groupContext->isAdmin())
-            <a class="btn" href="{{ route('g.members.requests', $group) }}">
+        {{--
+            Guarded by surface rather than by role. A fund administrator reading
+            the member list from /u is looking at who else is in the fund; the
+            same list on /g is a roster they act on. The question "does this
+            experience do that?" is the one that decides.
+        --}}
+        @surfaces('member.requests')
+            <a class="btn" href="@surface('member.requests', $group)">
                 {{ __('members.index.requests_link') }} @if ($pending > 0)<span class="badge badge-warn">{{ $pending }}</span>@endif
             </a>
-        @endif
+        @endsurfaces
     </div>
 
     <div class="card">
@@ -24,14 +30,20 @@
                     <th>{{ __('members.index.role_header') }}</th>
                     <th>{{ __('members.index.status_header') }}</th>
                     <th>{{ __('members.index.member_since_header') }}</th>
-                    @if ($groupContext->isAdmin())<th></th>@endif
+                    @surfaces('member.role')<th></th>@endsurfaces
                 </tr>
                 </thead>
                 <tbody>
                 @forelse ($members as $member)
                     <tr>
                         <td>
-                            <a href="{{ route('g.members.show', [$group, $member]) }}">{{ $member->displayName() }}</a>
+                            {{-- GroupPolicy::viewMemberPosition is admin-or-self, so on /u the
+                                 roster only links the rows a member may actually open. --}}
+                            @if (\App\Domain\Access\SurfaceRoute::serves('member.role') || $groupContext->owns($member))
+                                <a href="@surface('member.show', $group, $member)">{{ $member->displayName() }}</a>
+                            @else
+                                {{ $member->displayName() }}
+                            @endif
                             <br><span class="small muted">{{ $member->user?->email }}</span>
                         </td>
                         <td class="mono">{{ $member->costCenter?->code ?? '—' }}</td>
@@ -40,22 +52,22 @@
                         <td class="small muted">
                             @if ($member->approved_at)<x-datetime :value="$member->approved_at" />@else —@endif
                         </td>
-                        @if ($groupContext->isAdmin())
+                        @surfaces('member.role')
                             <td>
                                 <div class="actions">
                                     @if ($member->status === \App\Models\GroupMembership::STATUS_SUSPENDED)
-                                        <form method="POST" action="{{ route('g.members.reinstate', [$group, $member]) }}">
+                                        <form method="POST" action="@surface('member.reinstate', $group, $member)">
                                             @csrf
                                             <button class="btn btn-small">{{ __('members.index.reinstate') }}</button>
                                         </form>
                                     @else
-                                        <form method="POST" action="{{ route('g.members.suspend', [$group, $member]) }}">
+                                        <form method="POST" action="@surface('member.suspend', $group, $member)">
                                             @csrf
                                             <button class="btn btn-small btn-danger">{{ __('members.index.suspend') }}</button>
                                         </form>
                                     @endif
 
-                                    <form method="POST" action="{{ route('g.members.role', [$group, $member]) }}">
+                                    <form method="POST" action="@surface('member.role', $group, $member)">
                                         @csrf
                                         <input type="hidden" name="role"
                                                value="{{ $member->role === 'admin' ? 'member' : 'admin' }}">
@@ -65,17 +77,17 @@
                                     </form>
                                 </div>
                             </td>
-                        @endif
+                        @endsurfaces
                     </tr>
                 @empty
-                    <x-empty colspan="{{ $groupContext->isAdmin() ? 6 : 5 }}">{{ __('members.index.empty') }}</x-empty>
+                    <x-empty colspan="{{ \App\Domain\Access\SurfaceRoute::serves('member.role') ? 6 : 5 }}">{{ __('members.index.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 
-    @if ($groupContext->isAdmin())
+    @surfaces('member.approve')
         <div class="card" style="margin-top: 1rem;">
             <h3>{{ __('members.index.invite_heading') }}</h3>
             <p class="small muted">
@@ -83,5 +95,5 @@
             </p>
             <p class="mono small">{{ route('groups.join', $group) }}</p>
         </div>
-    @endif
+    @endsurfaces
 @endsection

@@ -4,12 +4,17 @@
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.members.index', $group) }}">{{ __('members.show.breadcrumb') }}</a></p>
+            <p class="breadcrumb"><a href="@surface('member.index', $group)">{{ __('members.show.breadcrumb') }}</a></p>
             <h1>{{ $member->displayName() }}</h1>
             <p class="muted small">
                 {{ $member->role }} · <x-status :value="$member->status" />
                 @if ($member->costCenter)
-                    · <a href="{{ route('g.cost-centers.show', [$group, $member->costCenter]) }}">{{ $member->costCenter->code }}</a>
+                    ·
+                    @surfaces('cost-center.show')
+                        <a href="@surface('cost-center.show', $group, $member->costCenter)">{{ $member->costCenter->code }}</a>
+                    @else
+                        {{ $member->costCenter->code }}
+                    @endsurfaces
                 @endif
             </p>
         </div>
@@ -35,9 +40,13 @@
                         @forelse ($position['statement'] as $row)
                             <tr>
                                 <td>
-                                    <a href="{{ route('g.accounts.show', [$group, $row['account']]) }}">
+                                    @surfaces('account.show')
+                                        <a href="@surface('account.show', $group, $row['account'])">
+                                            {{ $row['account']->label() }}
+                                        </a>
+                                    @else
                                         {{ $row['account']->label() }}
-                                    </a>
+                                    @endsurfaces
                                 </td>
                                 <td class="num"><x-amount :value="$row['debit']" /></td>
                                 <td class="num"><x-amount :value="$row['credit']" /></td>
@@ -66,7 +75,7 @@
                         <tbody>
                         @forelse ($loans as $loan)
                             <tr>
-                                <td><a href="{{ route('g.loans.show', [$group, $loan]) }}">{{ $loan->reference }}</a></td>
+                                <td><a href="@surface('loan.show', $group, $loan)">{{ $loan->reference }}</a></td>
                                 <td class="num"><x-amount :value="$loan->principal" :currency="$loan->currency" /></td>
                                 <td class="small muted">v{{ $loan->policyVersion?->version }}</td>
                                 <td><x-status :value="$loan->status" /></td>

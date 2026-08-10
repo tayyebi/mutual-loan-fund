@@ -4,7 +4,7 @@
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.transactions.index', $group) }}">{{ __('transactions.create.breadcrumb') }}</a></p>
+            <p class="breadcrumb"><a href="@surface('transaction.index', $group)">{{ __('transactions.create.breadcrumb') }}</a></p>
             <h1>{{ __('transactions.create.heading') }}</h1>
             <p class="muted small">
                 {{ __('transactions.create.intro') }}
@@ -14,7 +14,7 @@
 
     <div class="grid grid-side">
         <div class="card">
-            <form method="POST" action="{{ route('g.transactions.store', $group) }}" enctype="multipart/form-data">
+            <form method="POST" action="@surface('transaction.store', $group)" enctype="multipart/form-data">
                 @csrf
 
                 <div class="field">

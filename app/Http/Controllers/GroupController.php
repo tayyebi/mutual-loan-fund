@@ -75,7 +75,7 @@ class GroupController extends Controller
         $membership = $request->user()->membershipFor($group);
 
         if ($membership?->hasAccess()) {
-            return redirect()->route('g.dashboard', $group);
+            return redirect()->route('u.dashboard', $group);
         }
 
         return view('groups.join', ['group' => $group, 'membership' => $membership]);
@@ -94,7 +94,7 @@ class GroupController extends Controller
         }
 
         return $membership->hasAccess()
-            ? redirect()->route('g.dashboard', $group)
+            ? redirect()->route('u.dashboard', $group)
             : redirect()->route('home')->with('status', 'Your membership request has been sent to the administrators.');
     }
 }

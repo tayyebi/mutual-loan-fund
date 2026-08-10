@@ -258,4 +258,89 @@ class ReportService
             ->orderBy('reference')
             ->get();
     }
+
+    /*
+    |---------------------------------------------------------------------------
+    | The member's own view
+    |---------------------------------------------------------------------------
+    | What the /u surface reads. Everything below is scoped to one membership and
+    | phrased in the terms that membership cares about, so a member page never
+    | has to filter a fund-wide result set down to "mine" itself.
+    */
+
+    /**
+     * Everything the member overview needs in one call.
+     *
+     * `tracked` is the honest answer to "are these figures real?". A membership
+     * with no cost centre has no ledger identity yet, so memberPosition() can
+     * only return zeroes — which is indistinguishable from a member who has
+     * genuinely contributed nothing. The flag lets the page say which it is
+     * instead of showing a confident 0.00.
+     *
+     * @return array{position: array<string, mixed>, tracked: bool, pending: int, outstanding: Collection<int, Loan>, undecided: Collection<int, Loan>}
+     */
+    public function memberOverview(GroupMembership $member, ?Carbon $asOf = null): array
+    {
+        $loans = $this->memberLoans($member);
+
+        return [
+            'position' => $this->memberPosition($member, $asOf),
+            'tracked' => $member->costCenter !== null,
+            'pending' => $this->memberSubmissions($member)
+                ->where('status', Transaction::STATUS_PENDING)
+                ->count(),
+            'outstanding' => $loans->filter(fn (Loan $loan) => $loan->isOutstanding())->values(),
+            'undecided' => $loans->filter(fn (Loan $loan) => in_array($loan->status, [
+                Loan::STATUS_REQUESTED,
+                Loan::STATUS_APPROVED,
+            ], true))->values(),
+        ];
+    }
+
+    /**
+     * Every loan this member has ever had, newest first.
+     *
+     * @return Collection<int, Loan>
+     */
+    public function memberLoans(GroupMembership $member): Collection
+    {
+        return Loan::query()
+            ->forGroup($member->group)
+            ->where('member_id', $member->getKey())
+            // Eager-loaded so Loan::nextInstallment() costs nothing per row.
+            ->with(['policyVersion', 'installments'])
+            ->orderByDesc('id')
+            ->get();
+    }
+
+    /**
+     * Transactions this member submitted or that were recorded against them —
+     * their side of the fund's activity, in every status.
+     *
+     * @return Collection<int, Transaction>
+     */
+    public function memberSubmissions(GroupMembership $member, ?int $limit = null): Collection
+    {
+        return Transaction::query()
+            ->forGroup($member->group)
+            ->where('member_id', $member->getKey())
+            ->with(['treasury', 'loan'])
+            ->orderByDesc('occurred_on')
+            ->orderByDesc('id')
+            ->when($limit, fn ($q, $take) => $q->limit($take))
+            ->get();
+    }
+
+    /**
+     * Money in: what this member has paid into the fund, and what is still
+     * waiting on an administrator.
+     *
+     * @return Collection<int, Transaction>
+     */
+    public function memberContributions(GroupMembership $member): Collection
+    {
+        return $this->memberSubmissions($member)
+            ->where('type', Transaction::TYPE_CONTRIBUTION)
+            ->values();
+    }
 }

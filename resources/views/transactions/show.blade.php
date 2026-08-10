@@ -4,26 +4,31 @@
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.transactions.index', $group) }}">{{ __('transactions.show.breadcrumb') }}</a></p>
+            <p class="breadcrumb"><a href="@surface('transaction.index', $group)">{{ __('transactions.show.breadcrumb') }}</a></p>
             <h1>{{ $transaction->typeLabel() }} · <x-amount :value="$transaction->amount" :currency="$transaction->currency" /></h1>
             <p class="muted small">
                 <x-status :value="$transaction->status" />
                 <x-datetime :value="$transaction->occurred_on" />
                 @if ($transaction->member) · {{ $transaction->member->displayName() }} @endif
                 @if ($transaction->policyVersion)
-                    · {{ __('transactions.show.policy_prefix') }} <a href="{{ route('g.policies.show', [$group, $transaction->policyVersion->version]) }}">v{{ $transaction->policyVersion->version }}</a>
+                    · {{ __('transactions.show.policy_prefix') }}
+                    @surfaces('policy.show')
+                        <a href="@surface('policy.show', $group, $transaction->policyVersion->version)">v{{ $transaction->policyVersion->version }}</a>
+                    @else
+                        <a href="{{ route('u.fund.rules', $group) }}">v{{ $transaction->policyVersion->version }}</a>
+                    @endsurfaces
                 @endif
             </p>
         </div>
 
-        @if ($groupContext->isAdmin() && $transaction->isPending())
+        @if (\App\Domain\Access\SurfaceRoute::serves('transaction.verify') && $transaction->isPending())
             <div class="actions">
-                <form method="POST" action="{{ route('g.transactions.verify', [$group, $transaction]) }}">
+                <form method="POST" action="@surface('transaction.verify', $group, $transaction)">
                     @csrf
                     <button class="btn btn-primary">{{ __('transactions.show.verify_button') }}</button>
                 </form>
                 @if ($transaction->hasChainEvidence())
-                    <form method="POST" action="{{ route('g.transactions.chain-check', [$group, $transaction]) }}">
+                    <form method="POST" action="@surface('transaction.chain-check', $group, $transaction)">
                         @csrf
                         <button class="btn">{{ __('transactions.show.chain_recheck_button') }}</button>
                     </form>
@@ -63,7 +68,7 @@
 
                     @if ($transaction->loan)
                         <dt>{{ __('transactions.show.loan_label') }}</dt>
-                        <dd><a href="{{ route('g.loans.show', [$group, $transaction->loan]) }}">{{ $transaction->loan->reference }}</a></dd>
+                        <dd><a href="@surface('loan.show', $group, $transaction->loan)">{{ $transaction->loan->reference }}</a></dd>
                     @endif
 
                     @if ($transaction->reference)
@@ -91,11 +96,19 @@
                 </dl>
             </div>
 
+            {{--
+                The journal entries this transaction posted. Shown only on the
+                administrator's surface: the double-entry behind a payment is
+                what makes the figures reconcilable, but reading it is a
+                bookkeeping skill, and a member checking their own contribution
+                is served by the status and the receipt above.
+            --}}
+            @surfaces('ledger.show')
             @foreach ($transaction->journalEntries as $entry)
                 <div class="card">
                     <div class="card-head">
                         <h2>
-                            <a href="{{ route('g.ledger.show', [$group, $entry]) }}">{{ $entry->entry_number }}</a>
+                            <a href="@surface('ledger.show', $group, $entry)">{{ $entry->entry_number }}</a>
                             @if ($entry->reverses_entry_id) <span class="badge badge-warn">{{ __('transactions.show.reversal_badge') }}</span> @endif
                         </h2>
                         <x-status :value="$entry->status" />
@@ -125,6 +138,7 @@
                     </div>
                 </div>
             @endforeach
+            @endsurfaces
         </div>
 
         <div class="stack">
@@ -165,7 +179,7 @@
                 <h3>{{ __('transactions.show.receipts_heading') }}</h3>
                 @forelse ($transaction->receipts as $receipt)
                     <p class="small" style="margin-bottom:0.35rem">
-                        <a href="{{ route('g.receipts.show', [$group, $receipt]) }}">{{ $receipt->original_filename }}</a>
+                        <a href="@surface('receipt.show', $group, $receipt)">{{ $receipt->original_filename }}</a>
                         <br><span class="muted">{{ $receipt->humanSize() }} · sha256 {{ substr($receipt->sha256, 0, 12) }}…</span>
                     </p>
                 @empty
@@ -173,7 +187,7 @@
                 @endforelse
 
                 @can('attachReceipt', $transaction)
-                    <form method="POST" action="{{ route('g.transactions.receipts.store', [$group, $transaction]) }}"
+                    <form method="POST" action="@surface('transaction.receipts.store', $group, $transaction)"
                           enctype="multipart/form-data" style="margin-top:0.6rem">
                         @csrf
                         <div class="field">
@@ -185,10 +199,10 @@
                 @endcan
             </div>
 
-            @if ($groupContext->isAdmin() && $transaction->isPending())
+            @if (\App\Domain\Access\SurfaceRoute::serves('transaction.reject') && $transaction->isPending())
                 <div class="card">
                     <h3>{{ __('transactions.show.reject_heading') }}</h3>
-                    <form method="POST" action="{{ route('g.transactions.reject', [$group, $transaction]) }}">
+                    <form method="POST" action="@surface('transaction.reject', $group, $transaction)">
                         @csrf
                         <div class="field">
                             <label for="reason">{{ __('transactions.show.reject_reason_label') }}</label>

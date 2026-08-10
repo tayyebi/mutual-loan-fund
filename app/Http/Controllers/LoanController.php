@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Access\SurfaceRoute;
 use App\Domain\Loans\LoanService;
 use App\Domain\Money\Decimal;
 use App\Domain\Policies\Exceptions\PolicyViolationException;
@@ -80,7 +81,7 @@ class LoanController extends Controller
         }
 
         return redirect()
-            ->route('g.loans.show', [$group, $loan])
+            ->route(SurfaceRoute::name('loan.show'), [$group, $loan])
             ->with('status', "Loan {$loan->reference} requested under policy v{$loan->policyVersion->version}.");
     }
 
@@ -194,7 +195,7 @@ class LoanController extends Controller
         }
 
         return redirect()
-            ->route('g.transactions.show', [$group, $transaction])
+            ->route(SurfaceRoute::name('transaction.show'), [$group, $transaction])
             ->with('status', 'Repayment submitted. It affects the loan once verified.');
     }
 

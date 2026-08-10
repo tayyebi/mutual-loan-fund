@@ -65,7 +65,7 @@ class PersonalAreaTest extends TestCase
         $this->actingAs($ali)
             ->get(route('p.transactions'))
             ->assertOk()
-            ->assertSee(route('g.transactions.show', [$fund, $aliTx]))
+            ->assertSee(route('u.activity.show', [$fund, $aliTx]))
             ->assertSee($fund->name);
 
         $this->assertSame(1, Transaction::query()

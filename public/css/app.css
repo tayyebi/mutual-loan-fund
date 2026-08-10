@@ -6,6 +6,43 @@
  * readable HTML if the stylesheet fails to load.
  */
 
+/* ------------------------------------------------------------------ fonts */
+
+/*
+ * Vazirmatn, self-hosted from public/fonts — no CDN, no external request, in
+ * keeping with the rest of this file. Three static weights rather than the
+ * variable face, because only these three are ever asked for and the variable
+ * build ships as .ttf only.
+ *
+ * font-display: swap so text is readable immediately and merely reflows once
+ * the face arrives; a fund's figures should never be invisible while a font
+ * downloads. Licensed under the SIL Open Font License — see
+ * public/fonts/Vazirmatn-OFL.txt.
+ */
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("/fonts/Vazirmatn-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("/fonts/Vazirmatn-Medium.woff2") format("woff2");
+    font-weight: 500 650;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("/fonts/Vazirmatn-Bold.woff2") format("woff2");
+    font-weight: 700 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     --bg: #f6f7f9;
     --surface: #ffffff;
@@ -23,6 +60,21 @@
     --ok-soft: #e7f5ec;
     --radius: 8px;
     --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --ui-line: 1.55;
+}
+
+/*
+ * The webfont is localised rather than global: English keeps the reader's own
+ * system UI face, which needs no download at all, and Farsi gets Vazirmatn
+ * because the system fallbacks for Persian script vary widely between
+ * platforms and several of them set the numerals and the letterforms at
+ * visibly different weights. Persian also needs more leading than Latin at the
+ * same size.
+ */
+:root[lang="fa"] {
+    --ui: "Vazirmatn", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --ui-line: 1.75;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -54,7 +106,9 @@ body {
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--ui);
+    font-size: 15px;
+    line-height: var(--ui-line);
 }
 
 a {
@@ -126,10 +180,81 @@ small, .small { font-size: 0.85rem; }
     font-size: 0.9rem;
 }
 
+/*
+ * The surface switcher: which access level's experience you are in. It sits
+ * above the section nav and is deliberately quieter than it — switching levels
+ * is rare, moving inside one is constant.
+ */
+.surfaces {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+}
+
+.surfaces-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+.surfaces ul {
+    display: flex;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0.35rem 0;
+}
+
+.surfaces a {
+    display: block;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.surfaces a:hover {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.surfaces a[aria-current="true"] {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.2rem 0.7rem;
+    color: var(--text);
+    font-weight: 550;
+}
+
 .groupnav {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     overflow-x: auto;
+}
+
+/*
+ * Section captions inside the nav. The member surface has none — a member
+ * should never have to pick a category to find their own money — so these
+ * only ever appear on the administrative surfaces, whose work genuinely
+ * divides into separate areas.
+ */
+.groupnav .navgroup {
+    align-self: center;
+    padding: 0 0.5rem 0 0.9rem;
+    color: var(--muted);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    border-left: 1px solid var(--border);
+    margin-left: 0.4rem;
+}
+
+.groupnav .navgroup:first-child {
+    border-left: 0;
+    margin-left: 0;
+    padding-left: 0;
 }
 
 .groupnav ul {
@@ -524,7 +649,7 @@ textarea { min-height: 4.5rem; resize: vertical; }
 }
 
 @media print {
-    .masthead, .groupnav, .actions, .filters { display: none; }
+    .masthead, .surfaces, .groupnav, .actions, .filters { display: none; }
     body { background: #fff; }
     .card { border: none; padding: 0; }
 }
@@ -533,9 +658,9 @@ textarea { min-height: 4.5rem; resize: vertical; }
 /*
  * Farsi renders right-to-left. Flex/grid row direction already follows
  * <html dir> automatically; only the hand-set physical left/right
- * properties below need a mirrored override. No custom font is loaded —
- * Persian glyphs fall back to the browser's own script fallback, matching
- * this app's no-external-resources rule.
+ * properties below need a mirrored override. The Persian face is Vazirmatn,
+ * self-hosted from public/fonts and selected on :root[lang="fa"] at the top of
+ * this file — no external request, matching this app's no-CDN rule.
  */
 [dir="rtl"] th,
 [dir="rtl"] td {
@@ -566,4 +691,19 @@ textarea { min-height: 4.5rem; resize: vertical; }
 
 [dir="rtl"] .table-empty {
     text-align: center;
+}
+
+/* The nav's section captions are separated by a rule on their leading edge. */
+[dir="rtl"] .groupnav .navgroup {
+    border-left: 0;
+    border-right: 1px solid var(--border);
+    margin-left: 0;
+    margin-right: 0.4rem;
+    padding: 0 0.9rem 0 0.5rem;
+}
+
+[dir="rtl"] .groupnav .navgroup:first-child {
+    border-right: 0;
+    margin-right: 0;
+    padding-right: 0;
 }

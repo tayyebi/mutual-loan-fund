@@ -18,7 +18,7 @@ class SystemAdminTest extends TestCase
 
     public function test_guests_are_redirected_away_from_the_admin_area(): void
     {
-        foreach (['admin.dashboard', 'admin.users.index', 'admin.funds.index', 'admin.audit.index'] as $route) {
+        foreach (['s.dashboard', 's.users.index', 's.funds.index', 's.audit.index'] as $route) {
             $this->get(route($route))->assertRedirect(route('login'));
         }
     }
@@ -27,7 +27,7 @@ class SystemAdminTest extends TestCase
     {
         $user = $this->user('Ali');
 
-        foreach (['admin.dashboard', 'admin.users.index', 'admin.funds.index', 'admin.audit.index'] as $route) {
+        foreach (['s.dashboard', 's.users.index', 's.funds.index', 's.audit.index'] as $route) {
             $this->actingAs($user)->get(route($route))->assertForbidden();
         }
     }
@@ -37,7 +37,7 @@ class SystemAdminTest extends TestCase
         $admin = $this->user('Fund Admin');
         $this->fund($admin);
 
-        $this->actingAs($admin)->get(route('admin.dashboard'))->assertForbidden();
+        $this->actingAs($admin)->get(route('s.dashboard'))->assertForbidden();
     }
 
     public function test_a_system_admin_can_view_the_platform_operations_screens(): void
@@ -46,10 +46,10 @@ class SystemAdminTest extends TestCase
         $this->user('Someone');
         $this->fund($this->user('Founder'));
 
-        $this->actingAs($admin)->get(route('admin.dashboard'))->assertOk();
-        $this->actingAs($admin)->get(route('admin.users.index'))->assertOk();
-        $this->actingAs($admin)->get(route('admin.funds.index'))->assertOk();
-        $this->actingAs($admin)->get(route('admin.audit.index'))->assertOk();
+        $this->actingAs($admin)->get(route('s.dashboard'))->assertOk();
+        $this->actingAs($admin)->get(route('s.users.index'))->assertOk();
+        $this->actingAs($admin)->get(route('s.funds.index'))->assertOk();
+        $this->actingAs($admin)->get(route('s.audit.index'))->assertOk();
     }
 
     public function test_a_system_admin_can_suspend_and_reinstate_a_user(): void
@@ -58,7 +58,7 @@ class SystemAdminTest extends TestCase
         $target = $this->user('Target', 'target@example.test');
 
         $this->actingAs($admin)
-            ->post(route('admin.users.suspend', $target))
+            ->post(route('s.users.suspend', $target))
             ->assertRedirect();
 
         $this->assertSame(User::STATUS_SUSPENDED, $target->fresh()->status);
@@ -70,7 +70,7 @@ class SystemAdminTest extends TestCase
         $this->assertGuest();
 
         $this->actingAs($admin)
-            ->post(route('admin.users.reinstate', $target))
+            ->post(route('s.users.reinstate', $target))
             ->assertRedirect();
 
         $this->assertSame(User::STATUS_ACTIVE, $target->fresh()->status);
@@ -85,18 +85,18 @@ class SystemAdminTest extends TestCase
         $this->member($fund, $member, $founder);
 
         $this->actingAs($admin)
-            ->post(route('admin.funds.suspend', $fund))
+            ->post(route('s.funds.suspend', $fund))
             ->assertRedirect();
 
         $this->assertSame(Group::STATUS_SUSPENDED, $fund->fresh()->status);
-        $this->actingAs($member)->get(route('g.dashboard', $fund))->assertForbidden();
+        $this->actingAs($member)->get(route('u.dashboard', $fund))->assertForbidden();
 
         $this->actingAs($admin)
-            ->post(route('admin.funds.reinstate', $fund))
+            ->post(route('s.funds.reinstate', $fund))
             ->assertRedirect();
 
         $this->assertSame(Group::STATUS_ACTIVE, $fund->fresh()->status);
-        $this->actingAs($member)->get(route('g.dashboard', $fund))->assertOk();
+        $this->actingAs($member)->get(route('u.dashboard', $fund))->assertOk();
     }
 
     public function test_a_system_admin_can_promote_and_demote_another_user(): void
@@ -105,13 +105,13 @@ class SystemAdminTest extends TestCase
         $target = $this->user('Target');
 
         $this->actingAs($admin)
-            ->post(route('admin.users.promote', $target))
+            ->post(route('s.users.promote', $target))
             ->assertRedirect();
 
         $this->assertTrue($target->fresh()->isSystemAdmin());
 
         $this->actingAs($admin)
-            ->post(route('admin.users.demote', $target))
+            ->post(route('s.users.demote', $target))
             ->assertRedirect();
 
         $this->assertFalse($target->fresh()->isSystemAdmin());
@@ -122,12 +122,12 @@ class SystemAdminTest extends TestCase
         $admin = $this->systemAdmin();
 
         $this->actingAs($admin)
-            ->post(route('admin.users.demote', $admin))
+            ->post(route('s.users.demote', $admin))
             ->assertSessionHasErrors('user');
         $this->assertTrue($admin->fresh()->isSystemAdmin());
 
         $this->actingAs($admin)
-            ->post(route('admin.users.suspend', $admin))
+            ->post(route('s.users.suspend', $admin))
             ->assertSessionHasErrors('user');
         $this->assertSame(User::STATUS_ACTIVE, $admin->fresh()->status);
     }
@@ -138,7 +138,7 @@ class SystemAdminTest extends TestCase
         $second = $this->systemAdmin('Second');
 
         $this->actingAs($first)
-            ->post(route('admin.users.demote', $first))
+            ->post(route('s.users.demote', $first))
             ->assertRedirect();
 
         $this->assertFalse($first->fresh()->isSystemAdmin());
@@ -176,7 +176,7 @@ class SystemAdminTest extends TestCase
         $fund = $this->fund($founder, 'Confidential Fund');
         $this->member($fund, $secretMember, $founder);
 
-        $response = $this->actingAs($admin)->get(route('admin.funds.show', $fund));
+        $response = $this->actingAs($admin)->get(route('s.funds.show', $fund));
 
         $response->assertOk();
         $response->assertDontSee($secretMember->email);

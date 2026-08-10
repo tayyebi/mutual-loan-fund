@@ -153,4 +153,18 @@ class Loan extends Model
     {
         return ucfirst(str_replace('_', ' ', $this->status));
     }
+
+    /**
+     * The next payment still owed, for "what do I owe, and when?".
+     *
+     * Reads the already-loaded installments rather than querying, so a list of
+     * loans costs one eager load instead of one query per row.
+     */
+    public function nextInstallment(): ?LoanInstallment
+    {
+        return $this->installments
+            ->reject(fn (LoanInstallment $installment) => $installment->isSettled())
+            ->sortBy('due_date')
+            ->first();
+    }
 }

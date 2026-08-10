@@ -7,7 +7,7 @@
             <h1>{{ __('transactions.index.heading') }}</h1>
             <p class="muted small">{{ __('transactions.index.intro') }}</p>
         </div>
-        <a class="btn btn-primary" href="{{ route('g.transactions.create', $group) }}">{{ __('transactions.index.record_button') }}</a>
+        <a class="btn btn-primary" href="@surface('transaction.create', $group)">{{ __('transactions.index.record_button') }}</a>
     </div>
 
     <form method="GET" class="filters card">
@@ -57,7 +57,7 @@
         </div>
         <div class="actions">
             <button class="btn">{{ __('transactions.index.filter_submit') }}</button>
-            <a class="btn" href="{{ route('g.transactions.index', $group) }}">{{ __('transactions.index.filter_clear') }}</a>
+            <a class="btn" href="@surface('transaction.index', $group)">{{ __('transactions.index.filter_clear') }}</a>
         </div>
     </form>
 
@@ -78,7 +78,7 @@
                 @forelse ($transactions as $transaction)
                     <tr>
                         <td class="num">
-                            <a href="{{ route('g.transactions.show', [$group, $transaction]) }}">
+                            <a href="@surface('transaction.show', $group, $transaction)">
                                 <x-datetime :value="$transaction->occurred_on" />
                             </a>
                         </td>
@@ -89,7 +89,7 @@
                         <td class="small">
                             {{ $transaction->typeLabel() }}
                             @if ($transaction->loan)
-                                <br><a class="small" href="{{ route('g.loans.show', [$group, $transaction->loan]) }}">{{ $transaction->loan->reference }}</a>
+                                <br><a class="small" href="@surface('loan.show', $group, $transaction->loan)">{{ $transaction->loan->reference }}</a>
                             @endif
                         </td>
                         <td class="small muted">{{ $transaction->treasury?->name }}</td>
