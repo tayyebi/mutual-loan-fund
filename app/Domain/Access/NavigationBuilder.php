@@ -60,6 +60,7 @@ class NavigationBuilder
                     ? route($surface::home(), $this->context->group())
                     : route($surface::home()),
                 current: $surface === $current,
+                icon: $surface::icon(),
             );
         }
 

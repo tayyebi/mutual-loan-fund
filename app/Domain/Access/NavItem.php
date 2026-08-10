@@ -20,12 +20,16 @@ final class NavItem
      *                              from $route when null
      * @param  string|null  $hint  optional translation key for a one-line
      *                             description, used on hub cards
+     * @param  string|null  $icon  optional <x-icon> name shown beside the
+     *                             label in the sidebar; falls back to a
+     *                             generic dot when omitted
      */
     public function __construct(
         public readonly string $route,
         public readonly string $label,
         public readonly ?string $match = null,
         public readonly ?string $hint = null,
+        public readonly ?string $icon = null,
     ) {}
 
     /**

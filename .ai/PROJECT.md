@@ -64,7 +64,9 @@ through a real `GroupMembership`, so a system administrator who is not a member 
 - `AccessMap::SURFACES` — the registry. **Adding a destination to a level means adding one
   `NavItem` to one surface's `sections()`, nothing else**; the layout, the surface switcher and
   the active-state highlighting are all generic over it. `layouts/app.blade.php` builds no link
-  list of its own.
+  list of its own. `NavItem` and `SurfaceSwitch` also carry an optional `icon` key (an
+  `<x-icon name="...">` name, see below) — pass one when adding a destination; an item left
+  without one just falls back to a generic dot rather than breaking.
 - `NavigationBuilder` → `Navigation`, resolved by a **view composer** on `layouts.app` (not
   middleware — `GroupContext` is only populated by route middleware, which runs after the global
   stack; a composer fires at render time).
@@ -158,6 +160,15 @@ does its trace. Policy changes get a second, fuller trail via `AuditRecorder::re
   naming new classes — prefer namespacing that avoids ambiguity (`App\Domain\<Area>\...`).
 - **Testing**: `tests/TestCase.php` has shared helpers (e.g. spinning up a fund via
   `GroupService`); feature tests live under `tests/Feature/`.
+- **CSS is mobile-first, ground up, and still zero-JS.** `public/css/app.css` is unqualified rules
+  for a phone, `@media (min-width: …)` only ever *adds* for a wider one (720px, then 1000px — see
+  the file's own header comment). The navigation sidebar is a single piece of markup in
+  `layouts/app.blade.php` that is an off-canvas drawer at the phone tier (toggled by a hidden
+  checkbox + label, no script) and becomes a permanent column at the 1000px tier via
+  `transform: none !important` overriding the checkbox state — don't reintroduce a separate
+  desktop nav markup, the whole point is one drawer that outgrows itself. Small self-authored
+  inline-SVG icons live in `resources/views/components/icon.blade.php` (`<x-icon name="...">`) —
+  still zero external resources/CDNs.
 
 ## Locale / preferences
 
@@ -185,11 +196,14 @@ Deliberate scope boundaries — do not silently expand these:
   only the surrounding words (day/month names, UI strings) are translated via
   `Carbon::translatedFormat()` and the `lang/` files below. Calendar-system conversion is a
   separate, larger feature that has not been attempted.
-- **The webfont is localised, not global.** Vazirmatn is self-hosted from `public/fonts/`
-  (`@font-face` at the top of `public/css/app.css`, three static weights, OFL licence alongside)
-  and selected only on `:root[lang="fa"]` via the `--ui`/`--ui-line` tokens; English keeps the
-  reader's system UI stack and downloads nothing. No CDN, in keeping with the stylesheet's
-  no-external-resources rule.
+- **Vazirmatn is the only typeface, for both locales.** Self-hosted from `public/fonts/`
+  (`@font-face` at the top of `public/css/app.css`, three static weights, OFL licence alongside),
+  declared unconditionally on the `--ui` token — there is no system-font fallback chain and no
+  separate monospace family; tabular/money figures use `--ui` with
+  `font-variant-numeric: tabular-nums` rather than a `--mono` stack. The only thing that still
+  varies by locale is line-height (`--ui-line`, taller for `fa`), because Persian genuinely needs
+  more leading at the same size — not because the face changes. No CDN, in keeping with the
+  stylesheet's no-external-resources rule.
 
 Translations live under `lang/en/` and `lang/fa/`, one file per `resources/views/` top-level
 subdirectory (`lang/{en,fa}/policies.php` backs every view under `resources/views/policies/`,

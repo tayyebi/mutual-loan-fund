@@ -33,6 +33,11 @@ final class SystemSurface extends Surface
         return 'nav.surfaces.system_admin';
     }
 
+    public static function icon(): string
+    {
+        return 'shield';
+    }
+
     public static function home(): string
     {
         return 's.dashboard';
@@ -47,10 +52,10 @@ final class SystemSurface extends Surface
     {
         return [
             new NavSection(null, [
-                new NavItem('s.dashboard', 'nav.links.overview', match: 's.dashboard'),
-                new NavItem('s.users.index', 'nav.links.users'),
-                new NavItem('s.funds.index', 'nav.links.funds'),
-                new NavItem('s.audit.index', 'nav.links.audit'),
+                new NavItem('s.dashboard', 'nav.links.overview', match: 's.dashboard', icon: 'dashboard'),
+                new NavItem('s.users.index', 'nav.links.users', icon: 'members'),
+                new NavItem('s.funds.index', 'nav.links.funds', icon: 'fund'),
+                new NavItem('s.audit.index', 'nav.links.audit', icon: 'audit'),
             ]),
         ];
     }

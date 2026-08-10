@@ -6,6 +6,7 @@ return [
     'default_title' => 'صندوق وام متقابل',
     'exchange_rates' => 'نرخ ارز',
     'sign_out' => 'خروج',
+    'menu' => 'منو',
 
     'surfaces' => [
         'aria_label' => 'تغییر نما',

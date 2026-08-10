@@ -24,6 +24,9 @@ abstract class Surface
     /** Translation key for the surface's own name, used by the switcher. */
     abstract public static function label(): string;
 
+    /** <x-icon> name shown beside this surface in the switcher. */
+    abstract public static function icon(): string;
+
     /** Route-name prefix, e.g. 'u.' — every route on this surface starts with it. */
     public static function routePrefix(): string
     {

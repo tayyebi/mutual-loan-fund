@@ -3,7 +3,16 @@
  *
  * Hand-authored and served as-is: there is no build step, no bundler and no
  * JavaScript anywhere in this application. Everything below degrades to plain
- * readable HTML if the stylesheet fails to load.
+ * readable HTML if the stylesheet fails to load. Every interactive affordance
+ * (the navigation drawer, filter row, etc.) is pure CSS — checkbox-driven
+ * toggles, no scripts.
+ *
+ * Layout is written mobile-first throughout: unqualified rules are the phone
+ * layout, and each @media (min-width: …) block only ever *adds* or *changes*
+ * behaviour for a wider viewport. Two tiers are used consistently:
+ *   - 720px  ("tablet"): form rows and list-row meta gain columns.
+ *   - 1000px ("desktop"): content grids gain columns and the navigation
+ *     drawer stops being a drawer and becomes a permanent sidebar column.
  */
 
 /* ------------------------------------------------------------------ fonts */
@@ -12,7 +21,8 @@
  * Vazirmatn, self-hosted from public/fonts — no CDN, no external request, in
  * keeping with the rest of this file. Three static weights rather than the
  * variable face, because only these three are ever asked for and the variable
- * build ships as .ttf only.
+ * build ships as .ttf only. It is the only typeface this application loads or
+ * declares, for either locale — see the --ui token below.
  *
  * font-display: swap so text is readable immediately and merely reflows once
  * the face arrives; a fund's figures should never be invisible while a font
@@ -44,55 +54,81 @@
 }
 
 :root {
-    --bg: #f6f7f9;
+    /* surfaces */
+    --bg: #faf6ee;
     --surface: #ffffff;
-    --surface-2: #f0f2f5;
-    --border: #dfe3e8;
-    --text: #1b1f24;
-    --muted: #5b6470;
-    --accent: #1f5f4b;
-    --accent-soft: #e6f2ed;
-    --danger: #9b2c2c;
-    --danger-soft: #fdecec;
+    --surface-2: #f4efe3;
+    --border: #ece4d3;
+    --text: #241f16;
+    --muted: #7a715f;
+
+    /* brand accent */
+    --accent: #f5a623;
+    --accent-ink: #241f16;
+    --accent-soft: #fdf0d9;
+
+    /* semantic — deliberately distinct hues from --accent */
+    --danger: #b3392c;
+    --danger-soft: #fbe9e6;
     --warning: #8a5a00;
     --warning-soft: #fdf3e0;
     --ok: #1f6f43;
     --ok-soft: #e7f5ec;
-    --radius: 8px;
-    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
-    --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    /* shape */
+    --radius-sm: 10px;
+    --radius: 16px;
+    --radius-lg: 22px;
+    --pill: 999px;
+
+    /* elevation */
+    --shadow-card: 0 1px 2px rgba(36, 31, 22, .04), 0 6px 16px rgba(36, 31, 22, .06);
+    --shadow-drawer: 0 8px 30px rgba(36, 31, 22, .18);
+
+    /* spacing scale */
+    --sp-1: .25rem;
+    --sp-2: .5rem;
+    --sp-3: .75rem;
+    --sp-4: 1rem;
+    --sp-5: 1.5rem;
+    --sp-6: 2rem;
+
+    /* type — Vazirmatn only, both locales */
+    --ui: "Vazirmatn", sans-serif;
     --ui-line: 1.55;
+
+    /* avatar palette — a person's initials land on one of these, by hash */
+    --av-1: #f5a623;
+    --av-2: #e0685a;
+    --av-3: #4a90a4;
+    --av-4: #7b6fae;
+    --av-5: #5a8a5a;
 }
 
-/*
- * The webfont is localised rather than global: English keeps the reader's own
- * system UI face, which needs no download at all, and Farsi gets Vazirmatn
- * because the system fallbacks for Persian script vary widely between
- * platforms and several of them set the numerals and the letterforms at
- * visibly different weights. Persian also needs more leading than Latin at the
- * same size.
- */
+/* Farsi needs more leading than Latin at the same size; same face either way. */
 :root[lang="fa"] {
-    --ui: "Vazirmatn", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --ui-line: 1.75;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg: #14171a;
-        --surface: #1c2024;
-        --surface-2: #232830;
-        --border: #333a42;
-        --text: #e8eaed;
-        --muted: #9aa3ae;
-        --accent: #5cc0a0;
-        --accent-soft: #1d332c;
-        --danger: #f08a8a;
-        --danger-soft: #35211f;
+        --bg: #17140f;
+        --surface: #211d16;
+        --surface-2: #2a2519;
+        --border: #3a3324;
+        --text: #f3ede0;
+        --muted: #a89a80;
+        --accent: #f5b84d;
+        --accent-ink: #17140f;
+        --accent-soft: #3a2c14;
+        --danger: #e08a7d;
+        --danger-soft: #3a231e;
         --warning: #e0b062;
         --warning-soft: #33291a;
         --ok: #74c493;
         --ok-soft: #1c2f22;
+        --shadow-card: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 16px rgba(0, 0, 0, .35);
+        --shadow-drawer: 0 8px 30px rgba(0, 0, 0, .5);
     }
 }
 
@@ -100,6 +136,10 @@
 *::before,
 *::after {
     box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -136,36 +176,45 @@ small, .small { font-size: 0.85rem; }
 .muted { color: var(--muted); }
 
 .mono, .num {
-    font-family: var(--mono);
+    font-family: var(--ui);
     font-variant-numeric: tabular-nums;
 }
 
 /* ---------------------------------------------------------------- layout */
 
-.masthead {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-}
-
-.masthead-inner,
 .container {
     max-width: 1180px;
     margin: 0 auto;
     padding: 0 1.25rem;
 }
 
+.masthead {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
 .masthead-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
     min-height: 56px;
+    padding-top: env(safe-area-inset-top);
 }
 
 .brand {
     font-weight: 650;
     color: var(--text);
     letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .brand span {
@@ -173,64 +222,136 @@ small, .small { font-size: 0.85rem; }
     font-weight: 400;
 }
 
-.masthead-actions {
+/* The hamburger toggle: an invisible checkbox plus a label styled as a
+   button. Checking it slides the drawer in — see .sidebar below. It has
+   nothing left to do once the desktop tier makes the sidebar permanent. */
+.nav-toggle-input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.nav-toggle-btn {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    font-size: 0.9rem;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--pill);
+    color: var(--text);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.nav-toggle-btn:hover {
+    background: var(--surface-2);
+}
+
+.nav-toggle-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+.masthead-avatar {
+    flex-shrink: 0;
+    line-height: 0;
+}
+
+/* Dims and blocks the page while the drawer is open; tapping it (it's a
+   label for the same checkbox) closes the drawer again — no script needed. */
+.nav-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 16, 8, .35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .22s ease;
+    z-index: 30;
+}
+
+.nav-toggle-input:checked ~ .nav-scrim {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sidebar {
+    position: fixed;
+    inset-inline-start: 0;
+    top: 0;
+    bottom: 0;
+    width: min(85vw, 320px);
+    background: var(--surface);
+    box-shadow: var(--shadow-drawer);
+    transform: translateX(-100%);
+    transition: transform .22s ease;
+    z-index: 40;
+    overflow-y: auto;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+[dir="rtl"] .sidebar {
+    transform: translateX(100%);
+}
+
+.nav-toggle-input:checked ~ .sidebar {
+    transform: translateX(0);
+}
+
+.sidebar-inner {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-height: 100%;
+}
+
+.sidebar-brand {
+    font-weight: 650;
+    font-size: 1.1rem;
+    padding: 0.5rem 0.6rem;
 }
 
 /*
  * The surface switcher: which access level's experience you are in. It sits
- * above the section nav and is deliberately quieter than it — switching levels
- * is rare, moving inside one is constant.
+ * above the section nav and is deliberately quieter than it — switching
+ * levels is rare, moving inside one is constant.
  */
-.surfaces {
-    background: var(--surface-2);
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-}
-
-.surfaces-inner {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 0 1.25rem;
-}
-
-.surfaces ul {
+.sidebar-switches {
     display: flex;
-    gap: 0.35rem;
-    list-style: none;
-    margin: 0;
-    padding: 0.35rem 0;
+    flex-direction: column;
+    gap: 0.15rem;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    padding: 0.35rem;
 }
 
-.surfaces a {
-    display: block;
-    padding: 0.2rem 0.7rem;
-    border-radius: 999px;
+.sidebar-switches a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: var(--radius-sm);
     color: var(--muted);
-    font-size: 0.85rem;
-    white-space: nowrap;
+    font-size: 0.9rem;
 }
 
-.surfaces a:hover {
-    color: var(--text);
+.sidebar-switches a:hover {
     text-decoration: none;
-}
-
-.surfaces a[aria-current="true"] {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 0.2rem 0.7rem;
     color: var(--text);
-    font-weight: 550;
 }
 
-.groupnav {
+.sidebar-switches a[aria-current="true"] {
     background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
+    color: var(--text);
+    font-weight: 600;
+    box-shadow: var(--shadow-card);
+}
+
+.sidebar-group + .sidebar-group {
+    margin-top: 0.25rem;
 }
 
 /*
@@ -239,54 +360,127 @@ small, .small { font-size: 0.85rem; }
  * only ever appear on the administrative surfaces, whose work genuinely
  * divides into separate areas.
  */
-.groupnav .navgroup {
-    align-self: center;
-    padding: 0 0.5rem 0 0.9rem;
+.sidebar-caption {
+    margin: 0 0 0.35rem;
+    padding: 0 0.7rem;
     color: var(--muted);
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    white-space: nowrap;
-    border-left: 1px solid var(--border);
-    margin-left: 0.4rem;
 }
 
-.groupnav .navgroup:first-child {
-    border-left: 0;
-    margin-left: 0;
-    padding-left: 0;
-}
-
-.groupnav ul {
+.sidebar-group a {
     display: flex;
-    gap: 0.25rem;
-    list-style: none;
-    margin: 0 auto;
-    padding: 0 1.25rem;
-    max-width: 1180px;
-}
-
-.groupnav a {
-    display: block;
+    align-items: center;
+    gap: 0.7rem;
     padding: 0.6rem 0.7rem;
-    color: var(--muted);
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 0.95rem;
 }
 
-.groupnav a:hover {
-    color: var(--text);
+.sidebar-group a svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--muted);
+}
+
+.sidebar-group a:hover {
+    background: var(--surface-2);
     text-decoration: none;
 }
 
-.groupnav a[aria-current="page"] {
+.sidebar-group a[aria-current="page"] {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    font-weight: 600;
+}
+
+.sidebar-group a[aria-current="page"] svg {
+    color: var(--accent);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.sidebar-footer a,
+.sidebar-footer .btn-link {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: start;
+}
+
+.sidebar-footer a svg,
+.sidebar-footer .btn-link svg {
+    width: 20px;
+    height: 20px;
+}
+
+.sidebar-footer a:hover,
+.sidebar-footer .btn-link:hover {
+    background: var(--surface-2);
+    text-decoration: none;
     color: var(--text);
-    border-bottom-color: var(--accent);
-    font-weight: 550;
+}
+
+@media (min-width: 1000px) {
+    body {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .nav-toggle-btn {
+        display: none;
+    }
+
+    .nav-scrim {
+        display: none;
+    }
+
+    .sidebar {
+        position: sticky;
+        top: 0;
+        /* Wins over the checkbox's :checked state unconditionally — the
+           drawer becomes a permanent column regardless of toggle state. */
+        transform: none !important;
+        width: 260px;
+        height: 100vh;
+        box-shadow: none;
+        border-inline-end: 1px solid var(--border);
+        flex-shrink: 0;
+    }
+
+    main {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .masthead {
+        display: none;
+    }
 }
 
 main {
-    padding: 1.5rem 0 4rem;
+    padding: 1.25rem 0 5rem;
+}
+
+@media (min-width: 1000px) {
+    main {
+        padding: 2rem 0 3rem;
+    }
 }
 
 .page-head {
@@ -303,7 +497,7 @@ main {
     gap: 1rem;
 }
 
-@media (min-width: 760px) {
+@media (min-width: 1000px) {
     .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .grid-side { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
@@ -315,14 +509,20 @@ main {
 
 .card {
     background: var(--surface);
-    border: 1px solid var(--border);
     border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
     padding: 1.1rem 1.25rem;
 }
 
 .card > h2:first-child,
 .card > h3:first-child {
     margin-top: 0;
+}
+
+/* Clips a nested .list-rows' flush-to-the-edge rows to the card's own
+   rounded corners instead of the rows' square corners poking past them. */
+.card:has(.list-rows) {
+    overflow: hidden;
 }
 
 .card-head {
@@ -334,7 +534,7 @@ main {
 }
 
 .figure {
-    font-family: var(--mono);
+    font-family: var(--ui);
     font-variant-numeric: tabular-nums;
     font-size: 1.9rem;
     letter-spacing: -0.02em;
@@ -360,7 +560,7 @@ table {
 
 th, td {
     text-align: left;
-    padding: 0.55rem 0.7rem;
+    padding: 0.6rem 0.7rem;
     border-bottom: 1px solid var(--border);
     vertical-align: top;
 }
@@ -378,7 +578,7 @@ tbody tr:last-child td { border-bottom: none; }
 
 td.num, th.num {
     text-align: right;
-    font-family: var(--mono);
+    font-family: var(--ui);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
@@ -393,6 +593,134 @@ tfoot td {
     color: var(--muted);
     text-align: center;
 }
+
+/* ------------------------------------------------------------- list-row */
+
+/*
+ * The mobile-native alternative to a table row: an avatar/lead, a stacked
+ * title+meta, and a trailing figure, all in one tappable row. At the tablet
+ * tier the meta line moves inline next to the title instead of the markup
+ * switching to a <table> — one component, two densities.
+ */
+/*
+ * No chrome of its own — it's a plain stack of rows, meant to sit inside a
+ * .card (same convention a <table> followed: the card supplies the surface,
+ * shadow and radius, the rows supply their own dividers).
+ */
+.list-rows {
+    margin: -1.1rem -1.25rem;
+}
+
+.list-row {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+}
+
+.list-row:hover {
+    background: var(--surface-2);
+    text-decoration: none;
+}
+
+.list-rows > .list-row:last-child { border-bottom: none; }
+
+/* For rows that carry inline actions alongside their link (e.g. member
+   admin actions) — the wrapper owns the divider, the link inside doesn't
+   double it, and the actions sit in their own strip below. */
+.list-row-item .list-row { border-bottom: none; }
+
+.list-row-item {
+    border-bottom: 1px solid var(--border);
+}
+
+.list-rows > .list-row-item:last-child {
+    border-bottom: none;
+}
+
+.list-row-actions {
+    padding: 0 var(--sp-4) var(--sp-3);
+}
+
+.list-row-lead { flex-shrink: 0; }
+
+.list-row-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.list-row-title {
+    font-weight: 550;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.list-row-meta {
+    color: var(--muted);
+    font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.list-row-trail {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-family: var(--ui);
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+}
+
+.list-row-trail svg {
+    width: 18px;
+    height: 18px;
+    color: var(--muted);
+}
+
+@media (min-width: 720px) {
+    .list-row-body {
+        flex-direction: row;
+        align-items: baseline;
+        gap: var(--sp-3);
+    }
+
+    .list-row-meta {
+        margin-inline-start: auto;
+    }
+}
+
+/* -------------------------------------------------------------- avatars */
+
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--pill);
+    color: #fff;
+    font-weight: 650;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+}
+
+.avatar-sm { width: 1.75rem; height: 1.75rem; font-size: 0.72rem; }
+.avatar-lg { width: 3rem; height: 3rem; font-size: 1rem; }
+
+.avatar-1 { background: var(--av-1); }
+.avatar-2 { background: var(--av-2); }
+.avatar-3 { background: var(--av-3); }
+.avatar-4 { background: var(--av-4); }
+.avatar-5 { background: var(--av-5); }
 
 /* ----------------------------------------------------------------- forms */
 
@@ -415,7 +743,7 @@ label {
     display: block;
     font-size: 0.85rem;
     color: var(--muted);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.3rem;
 }
 
 input[type="text"],
@@ -427,18 +755,20 @@ input[type="file"],
 select,
 textarea {
     width: 100%;
-    padding: 0.45rem 0.6rem;
+    min-height: 44px;
+    padding: 0.55rem 0.75rem;
     background: var(--surface);
     color: var(--text);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     font: inherit;
+    font-size: 16px; /* keeps iOS from zooming in on focus */
 }
 
 input[type="text"],
 input[type="number"],
 .input-num {
-    font-family: var(--mono);
+    font-family: var(--ui);
     font-variant-numeric: tabular-nums;
 }
 
@@ -449,23 +779,24 @@ input:focus, select:focus, textarea:focus {
 
 textarea { min-height: 4.5rem; resize: vertical; }
 
-.field { margin-bottom: 0.85rem; }
+.field { margin-bottom: 0.9rem; }
 
 .field-row {
     display: grid;
     gap: 0.85rem;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 720px) {
     .field-row-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .field-row-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .field-row-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
+/* A native-feeling on/off switch rather than a browser checkbox square. */
 .check {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
 }
 
 .check label {
@@ -474,13 +805,52 @@ textarea { min-height: 4.5rem; resize: vertical; }
     font-size: 0.95rem;
 }
 
-.check input { width: auto; }
+.check input {
+    appearance: none;
+    width: 2.5rem;
+    height: 1.5rem;
+    min-height: 0;
+    flex-shrink: 0;
+    border-radius: var(--pill);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    position: relative;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+.check input::before {
+    content: "";
+    position: absolute;
+    top: 1px;
+    inset-inline-start: 1px;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: var(--pill);
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+    transition: inset-inline-start .15s ease;
+}
+
+.check input:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.check input:checked::before {
+    inset-inline-start: calc(100% - 1.2rem - 1px);
+}
+
+.check input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
 
 .hint {
     display: block;
     color: var(--muted);
     font-size: 0.8rem;
-    margin-top: 0.2rem;
+    margin-top: 0.25rem;
 }
 
 .suffix {
@@ -497,14 +867,19 @@ textarea { min-height: 4.5rem; resize: vertical; }
 /* --------------------------------------------------------------- buttons */
 
 .btn {
-    display: inline-block;
-    padding: 0.45rem 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding: 0.55rem 1.1rem;
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--pill);
     background: var(--surface-2);
     color: var(--text);
     font: inherit;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
+    font-weight: 550;
     cursor: pointer;
     text-decoration: none;
 }
@@ -514,11 +889,7 @@ textarea { min-height: 4.5rem; resize: vertical; }
 .btn-primary {
     background: var(--accent);
     border-color: var(--accent);
-    color: #fff;
-}
-
-@media (prefers-color-scheme: dark) {
-    .btn-primary { color: #10221c; }
+    color: var(--accent-ink);
 }
 
 .btn-danger {
@@ -527,48 +898,88 @@ textarea { min-height: 4.5rem; resize: vertical; }
     color: var(--danger);
 }
 
-.btn-small { padding: 0.25rem 0.55rem; font-size: 0.82rem; }
+.btn-small {
+    min-height: 36px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.82rem;
+}
 
 .btn-link {
     background: none;
     border: none;
+    min-height: 0;
     color: var(--accent);
     padding: 0;
     cursor: pointer;
     font: inherit;
 }
 
+/*
+ * Button clusters stack full-width at the phone tier — deliberately the
+ * same "action sheet" language a native app uses for a row of choices —
+ * and only become an inline row once there's room to spare.
+ */
 .actions {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
+    flex-direction: column;
+    gap: 0.6rem;
+    align-items: stretch;
+}
+
+.actions .btn { width: 100%; }
+
+@media (min-width: 720px) {
+    .actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .actions .btn { width: auto; }
+}
+
+/* Opt-in utility for a form whose one primary action should stay reachable
+   at the bottom of the screen on a phone. Not applied anywhere yet. */
+.actions-sticky {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg);
+    padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+}
+
+@media (min-width: 1000px) {
+    .actions-sticky {
+        position: static;
+        background: none;
+        padding: 0;
+        border-top: none;
+    }
 }
 
 /* -------------------------------------------------------------- messages */
 
 .alert {
-    border: 1px solid var(--border);
-    border-left-width: 3px;
+    border-inline-start: 3px solid transparent;
     border-radius: var(--radius);
-    padding: 0.7rem 0.9rem;
+    padding: 0.8rem 1rem;
     margin-bottom: 1rem;
     font-size: 0.92rem;
 }
 
-.alert-ok { background: var(--ok-soft); border-left-color: var(--ok); }
-.alert-error { background: var(--danger-soft); border-left-color: var(--danger); }
-.alert-warn { background: var(--warning-soft); border-left-color: var(--warning); }
-.alert-info { background: var(--accent-soft); border-left-color: var(--accent); }
+.alert-ok { background: var(--ok-soft); border-inline-start-color: var(--ok); }
+.alert-error { background: var(--danger-soft); border-inline-start-color: var(--danger); }
+.alert-warn { background: var(--warning-soft); border-inline-start-color: var(--warning); }
+.alert-info { background: var(--accent-soft); border-inline-start-color: var(--accent); }
 
-.alert ul { margin: 0.3rem 0 0; padding-left: 1.1rem; }
+.alert ul { margin: 0.3rem 0 0; padding-inline-start: 1.1rem; }
 
 /* --------------------------------------------------------------- badges */
 
 .badge {
     display: inline-block;
-    padding: 0.1rem 0.45rem;
-    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+    border-radius: var(--pill);
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -590,7 +1001,7 @@ textarea { min-height: 4.5rem; resize: vertical; }
 .deflist {
     display: grid;
     grid-template-columns: max-content 1fr;
-    gap: 0.35rem 1rem;
+    gap: 0.4rem 1rem;
     margin: 0;
     font-size: 0.92rem;
 }
@@ -604,34 +1015,90 @@ textarea { min-height: 4.5rem; resize: vertical; }
     margin-bottom: 0.4rem;
 }
 
+/* ------------------------------------------------------------ pagination */
+
+/*
+ * pagination.blade.php only ever renders three elements — Prev, "page X of
+ * Y", Next — so this is a paging footer, not a numbered link list. At the
+ * phone tier it becomes a full-width split bar with generous tap targets;
+ * from the tablet tier up it shrinks back to a compact inline row.
+ */
 .pagination {
     display: flex;
-    gap: 0.4rem;
-    flex-wrap: wrap;
+    gap: 0.5rem;
     margin-top: 1rem;
     font-size: 0.9rem;
 }
 
 .pagination .page {
-    padding: 0.25rem 0.55rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.5rem 0.75rem;
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+    border-radius: var(--pill);
+    text-align: center;
 }
 
 .pagination .page[aria-current] {
     background: var(--accent-soft);
-    border-color: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 600;
+    flex: 2;
 }
 
+@media (min-width: 720px) {
+    .pagination {
+        flex-wrap: wrap;
+    }
+
+    .pagination .page {
+        flex: none;
+        min-height: 0;
+        padding: 0.3rem 0.7rem;
+    }
+
+    .pagination .page[aria-current] {
+        flex: none;
+    }
+}
+
+/* ---------------------------------------------------------------- filters */
+
+/*
+ * A native app's filter bar: a horizontally-scrolling row of compact
+ * controls on a phone, spreading out into the full always-visible
+ * label+input bar once there's room for it from the desktop tier up.
+ */
 .filters {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.6rem;
     align-items: flex-end;
     margin-bottom: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
 }
 
-.filters .field { margin: 0; min-width: 9rem; }
+.filters .field {
+    margin: 0;
+    min-width: 8rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 1000px) {
+    .filters {
+        flex-wrap: wrap;
+        overflow-x: visible;
+    }
+
+    .filters .field {
+        flex-shrink: 1;
+    }
+}
 
 .divider {
     border: none;
@@ -648,19 +1115,43 @@ textarea { min-height: 4.5rem; resize: vertical; }
     vertical-align: bottom;
 }
 
+/* -------------------------------------------------------------- auth card */
+
+.auth-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1.25rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 24rem;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 1.75rem 1.5rem;
+}
+
+.auth-card .brand {
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+}
+
 @media print {
-    .masthead, .surfaces, .groupnav, .actions, .filters { display: none; }
-    body { background: #fff; }
-    .card { border: none; padding: 0; }
+    .masthead, .sidebar, .nav-scrim, .nav-toggle-btn, .actions, .filters { display: none; }
+    body { background: #fff; display: block; }
+    .card { box-shadow: none; padding: 0; }
 }
 
 /* ------------------------------------------------------------------ rtl */
 /*
- * Farsi renders right-to-left. Flex/grid row direction already follows
- * <html dir> automatically; only the hand-set physical left/right
- * properties below need a mirrored override. The Persian face is Vazirmatn,
- * self-hosted from public/fonts and selected on :root[lang="fa"] at the top of
- * this file — no external request, matching this app's no-CDN rule.
+ * Farsi renders right-to-left. Flex/grid row direction and the logical
+ * (inset-inline-*, border-inline-*, margin-inline-*) properties used above
+ * already follow <html dir> automatically; only physical left/right
+ * properties below need a mirrored override.
  */
 [dir="rtl"] th,
 [dir="rtl"] td {
@@ -674,36 +1165,6 @@ textarea { min-height: 4.5rem; resize: vertical; }
     text-align: left;
 }
 
-[dir="rtl"] .alert {
-    border-left-width: 1px;
-    border-right-width: 3px;
-}
-
-[dir="rtl"] .alert-ok { border-left-color: var(--border); border-right-color: var(--ok); }
-[dir="rtl"] .alert-error { border-left-color: var(--border); border-right-color: var(--danger); }
-[dir="rtl"] .alert-warn { border-left-color: var(--border); border-right-color: var(--warning); }
-[dir="rtl"] .alert-info { border-left-color: var(--border); border-right-color: var(--accent); }
-
-[dir="rtl"] .alert ul {
-    padding-left: 0;
-    padding-right: 1.1rem;
-}
-
 [dir="rtl"] .table-empty {
     text-align: center;
-}
-
-/* The nav's section captions are separated by a rule on their leading edge. */
-[dir="rtl"] .groupnav .navgroup {
-    border-left: 0;
-    border-right: 1px solid var(--border);
-    margin-left: 0;
-    margin-right: 0.4rem;
-    padding: 0 0.9rem 0 0.5rem;
-}
-
-[dir="rtl"] .groupnav .navgroup:first-child {
-    border-right: 0;
-    margin-right: 0;
-    padding-right: 0;
 }

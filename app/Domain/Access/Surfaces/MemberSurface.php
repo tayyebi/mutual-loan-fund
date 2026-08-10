@@ -36,6 +36,11 @@ final class MemberSurface extends Surface
         return 'nav.surfaces.member';
     }
 
+    public static function icon(): string
+    {
+        return 'user';
+    }
+
     public static function home(): string
     {
         return 'u.dashboard';
@@ -79,35 +84,41 @@ final class MemberSurface extends Surface
                     label: 'nav.links.overview',
                     match: 'u.dashboard',
                     hint: 'nav.hints.overview',
+                    icon: 'home',
                 ),
                 new NavItem(
                     route: 'u.money',
                     label: 'nav.links.money',
                     match: 'u.money*',
                     hint: 'nav.hints.money',
+                    icon: 'wallet',
                 ),
                 new NavItem(
                     route: 'u.borrowing',
                     label: 'nav.links.borrowing',
                     match: 'u.borrowing*',
                     hint: 'nav.hints.borrowing',
+                    icon: 'borrowing',
                 ),
                 new NavItem(
                     route: 'u.activity',
                     label: 'nav.links.activity',
                     match: 'u.activity*',
                     hint: 'nav.hints.activity',
+                    icon: 'activity',
                 ),
                 new NavItem(
                     route: 'u.wallets.index',
                     label: 'nav.links.wallets',
                     hint: 'nav.hints.wallets',
+                    icon: 'wallets',
                 ),
                 new NavItem(
                     route: 'u.fund',
                     label: 'nav.links.the_fund',
                     match: 'u.fund*',
                     hint: 'nav.hints.the_fund',
+                    icon: 'fund',
                 ),
             ]),
         ];

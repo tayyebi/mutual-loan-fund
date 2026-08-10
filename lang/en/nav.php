@@ -6,6 +6,7 @@ return [
     'default_title' => 'Mutual Loan Fund',
     'exchange_rates' => 'Exchange rates',
     'sign_out' => 'Sign out',
+    'menu' => 'Menu',
 
     /*
     | The three access levels, as the switcher names them. These are the labels

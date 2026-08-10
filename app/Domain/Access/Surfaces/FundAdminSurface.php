@@ -36,6 +36,11 @@ final class FundAdminSurface extends Surface
         return 'nav.surfaces.fund_admin';
     }
 
+    public static function icon(): string
+    {
+        return 'briefcase';
+    }
+
     public static function home(): string
     {
         return 'g.dashboard';
@@ -100,28 +105,28 @@ final class FundAdminSurface extends Surface
     {
         return [
             new NavSection(null, [
-                new NavItem('g.dashboard', 'nav.links.manage', match: 'g.dashboard'),
+                new NavItem('g.dashboard', 'nav.links.manage', match: 'g.dashboard', icon: 'dashboard'),
             ]),
 
             new NavSection('nav.sections.operations', [
-                new NavItem('g.transactions.index', 'nav.links.activity'),
-                new NavItem('g.loans.index', 'nav.links.loans'),
-                new NavItem('g.members.index', 'nav.links.members'),
-                new NavItem('g.treasuries.index', 'nav.links.treasuries'),
+                new NavItem('g.transactions.index', 'nav.links.activity', icon: 'activity'),
+                new NavItem('g.loans.index', 'nav.links.loans', icon: 'loans'),
+                new NavItem('g.members.index', 'nav.links.members', icon: 'members'),
+                new NavItem('g.treasuries.index', 'nav.links.treasuries', icon: 'treasuries'),
             ]),
 
             new NavSection('nav.sections.books', [
-                new NavItem('g.ledger.index', 'nav.links.ledger'),
-                new NavItem('g.accounts.index', 'nav.links.accounts'),
-                new NavItem('g.cost-centers.index', 'nav.links.cost_centers'),
-                new NavItem('g.periods.index', 'nav.links.periods'),
-                new NavItem('g.reports.index', 'nav.links.reports'),
+                new NavItem('g.ledger.index', 'nav.links.ledger', icon: 'ledger'),
+                new NavItem('g.accounts.index', 'nav.links.accounts', icon: 'accounts'),
+                new NavItem('g.cost-centers.index', 'nav.links.cost_centers', icon: 'cost-centers'),
+                new NavItem('g.periods.index', 'nav.links.periods', icon: 'periods'),
+                new NavItem('g.reports.index', 'nav.links.reports', icon: 'reports'),
             ]),
 
             new NavSection('nav.sections.governance', [
-                new NavItem('g.policies.index', 'nav.links.policies'),
-                new NavItem('g.framework.edit', 'nav.links.framework', match: 'g.framework.*'),
-                new NavItem('g.audit.index', 'nav.links.audit'),
+                new NavItem('g.policies.index', 'nav.links.policies', icon: 'policies'),
+                new NavItem('g.framework.edit', 'nav.links.framework', match: 'g.framework.*', icon: 'framework'),
+                new NavItem('g.audit.index', 'nav.links.audit', icon: 'audit'),
             ]),
         ];
     }

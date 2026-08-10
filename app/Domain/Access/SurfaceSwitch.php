@@ -16,5 +16,6 @@ final class SurfaceSwitch
         public readonly string $label,
         public readonly string $href,
         public readonly bool $current,
+        public readonly ?string $icon = null,
     ) {}
 }
