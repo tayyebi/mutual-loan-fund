@@ -137,9 +137,13 @@ Deliberate scope boundaries — do not silently expand these:
 
 Translations live under `lang/en/` and `lang/fa/`, one file per `resources/views/` top-level
 subdirectory (`lang/{en,fa}/policies.php` backs every view under `resources/views/policies/`,
-etc.), plus `validation.php`/`auth.php`/`pagination.php`/`passwords.php` (Laravel's own framework
-strings) and `exceptions.php` (every hardcoded message thrown by `app/Domain/**` services and
-`abort()` calls in `app/Http/Middleware`/`app/Http/Controllers`). Every user-facing string, Blade
-or PHP, must be wrapped in `__('file.key')` — there is no unwrapped literal English left by
-design; if you add a new string, add its translation key to **both** locale files in the same
-change.
+etc.), plus `nav.php` (the shared masthead/nav in `resources/views/layouts/*`), `validation.php`/
+`auth.php`/`pagination.php`/`passwords.php` (Laravel's own framework strings), and `exceptions.php`
+(every hardcoded message thrown by `app/Domain/**` services and `abort()`/`withErrors()` calls in
+`app/Http/Middleware`/`app/Http/Controllers`). `App\Domain\Policies\Categories\*`'s `PolicyField`
+labels/help text live under `policies.php`'s `fields` key. Every user-facing string, Blade or PHP
+— including strings a controller builds itself, like `ReportController`'s report titles, not just
+literal Blade text — must be wrapped in `__('file.key')`; there is no unwrapped literal English
+left by design. If you add a new string, add its translation key to **both** locale files in the
+same change, and keep their key structures identical (a key in one locale missing from the other
+silently renders as the raw key).
