@@ -91,33 +91,23 @@
                 <a class="small" href="{{ route('u.activity', $group) }}">{{ __('member.overview.all_activity') }}</a>
             </div>
 
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>{{ __('member.overview.col_date') }}</th>
-                        <th>{{ __('member.overview.col_what') }}</th>
-                        <th class="num">{{ __('member.overview.col_amount') }}</th>
-                        <th>{{ __('member.overview.col_status') }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse ($recent as $transaction)
-                        <tr>
-                            <td class="num"><x-datetime :value="$transaction->occurred_on" format="j M" /></td>
-                            <td>
-                                <a href="{{ route('u.activity.show', [$group, $transaction]) }}">
-                                    {{ $transaction->typeLabel() }}
-                                </a>
-                            </td>
-                            <td class="num"><x-amount :value="$transaction->amount" :currency="$transaction->currency" /></td>
-                            <td><x-status :value="$transaction->status" /></td>
-                        </tr>
-                    @empty
-                        <x-empty colspan="4">{{ __('member.overview.nothing_yet') }}</x-empty>
-                    @endforelse
-                    </tbody>
-                </table>
+            <div class="list-rows">
+                @forelse ($recent as $transaction)
+                    <x-list-row href="{{ route('u.activity.show', [$group, $transaction]) }}">
+                        {{ $transaction->typeLabel() }}
+
+                        <x-slot:meta>
+                            <x-datetime :value="$transaction->occurred_on" format="j M" />
+                        </x-slot:meta>
+
+                        <x-slot:trailing>
+                            <x-amount :value="$transaction->amount" :currency="$transaction->currency" />
+                            <x-status :value="$transaction->status" />
+                        </x-slot:trailing>
+                    </x-list-row>
+                @empty
+                    <x-empty as="list">{{ __('member.overview.nothing_yet') }}</x-empty>
+                @endforelse
             </div>
         </div>
 

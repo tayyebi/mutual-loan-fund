@@ -1,5 +1,9 @@
-@props(['colspan' => 1])
+@props(['colspan' => 1, 'as' => 'table'])
 
-<tr>
-    <td colspan="{{ $colspan }}" class="table-empty">{{ $slot }}</td>
-</tr>
+@if ($as === 'list')
+    <div class="table-empty">{{ $slot }}</div>
+@else
+    <tr>
+        <td colspan="{{ $colspan }}" class="table-empty">{{ $slot }}</td>
+    </tr>
+@endif

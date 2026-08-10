@@ -21,70 +21,66 @@
     </div>
 
     <div class="card">
-        <div class="table-wrap">
-            <table>
-                <thead>
-                <tr>
-                    <th>{{ __('members.index.member_header') }}</th>
-                    <th>{{ __('members.index.cost_center_header') }}</th>
-                    <th>{{ __('members.index.role_header') }}</th>
-                    <th>{{ __('members.index.status_header') }}</th>
-                    <th>{{ __('members.index.member_since_header') }}</th>
-                    @surfaces('member.role')<th></th>@endsurfaces
-                </tr>
-                </thead>
-                <tbody>
-                @forelse ($members as $member)
-                    <tr>
-                        <td>
-                            {{-- GroupPolicy::viewMemberPosition is admin-or-self, so on /u the
-                                 roster only links the rows a member may actually open. --}}
-                            @if (\App\Domain\Access\SurfaceRoute::serves('member.role') || $groupContext->owns($member))
-                                <a href="@surface('member.show', $group, $member)">{{ $member->displayName() }}</a>
-                            @else
-                                {{ $member->displayName() }}
+    <div class="list-rows">
+        @forelse ($members as $member)
+            <div class="list-row-item">
+                @php
+                    // GroupPolicy::viewMemberPosition is admin-or-self, so on /u the
+                    // roster only links the rows a member may actually open.
+                    $linkable = \App\Domain\Access\SurfaceRoute::serves('member.role') || $groupContext->owns($member);
+                @endphp
+                <{{ $linkable ? 'a' : 'div' }}
+                    @if ($linkable) href="{{ \App\Domain\Access\SurfaceRoute::to('member.show', $group, $member) }}" @endif
+                    class="list-row">
+                    <span class="list-row-lead">
+                        <x-avatar :name="$member->displayName()" />
+                    </span>
+                    <span class="list-row-body">
+                        <span class="list-row-title">{{ $member->displayName() }}</span>
+                        <span class="list-row-meta">
+                            {{ $member->role }}
+                            · {{ $member->costCenter?->code ?? '—' }}
+                            @if ($member->approved_at)
+                                · <x-datetime :value="$member->approved_at" />
                             @endif
-                            <br><span class="small muted">{{ $member->user?->email }}</span>
-                        </td>
-                        <td class="mono">{{ $member->costCenter?->code ?? '—' }}</td>
-                        <td>{{ $member->role }}</td>
-                        <td><x-status :value="$member->status" /></td>
-                        <td class="small muted">
-                            @if ($member->approved_at)<x-datetime :value="$member->approved_at" />@else —@endif
-                        </td>
-                        @surfaces('member.role')
-                            <td>
-                                <div class="actions">
-                                    @if ($member->status === \App\Models\GroupMembership::STATUS_SUSPENDED)
-                                        <form method="POST" action="@surface('member.reinstate', $group, $member)">
-                                            @csrf
-                                            <button class="btn btn-small">{{ __('members.index.reinstate') }}</button>
-                                        </form>
-                                    @else
-                                        <form method="POST" action="@surface('member.suspend', $group, $member)">
-                                            @csrf
-                                            <button class="btn btn-small btn-danger">{{ __('members.index.suspend') }}</button>
-                                        </form>
-                                    @endif
+                        </span>
+                    </span>
+                    <span class="list-row-trail">
+                        <x-status :value="$member->status" />
+                    </span>
+                </{{ $linkable ? 'a' : 'div' }}>
 
-                                    <form method="POST" action="@surface('member.role', $group, $member)">
-                                        @csrf
-                                        <input type="hidden" name="role"
-                                               value="{{ $member->role === 'admin' ? 'member' : 'admin' }}">
-                                        <button class="btn btn-small">
-                                            {{ $member->role === 'admin' ? __('members.index.make_member') : __('members.index.make_admin') }}
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        @endsurfaces
-                    </tr>
-                @empty
-                    <x-empty colspan="{{ \App\Domain\Access\SurfaceRoute::serves('member.role') ? 6 : 5 }}">{{ __('members.index.empty') }}</x-empty>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
+                @surfaces('member.role')
+                    <div class="list-row-actions">
+                        <div class="actions">
+                            @if ($member->status === \App\Models\GroupMembership::STATUS_SUSPENDED)
+                                <form method="POST" action="@surface('member.reinstate', $group, $member)">
+                                    @csrf
+                                    <button class="btn btn-small">{{ __('members.index.reinstate') }}</button>
+                                </form>
+                            @else
+                                <form method="POST" action="@surface('member.suspend', $group, $member)">
+                                    @csrf
+                                    <button class="btn btn-small btn-danger">{{ __('members.index.suspend') }}</button>
+                                </form>
+                            @endif
+
+                            <form method="POST" action="@surface('member.role', $group, $member)">
+                                @csrf
+                                <input type="hidden" name="role"
+                                       value="{{ $member->role === 'admin' ? 'member' : 'admin' }}">
+                                <button class="btn btn-small">
+                                    {{ $member->role === 'admin' ? __('members.index.make_member') : __('members.index.make_admin') }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endsurfaces
+            </div>
+        @empty
+            <x-empty as="list">{{ __('members.index.empty') }}</x-empty>
+        @endforelse
+    </div>
     </div>
 
     @surfaces('member.approve')

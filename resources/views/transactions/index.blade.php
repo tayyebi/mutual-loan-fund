@@ -62,46 +62,36 @@
     </form>
 
     <div class="card">
-        <div class="table-wrap">
-            <table>
-                <thead>
-                <tr>
-                    <th>{{ __('transactions.index.col_date') }}</th>
-                    <th>{{ __('transactions.index.col_member') }}</th>
-                    <th class="num">{{ __('transactions.index.col_amount') }}</th>
-                    <th>{{ __('transactions.index.col_type') }}</th>
-                    <th>{{ __('transactions.index.col_treasury') }}</th>
-                    <th>{{ __('transactions.index.col_status') }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                @forelse ($transactions as $transaction)
-                    <tr>
-                        <td class="num">
-                            <a href="@surface('transaction.show', $group, $transaction)">
-                                <x-datetime :value="$transaction->occurred_on" />
-                            </a>
-                        </td>
-                        <td>{{ $transaction->member?->displayName() ?? '—' }}</td>
-                        <td class="num {{ $transaction->direction === 'in' ? 'pos' : ($transaction->direction === 'out' ? 'neg' : '') }}">
-                            {{ $transaction->direction === 'in' ? '+' : ($transaction->direction === 'out' ? '−' : '') }}<x-amount :value="$transaction->amount" :currency="$transaction->currency" />
-                        </td>
-                        <td class="small">
-                            {{ $transaction->typeLabel() }}
-                            @if ($transaction->loan)
-                                <br><a class="small" href="@surface('loan.show', $group, $transaction->loan)">{{ $transaction->loan->reference }}</a>
-                            @endif
-                        </td>
-                        <td class="small muted">{{ $transaction->treasury?->name }}</td>
-                        <td><x-status :value="$transaction->status" /></td>
-                    </tr>
-                @empty
-                    <x-empty colspan="6">{{ __('transactions.index.empty') }}</x-empty>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
+    <div class="list-rows">
+        @forelse ($transactions as $transaction)
+            <x-list-row href="@surface('transaction.show', $group, $transaction)">
+                <x-slot:avatar>
+                    <x-avatar :name="$transaction->member?->displayName() ?? '·'" size="sm" />
+                </x-slot:avatar>
 
-        {{ $transactions->links('pagination') }}
+                {{ $transaction->typeLabel() }}
+                @if ($transaction->loan)
+                    <span class="small muted">· {{ $transaction->loan->reference }}</span>
+                @endif
+
+                <x-slot:meta>
+                    <x-datetime :value="$transaction->occurred_on" format="j M" />
+                    · {{ $transaction->member?->displayName() ?? '—' }}
+                    @if ($transaction->treasury) · {{ $transaction->treasury->name }} @endif
+                </x-slot:meta>
+
+                <x-slot:trailing>
+                    <span class="{{ $transaction->direction === 'in' ? 'pos' : ($transaction->direction === 'out' ? 'neg' : '') }}">
+                        {{ $transaction->direction === 'in' ? '+' : ($transaction->direction === 'out' ? '−' : '') }}<x-amount :value="$transaction->amount" :currency="$transaction->currency" />
+                    </span>
+                    <x-status :value="$transaction->status" />
+                </x-slot:trailing>
+            </x-list-row>
+        @empty
+            <x-empty as="list">{{ __('transactions.index.empty') }}</x-empty>
+        @endforelse
     </div>
+    </div>
+
+    {{ $transactions->links('pagination') }}
 @endsection
