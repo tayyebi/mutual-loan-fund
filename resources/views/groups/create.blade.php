@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Create a fund')
+@section('title', __('groups.create.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('home') }}">Your funds</a></p>
-            <h1>Create a fund</h1>
+            <p class="breadcrumb"><a href="{{ route('home') }}">{{ __('groups.create.breadcrumb') }}</a></p>
+            <h1>{{ __('groups.create.heading') }}</h1>
         </div>
     </div>
 
@@ -15,19 +15,19 @@
                 @csrf
 
                 <div class="field">
-                    <label for="name">Name</label>
+                    <label for="name">{{ __('groups.create.name_label') }}</label>
                     <input id="name" name="name" type="text" value="{{ old('name') }}" required autofocus>
                 </div>
 
                 <div class="field">
-                    <label for="description">Description</label>
+                    <label for="description">{{ __('groups.create.description_label') }}</label>
                     <textarea id="description" name="description">{{ old('description') }}</textarea>
                 </div>
 
                 <div class="field">
-                    <label for="financial_framework_id">Financial framework <span class="muted">(optional)</span></label>
+                    <label for="financial_framework_id">{{ __('groups.create.framework_label') }} <span class="muted">({{ __('groups.create.optional') }})</span></label>
                     <select id="financial_framework_id" name="financial_framework_id">
-                        <option value="" @selected(old('financial_framework_id') === null)>None</option>
+                        <option value="" @selected(old('financial_framework_id') === null)>{{ __('groups.create.framework_none') }}</option>
                         @foreach ($frameworks as $framework)
                             <option value="{{ $framework->id }}" @selected((string) old('financial_framework_id') === (string) $framework->id)>
                                 {{ $framework->name }}
@@ -39,30 +39,28 @@
                     <p class="hint error">{{ $message }}</p>
                 @enderror
                 <p class="hint">
-                    A named preset of advisory rules. It never blocks anything — if your
-                    fund's policy later drifts from it, you'll just see a warning. You can
-                    change or clear it any time from Policies.
+                    {{ __('groups.create.framework_hint') }}
                 </p>
 
-                <button type="submit" class="btn btn-primary">Create fund</button>
+                <button type="submit" class="btn btn-primary">{{ __('groups.create.submit') }}</button>
             </form>
         </div>
 
         <div class="stack">
             <div class="card">
-                <h3>What is created with it</h3>
+                <h3>{{ __('groups.create.created_with_heading') }}</h3>
                 <ul class="small muted" style="padding-left: 1.1rem; margin: 0;">
-                    <li>A chart of accounts for this fund alone.</li>
-                    <li>Your administrator membership and cost center.</li>
-                    <li>Policy v1, published and active.</li>
+                    <li>{{ __('groups.create.created_with_chart') }}</li>
+                    <li>{{ __('groups.create.created_with_membership') }}</li>
+                    <li>{{ __('groups.create.created_with_policy') }}</li>
                 </ul>
                 <p class="small muted" style="margin-top: 0.8rem;">
-                    All of it in one database transaction, so the fund is never half-created.
+                    {{ __('groups.create.transaction_note') }}
                 </p>
             </div>
 
             <div class="card">
-                <h3>Financial frameworks</h3>
+                <h3>{{ __('groups.create.frameworks_heading') }}</h3>
                 <dl class="deflist">
                     @foreach ($frameworks as $framework)
                         <dt>{{ $framework->name }}</dt>

@@ -4,28 +4,27 @@
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.ledger.index', $group) }}">Ledger</a></p>
+            <p class="breadcrumb"><a href="{{ route('g.ledger.index', $group) }}">{{ __('ledger.show.breadcrumb') }}</a></p>
             <h1>{{ $entry->entry_number }}</h1>
             <p class="muted small">
                 <x-status :value="$entry->status" />
-                {{ $entry->entry_date->format('j M Y') }} · {{ $entry->template }}
-                @if ($entry->period) · period {{ $entry->period->label() }} @endif
+                <x-datetime :value="$entry->entry_date" /> · {{ $entry->template }}
+                @if ($entry->period) · {{ __('ledger.show.period_prefix') }} {{ $entry->period->label() }} @endif
             </p>
         </div>
     </div>
 
     @if ($entry->reverses)
         <div class="alert alert-warn">
-            This entry reverses
+            {{ __('ledger.show.reverses_notice') }}
             <a href="{{ route('g.ledger.show', [$group, $entry->reverses]) }}">{{ $entry->reverses->entry_number }}</a>.
-            @if ($entry->reason) Reason: {{ $entry->reason }} @endif
+            @if ($entry->reason) {{ __('ledger.show.reason_prefix') }} {{ $entry->reason }} @endif
         </div>
     @endif
 
     @if ($entry->isReversed())
         <div class="alert alert-warn">
-            This entry has been reversed. It stays in the ledger; the reversing entry
-            cancels it.
+            {{ __('ledger.show.reversed_notice') }}
         </div>
     @endif
 
@@ -37,13 +36,13 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>Account</th>
-                        <th>Cost center</th>
-                        <th class="num">Debit</th>
-                        <th class="num">Credit</th>
-                        <th class="num">Debit ({{ $entry->functional_currency }})</th>
-                        <th class="num">Credit ({{ $entry->functional_currency }})</th>
-                        <th class="num">18K gold</th>
+                        <th>{{ __('ledger.show.col_account') }}</th>
+                        <th>{{ __('ledger.show.col_cost_center') }}</th>
+                        <th class="num">{{ __('ledger.show.col_debit') }}</th>
+                        <th class="num">{{ __('ledger.show.col_credit') }}</th>
+                        <th class="num">{{ __('ledger.show.col_debit_currency', ['currency' => $entry->functional_currency]) }}</th>
+                        <th class="num">{{ __('ledger.show.col_credit_currency', ['currency' => $entry->functional_currency]) }}</th>
+                        <th class="num">{{ __('ledger.show.col_gold') }}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -80,14 +79,14 @@
                     </tbody>
                     <tfoot>
                     <tr>
-                        <td colspan="4">Totals</td>
+                        <td colspan="4">{{ __('ledger.show.totals') }}</td>
                         <td class="num"><x-amount :value="$debits" /></td>
                         <td class="num"><x-amount :value="$credits" /></td>
                         <td class="num">
                             @if ($debits->equals($credits))
-                                <span class="badge badge-ok">balanced</span>
+                                <span class="badge badge-ok">{{ __('ledger.show.balanced') }}</span>
                             @else
-                                <span class="badge badge-danger">unbalanced</span>
+                                <span class="badge badge-danger">{{ __('ledger.show.unbalanced') }}</span>
                             @endif
                         </td>
                     </tr>
@@ -96,27 +95,26 @@
             </div>
 
             <p class="small muted" style="margin-top:0.8rem">
-                Valuation snapshots are frozen at posting time. Later rate changes never
-                alter them.
+                {{ __('ledger.show.valuation_note') }}
             </p>
         </div>
 
         <div class="stack">
             <div class="card">
-                <h3>Provenance</h3>
+                <h3>{{ __('ledger.show.provenance_heading') }}</h3>
                 <dl class="deflist">
-                    <dt>Created</dt>
-                    <dd>{{ $entry->creator?->name }} · {{ $entry->created_at->format('j M Y H:i') }}</dd>
+                    <dt>{{ __('ledger.show.created_label') }}</dt>
+                    <dd>{{ $entry->creator?->name }} · <x-datetime :value="$entry->created_at" format="j M Y H:i" /></dd>
                     @if ($entry->posted_at)
-                        <dt>Posted</dt>
-                        <dd>{{ $entry->poster?->name }} · {{ $entry->posted_at->format('j M Y H:i') }}</dd>
+                        <dt>{{ __('ledger.show.posted_label') }}</dt>
+                        <dd>{{ $entry->poster?->name }} · <x-datetime :value="$entry->posted_at" format="j M Y H:i" /></dd>
                     @endif
                     @if ($entry->transaction)
-                        <dt>Transaction</dt>
+                        <dt>{{ __('ledger.show.transaction_label') }}</dt>
                         <dd><a href="{{ route('g.transactions.show', [$group, $entry->transaction]) }}">#{{ $entry->transaction_id }}</a></dd>
                     @endif
                     @if ($entry->reason)
-                        <dt>Reason</dt>
+                        <dt>{{ __('ledger.show.reason_label') }}</dt>
                         <dd>{{ $entry->reason }}</dd>
                     @endif
                 </dl>
@@ -124,29 +122,28 @@
 
             @if ($groupContext->isAdmin() && $entry->isPosted() && ! $entry->isReversed())
                 <div class="card">
-                    <h3>Reverse this entry</h3>
+                    <h3>{{ __('ledger.show.reverse_heading') }}</h3>
                     <p class="small muted">
-                        Posted entries are never edited or deleted. A reversal posts the
-                        opposite lines, keeping the original visible.
+                        {{ __('ledger.show.reverse_intro') }}
                     </p>
                     <form method="POST" action="{{ route('g.ledger.reverse', [$group, $entry]) }}">
                         @csrf
                         <div class="field">
-                            <label for="reason">Reason</label>
+                            <label for="reason">{{ __('ledger.show.reason_input_label') }}</label>
                             <textarea id="reason" name="reason" required></textarea>
                         </div>
-                        <button class="btn btn-danger btn-small">Post reversal</button>
+                        <button class="btn btn-danger btn-small">{{ __('ledger.show.submit_reversal') }}</button>
                     </form>
                 </div>
             @endif
 
             @if ($entry->reversal->isNotEmpty())
                 <div class="card">
-                    <h3>Reversed by</h3>
+                    <h3>{{ __('ledger.show.reversed_by_heading') }}</h3>
                     @foreach ($entry->reversal as $reversal)
                         <p class="small">
                             <a href="{{ route('g.ledger.show', [$group, $reversal]) }}">{{ $reversal->entry_number }}</a>
-                            · {{ $reversal->entry_date->format('j M Y') }}
+                            · <x-datetime :value="$reversal->entry_date" />
                         </p>
                     @endforeach
                 </div>

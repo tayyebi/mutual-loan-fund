@@ -6,18 +6,17 @@
 
     <div class="card">
         <p class="small muted">
-            Activity grouped by who or what it belongs to. Open a cost center for its full
-            statement.
+            {{ __('reports.cost_centers.subtitle') }}
         </p>
 
         <div class="table-wrap">
             <table>
                 <thead>
                 <tr>
-                    <th>Code</th>
-                    <th>Name</th>
-                    <th>Member</th>
-                    <th>Status</th>
+                    <th>{{ __('reports.cost_centers.table_code') }}</th>
+                    <th>{{ __('reports.cost_centers.table_name') }}</th>
+                    <th>{{ __('reports.cost_centers.table_member') }}</th>
+                    <th>{{ __('reports.cost_centers.table_status') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -31,7 +30,7 @@
                         <td><x-status :value="$costCenter->status" /></td>
                     </tr>
                 @empty
-                    <x-empty colspan="4">No cost centers.</x-empty>
+                    <x-empty colspan="4">{{ __('reports.cost_centers.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>

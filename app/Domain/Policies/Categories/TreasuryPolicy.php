@@ -14,7 +14,7 @@ class TreasuryPolicy extends PolicyCategory
 
     public static function label(): string
     {
-        return 'Treasury';
+        return __('policies.fields.categories.treasury');
     }
 
     public static function fields(): array
@@ -22,9 +22,9 @@ class TreasuryPolicy extends PolicyCategory
         return [
             'admin_verification_required' => PolicyField::bool(
                 'admin_verification_required',
-                'Administrator verification required',
+                __('policies.fields.treasury.admin_verification_required'),
                 true,
-                'When disabled, a transaction whose blockchain evidence the server verified is posted without a second human check.'
+                __('policies.fields.treasury.admin_verification_required_help')
             ),
         ];
     }

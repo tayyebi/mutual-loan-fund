@@ -1,13 +1,13 @@
 @extends('layouts.app')
-@section('title', 'Your funds')
+@section('title', __('home.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Your funds</h1>
-            <p class="muted small">Each fund is independent. Nothing is shared between them.</p>
+            <h1>{{ __('home.title') }}</h1>
+            <p class="muted small">{{ __('home.subtitle') }}</p>
         </div>
-        <a class="btn btn-primary" href="{{ route('groups.create') }}">Create a fund</a>
+        <a class="btn btn-primary" href="{{ route('groups.create') }}">{{ __('home.create_fund') }}</a>
     </div>
 
     <div class="grid grid-2">
@@ -29,23 +29,23 @@
                 @endif
 
                 <p class="small muted" style="margin:0">
-                    Role: {{ $membership->role }}
+                    {{ __('home.role', ['role' => $membership->role]) }}
                     @if ($membership->costCenter)
-                        · Cost center {{ $membership->costCenter->code }}
+                        · {{ __('home.cost_center', ['code' => $membership->costCenter->code]) }}
                     @endif
                 </p>
 
                 @unless ($membership->hasAccess())
                     <p class="small muted" style="margin: 0.5rem 0 0">
-                        Waiting for an administrator to approve your request.
+                        {{ __('home.waiting_approval') }}
                     </p>
                 @endunless
             </div>
         @empty
             <div class="card">
-                <p>You do not belong to a fund yet.</p>
+                <p>{{ __('home.no_fund') }}</p>
                 <p class="small muted">
-                    Create one, or open the join link an administrator sent you.
+                    {{ __('home.create_or_join') }}
                 </p>
             </div>
         @endforelse

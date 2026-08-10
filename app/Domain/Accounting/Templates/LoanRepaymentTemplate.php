@@ -39,7 +39,7 @@ class LoanRepaymentTemplate extends BaseTemplate
     public function build(Transaction $transaction): EntryDraft
     {
         $loan = $transaction->loan ?? throw new PostingException(
-            "Transaction #{$transaction->getKey()} is a repayment with no loan attached."
+            __('exceptions.repayment_no_loan', ['id' => $transaction->getKey()])
         );
 
         $treasury = $this->treasury($transaction);

@@ -19,14 +19,14 @@ abstract class BaseTemplate implements TransactionTemplate
     protected function treasury(Transaction $transaction): Treasury
     {
         return $transaction->treasury ?? throw new PostingException(
-            "Transaction #{$transaction->getKey()} has no treasury; there is nowhere for the money to be."
+            __('exceptions.transaction_no_treasury', ['id' => $transaction->getKey()])
         );
     }
 
     protected function treasuryAccount(Treasury $treasury): Account
     {
         return $treasury->account ?? throw new PostingException(
-            "Treasury '{$treasury->name}' has no ledger account."
+            __('exceptions.treasury_no_ledger_account', ['name' => $treasury->name])
         );
     }
 
@@ -38,7 +38,7 @@ abstract class BaseTemplate implements TransactionTemplate
         $costCenter = $transaction->member?->costCenter;
 
         return $costCenter ?? throw new PostingException(
-            "Transaction #{$transaction->getKey()} needs a member cost center for attribution."
+            __('exceptions.transaction_needs_member_cost_center', ['id' => $transaction->getKey()])
         );
     }
 
@@ -68,7 +68,7 @@ abstract class BaseTemplate implements TransactionTemplate
 
         if ($currency !== $treasury->currency) {
             throw new PostingException(
-                "Fee currency {$currency} does not match treasury currency {$treasury->currency}."
+                __('exceptions.fee_currency_mismatch', ['fee_currency' => $currency, 'treasury_currency' => $treasury->currency])
             );
         }
 

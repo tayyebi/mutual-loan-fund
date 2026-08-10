@@ -14,7 +14,7 @@ class MembershipPolicy extends PolicyCategory
 
     public static function label(): string
     {
-        return 'Membership';
+        return __('policies.fields.categories.membership');
     }
 
     public static function fields(): array
@@ -22,9 +22,9 @@ class MembershipPolicy extends PolicyCategory
         return [
             'member_approval_required' => PolicyField::bool(
                 'member_approval_required',
-                'Administrator approval required',
+                __('policies.fields.membership.member_approval_required'),
                 true,
-                'When disabled, a membership request becomes active immediately.'
+                __('policies.fields.membership.member_approval_required_help')
             ),
         ];
     }

@@ -1,0 +1,63 @@
+<?php
+
+return [
+
+    'index' => [
+        'title' => 'اعضا',
+        'heading' => 'اعضا',
+        'intro' => 'هر عضو فعال یک مرکز هزینه دارد؛ فعالیت او به آن نسبت داده می‌شود.',
+        'requests_link' => 'درخواست‌های عضویت',
+        'member_header' => 'عضو',
+        'cost_center_header' => 'مرکز هزینه',
+        'role_header' => 'نقش',
+        'status_header' => 'وضعیت',
+        'member_since_header' => 'عضو از تاریخ',
+        'reinstate' => 'بازگرداندن',
+        'suspend' => 'تعلیق',
+        'make_member' => 'تبدیل به عضو عادی',
+        'make_admin' => 'تبدیل به مدیر',
+        'empty' => 'هنوز عضوی وجود ندارد.',
+        'invite_heading' => 'دعوت از فرد جدید',
+        'invite_hint' => 'صندوق‌ها قابل کشف نیستند. این پیوند را برای فردی که می‌خواهد بپیوندد ارسال کنید:',
+    ],
+
+    'requests' => [
+        'title' => 'درخواست‌های عضویت',
+        'breadcrumb' => 'اعضا',
+        'heading' => 'درخواست‌های عضویت',
+        'intro' => 'تأیید یک عضو، مرکز هزینهٔ او را ایجاد می‌کند.',
+        'person_header' => 'شخص',
+        'requested_header' => 'تاریخ درخواست',
+        'approve' => 'تأیید',
+        'reject' => 'رد',
+        'reason_placeholder' => 'دلیل (اختیاری)',
+        'empty' => 'هیچ درخواستی در انتظار نیست.',
+    ],
+
+    'show' => [
+        'breadcrumb' => 'اعضا',
+        'position_heading' => 'وضعیت مالی',
+        'position_intro' => 'هر رقم زیر از سطرهای دفتر کل ثبت‌شده به دست می‌آید.',
+        'account_header' => 'حساب',
+        'debit_header' => 'بدهکار',
+        'credit_header' => 'بستانکار',
+        'balance_header' => 'مانده (:currency)',
+        'no_activity' => 'هنوز فعالیتی به این عضو نسبت داده نشده است.',
+        'loans_heading' => 'وام‌ها',
+        'reference_header' => 'شناسه',
+        'principal_header' => 'اصل مبلغ',
+        'policy_header' => 'سیاست مالی',
+        'status_header' => 'وضعیت',
+        'no_loans' => 'وامی وجود ندارد.',
+        'summary_heading' => 'خلاصه',
+        'contributed' => 'آورده',
+        'outstanding' => 'مانده بدهی',
+        'interest_paid' => 'سود پرداختی',
+        'member_for' => 'مدت عضویت',
+        'days_count' => ':days روز',
+        'wallets_heading' => 'کیف‌های پول',
+        'no_wallets' => 'کیف پول ثبت‌شده‌ای وجود ندارد.',
+        'wallets_note' => 'این برنامه هرگز کلید یا عبارت بازیابی را ذخیره نمی‌کند.',
+    ],
+
+];

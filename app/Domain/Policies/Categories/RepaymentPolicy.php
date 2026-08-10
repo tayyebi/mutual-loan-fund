@@ -15,14 +15,14 @@ class RepaymentPolicy extends PolicyCategory
 
     public static function label(): string
     {
-        return 'Repayments';
+        return __('policies.fields.categories.repayments');
     }
 
     public static function fields(): array
     {
         return [
-            'enabled' => PolicyField::bool('enabled', 'Repayments enabled', true),
-            'minimum_amount' => PolicyField::money('minimum_amount', 'Minimum amount', '0'),
+            'enabled' => PolicyField::bool('enabled', __('policies.fields.repayments.enabled'), true),
+            'minimum_amount' => PolicyField::money('minimum_amount', __('policies.fields.repayments.minimum_amount'), '0'),
         ];
     }
 

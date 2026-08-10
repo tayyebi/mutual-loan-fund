@@ -44,11 +44,11 @@ class TreasuryExchangeTemplate extends BaseTemplate
     {
         $source = $this->treasury($transaction);
         $destination = $transaction->counterTreasury ?? throw new PostingException(
-            "Exchange #{$transaction->getKey()} has no destination treasury."
+            __('exceptions.exchange_no_destination_treasury', ['id' => $transaction->getKey()])
         );
 
         if ($transaction->counter_amount === null || $transaction->counter_currency === null) {
-            throw new PostingException("Exchange #{$transaction->getKey()} is missing its destination amount.");
+            throw new PostingException(__('exceptions.exchange_missing_destination_amount', ['id' => $transaction->getKey()]));
         }
 
         $date = Carbon::parse($transaction->occurred_on);

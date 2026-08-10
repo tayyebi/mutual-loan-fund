@@ -76,7 +76,7 @@ class PeriodService
 
         if ($drafts > 0) {
             throw new RuntimeException(
-                "Period {$period->label()} still has {$drafts} unposted draft entries. Post or discard them before closing."
+                __('exceptions.period_has_draft_entries', ['period' => $period->label(), 'count' => $drafts])
             );
         }
 

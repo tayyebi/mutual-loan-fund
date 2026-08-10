@@ -11,8 +11,8 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>Account</th>
-                        <th class="num">Amount ({{ $currency }})</th>
+                        <th>{{ __('reports.income_statement.table_account') }}</th>
+                        <th class="num">{{ __('reports.income_statement.table_amount', ['currency' => $currency]) }}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -25,20 +25,20 @@
                             <td class="num"><x-amount :value="$row['balance']" signed /></td>
                         </tr>
                     @empty
-                        <x-empty colspan="2">No income or expenses in this period.</x-empty>
+                        <x-empty colspan="2">{{ __('reports.income_statement.empty') }}</x-empty>
                     @endforelse
                     </tbody>
                     <tfoot>
                     <tr>
-                        <td>Income</td>
+                        <td>{{ __('reports.income_statement.income') }}</td>
                         <td class="num"><x-amount :value="$statement['income']" /></td>
                     </tr>
                     <tr>
-                        <td>Expenses</td>
+                        <td>{{ __('reports.income_statement.expenses') }}</td>
                         <td class="num"><x-amount :value="$statement['expenses']" /></td>
                     </tr>
                     <tr>
-                        <td><strong>Net result</strong></td>
+                        <td><strong>{{ __('reports.income_statement.net_result') }}</strong></td>
                         <td class="num"><x-amount :value="$statement['net']" signed /></td>
                     </tr>
                     </tfoot>
@@ -47,11 +47,9 @@
         </div>
 
         <div class="card">
-            <h3>Interest</h3>
+            <h3>{{ __('reports.income_statement.interest_title') }}</h3>
             <p class="small muted">
-                Interest income appears here only when a repayment carrying interest has
-                been posted. The policy sets the contractual rate; the ledger records what
-                was actually recognised.
+                {{ __('reports.income_statement.interest_note') }}
             </p>
         </div>
     </div>

@@ -212,7 +212,7 @@ class TransactionController extends Controller
         Request $request,
     ): Transaction {
         if (! app(GroupContext::class)->isAdmin()) {
-            abort(403, 'Only administrators record treasury movements.');
+            abort(403, __('exceptions.restricted_to_admins_treasury_movements'));
         }
 
         $counterTreasury = isset($data['counter_treasury_id'])

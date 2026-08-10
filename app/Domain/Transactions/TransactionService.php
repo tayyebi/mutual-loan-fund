@@ -51,14 +51,17 @@ class TransactionService
         $contributions = $policy->toPolicyConfig()->contributions();
 
         if (! $contributions->enabled()) {
-            throw new PolicyViolationException('This fund is not accepting contributions.');
+            throw new PolicyViolationException(__('exceptions.contributions_disabled'));
         }
 
         $amount = $data['amount'];
 
         if ($amount->lessThan($contributions->minimumAmount())) {
             throw new PolicyViolationException(
-                "The minimum contribution is {$contributions->minimumAmount()->format(2)} {$data['currency']}.",
+                __('exceptions.contribution_minimum_amount', [
+                    'amount' => $contributions->minimumAmount()->format(2),
+                    'currency' => $data['currency'],
+                ]),
                 'amount'
             );
         }
@@ -67,7 +70,10 @@ class TransactionService
 
         if ($maximum !== null && $amount->greaterThan($maximum)) {
             throw new PolicyViolationException(
-                "The maximum contribution is {$maximum->format(2)} {$data['currency']}.",
+                __('exceptions.contribution_maximum_amount', [
+                    'amount' => $maximum->format(2),
+                    'currency' => $data['currency'],
+                ]),
                 'amount'
             );
         }
@@ -103,31 +109,34 @@ class TransactionService
         $repayments = $loan->policyVersion->toPolicyConfig()->repayments();
 
         if (! $repayments->enabled()) {
-            throw new PolicyViolationException('Repayments are not enabled for this fund.');
+            throw new PolicyViolationException(__('exceptions.repayments_disabled'));
         }
 
         if (! $loan->isOutstanding()) {
-            throw new PolicyViolationException('This loan is not outstanding.');
+            throw new PolicyViolationException(__('exceptions.loan_not_outstanding'));
         }
 
         $amount = $data['amount'];
 
         if ($amount->lessThan($repayments->minimumAmount())) {
             throw new PolicyViolationException(
-                "The minimum repayment is {$repayments->minimumAmount()->format(2)} {$loan->currency}.",
+                __('exceptions.repayment_minimum_amount', [
+                    'amount' => $repayments->minimumAmount()->format(2),
+                    'currency' => $loan->currency,
+                ]),
                 'amount'
             );
         }
 
         if ($data['currency'] !== $loan->currency) {
-            throw new PolicyViolationException("This loan is repaid in {$loan->currency}.", 'currency');
+            throw new PolicyViolationException(__('exceptions.repayment_currency_mismatch', ['currency' => $loan->currency]), 'currency');
         }
 
         $outstanding = $loan->outstandingPrincipal();
 
         if (! $loan->policyVersion->toPolicyConfig()->loans()->allowsEarlyRepayment()
             && $amount->greaterThan($outstanding)) {
-            throw new PolicyViolationException('Early repayment is not permitted under this loan\'s policy.', 'amount');
+            throw new PolicyViolationException(__('exceptions.early_repayment_not_permitted'), 'amount');
         }
 
         return $this->create($group, [
@@ -168,7 +177,7 @@ class TransactionService
     public function runChainVerification(Transaction $transaction): ChainVerification
     {
         if (! $transaction->hasChainEvidence()) {
-            return ChainVerification::unchecked('No transaction hash was submitted.');
+            return ChainVerification::unchecked(__('exceptions.chain_no_tx_hash'));
         }
 
         $result = $this->chain->verify($transaction);
@@ -215,7 +224,7 @@ class TransactionService
                 ->firstOrFail();
 
             if (! $locked->isPending()) {
-                throw new RuntimeException("This transaction is already {$locked->status}.");
+                throw new RuntimeException(__('exceptions.transaction_already_in_status', ['status' => $locked->status]));
             }
 
             $locked->setRelations($transaction->getRelations());
@@ -255,7 +264,7 @@ class TransactionService
     public function reject(Transaction $transaction, User $actor, string $reason): Transaction
     {
         if (! $transaction->isPending()) {
-            throw new RuntimeException("This transaction is already {$transaction->status}.");
+            throw new RuntimeException(__('exceptions.transaction_already_in_status', ['status' => $transaction->status]));
         }
 
         $transaction->forceFill([
@@ -304,7 +313,7 @@ class TransactionService
             // blockchain transfer being credited twice.
             if ($this->isDuplicateChainTransaction($e)) {
                 throw new RuntimeException(
-                    'That blockchain transaction has already been submitted to this application.'
+                    __('exceptions.chain_transaction_duplicate')
                 );
             }
 

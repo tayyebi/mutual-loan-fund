@@ -6,15 +6,13 @@
 
     <div class="grid grid-side">
         <div class="card">
-            <p class="figure-sub">Fund assets</p>
+            <p class="figure-sub">{{ __('reports.gold.fund_assets') }}</p>
             <p class="figure">{{ $valuation['grams']->format(4) }}</p>
-            <p class="small muted">grams of 18K gold ({{ $goldUnit }})</p>
+            <p class="small muted">{{ __('reports.gold.grams_of_gold', ['unit' => $goldUnit]) }}</p>
 
             @if ($valuation['unvalued_lines'] > 0)
                 <div class="alert alert-warn">
-                    {{ $valuation['unvalued_lines'] }} posted lines carry no gold snapshot: no
-                    rate existed for their currency at the time they were posted. They are
-                    excluded rather than valued at today's rate.
+                    {{ __('reports.gold.unvalued_warning', ['count' => $valuation['unvalued_lines']]) }}
                 </div>
             @endif
 
@@ -22,9 +20,9 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>Treasury</th>
-                        <th class="num">Native balance</th>
-                        <th class="num">≈ 18K gold today</th>
+                        <th>{{ __('reports.gold.table_treasury') }}</th>
+                        <th class="num">{{ __('reports.gold.table_native_balance') }}</th>
+                        <th class="num">{{ __('reports.gold.table_gold_today') }}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -34,14 +32,14 @@
                             <td class="num"><x-amount :value="$row['balance']" /></td>
                             <td class="num">
                                 @if ($row['gold'])
-                                    {{ $row['gold']->format(4) }} g
+                                    {{ $row['gold']->format(4) }} {{ __('reports.common.grams_suffix') }}
                                 @else
-                                    <span class="muted">no rate</span>
+                                    <span class="muted">{{ __('reports.common.no_rate') }}</span>
                                 @endif
                             </td>
                         </tr>
                     @empty
-                        <x-empty colspan="3">No treasuries.</x-empty>
+                        <x-empty colspan="3">{{ __('reports.gold.empty') }}</x-empty>
                     @endforelse
                     </tbody>
                 </table>
@@ -49,15 +47,12 @@
         </div>
 
         <div class="card">
-            <h3>Two different figures</h3>
+            <h3>{{ __('reports.gold.two_figures_title') }}</h3>
             <p class="small muted">
-                The headline total is the sum of valuations frozen when each line was
-                posted — what the fund's assets were worth in gold as they arrived.
+                {{ __('reports.gold.note_headline') }}
             </p>
             <p class="small muted">
-                The treasury column re-values today's balances at today's rate. The two
-                differ when the gold price has moved, and both are correct answers to
-                different questions.
+                {{ __('reports.gold.note_treasury_column') }}
             </p>
         </div>
     </div>

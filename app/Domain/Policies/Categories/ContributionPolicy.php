@@ -15,20 +15,20 @@ class ContributionPolicy extends PolicyCategory
 
     public static function label(): string
     {
-        return 'Contributions';
+        return __('policies.fields.categories.contributions');
     }
 
     public static function fields(): array
     {
         return [
-            'enabled' => PolicyField::bool('enabled', 'Contributions enabled', true),
-            'minimum_amount' => PolicyField::money('minimum_amount', 'Minimum amount', '0'),
+            'enabled' => PolicyField::bool('enabled', __('policies.fields.contributions.enabled'), true),
+            'minimum_amount' => PolicyField::money('minimum_amount', __('policies.fields.contributions.minimum_amount'), '0'),
             'maximum_amount' => PolicyField::money(
                 'maximum_amount',
-                'Maximum amount',
+                __('policies.fields.contributions.maximum_amount'),
                 null,
                 nullable: true,
-                help: 'Leave blank for no upper limit.'
+                help: __('policies.fields.contributions.maximum_amount_help')
             ),
         ];
     }

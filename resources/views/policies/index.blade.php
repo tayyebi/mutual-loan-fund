@@ -1,25 +1,23 @@
 @extends('layouts.app')
-@section('title', 'Policies')
+@section('title', __('policies.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Policies</h1>
+            <h1>{{ __('policies.index.heading') }}</h1>
             <p class="muted small">
-                Financial rules are versioned. A published version is immutable; changing
-                the rules means publishing a new version, and existing operations keep
-                the version they were created under.
+                {{ __('policies.index.intro') }}
             </p>
         </div>
 
         @unless ($draft)
             <form method="POST" action="{{ route('g.policies.store', $group) }}">
                 @csrf
-                <button class="btn btn-primary">New draft</button>
+                <button class="btn btn-primary">{{ __('policies.index.new_draft') }}</button>
             </form>
         @else
             <a class="btn btn-primary" href="{{ route('g.policies.edit', [$group, $draft->version]) }}">
-                Continue draft v{{ $draft->version }}
+                {{ __('policies.index.continue_draft', ['version' => $draft->version]) }}
             </a>
         @endunless
     </div>
@@ -27,12 +25,12 @@
     <div class="card">
         <div class="page-head" style="margin:0">
             <div>
-                <h3 style="margin:0">Financial framework</h3>
+                <h3 style="margin:0">{{ __('policies.index.framework_heading') }}</h3>
                 <p class="muted small" style="margin:0">
-                    {{ $group->financialFramework?->name ?? 'None selected' }}
+                    {{ $group->financialFramework?->name ?? __('policies.index.framework_none') }}
                 </p>
             </div>
-            <a class="btn btn-small" href="{{ route('g.framework.edit', $group) }}">Change…</a>
+            <a class="btn btn-small" href="{{ route('g.framework.edit', $group) }}">{{ __('policies.index.framework_change') }}</a>
         </div>
     </div>
 
@@ -41,11 +39,11 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Version</th>
-                    <th>Status</th>
-                    <th>Effective from</th>
-                    <th>Effective until</th>
-                    <th>Published by</th>
+                    <th>{{ __('policies.index.version_header') }}</th>
+                    <th>{{ __('policies.index.status_header') }}</th>
+                    <th>{{ __('policies.index.effective_from_header') }}</th>
+                    <th>{{ __('policies.index.effective_until_header') }}</th>
+                    <th>{{ __('policies.index.published_by_header') }}</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -57,29 +55,33 @@
                         </td>
                         <td>
                             @if ($version->isActive())
-                                <span class="badge badge-ok">Active</span>
+                                <span class="badge badge-ok">{{ __('policies.index.active_badge') }}</span>
                             @else
                                 <x-status :value="$version->status" />
                             @endif
                         </td>
-                        <td class="num small">{{ $version->effective_from?->format('j M Y') ?? '—' }}</td>
-                        <td class="num small">{{ $version->effective_until?->format('j M Y') ?? '—' }}</td>
+                        <td class="num small">
+                            @if ($version->effective_from)<x-datetime :value="$version->effective_from" />@else —@endif
+                        </td>
+                        <td class="num small">
+                            @if ($version->effective_until)<x-datetime :value="$version->effective_until" />@else —@endif
+                        </td>
                         <td class="small muted">{{ $version->publisher?->name ?? '—' }}</td>
                         <td>
                             <div class="actions">
                                 @if ($version->isDraft())
-                                    <a class="btn btn-small" href="{{ route('g.policies.edit', [$group, $version->version]) }}">Edit</a>
-                                    <a class="btn btn-small btn-primary" href="{{ route('g.policies.publish.confirm', [$group, $version->version]) }}">Publish</a>
+                                    <a class="btn btn-small" href="{{ route('g.policies.edit', [$group, $version->version]) }}">{{ __('policies.index.edit_link') }}</a>
+                                    <a class="btn btn-small btn-primary" href="{{ route('g.policies.publish.confirm', [$group, $version->version]) }}">{{ __('policies.index.publish_link') }}</a>
                                 @elseif ($active && $version->version !== $active->version)
                                     <a class="btn btn-small" href="{{ route('g.policies.compare', [$group, $active->version, $version->version]) }}">
-                                        Compare with active
+                                        {{ __('policies.index.compare_link') }}
                                     </a>
                                 @endif
                             </div>
                         </td>
                     </tr>
                 @empty
-                    <x-empty colspan="6">No policy versions yet.</x-empty>
+                    <x-empty colspan="6">{{ __('policies.index.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>

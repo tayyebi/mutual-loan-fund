@@ -1,13 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Funds')
+@section('title', __('admin.funds.index_title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Funds</h1>
+            <h1>{{ __('admin.funds.index_title') }}</h1>
             <p class="muted small">
-                Every fund on the platform. Names, status and member counts only —
-                members, transactions, loans and ledgers stay private to each fund.
+                {{ __('admin.funds.index_subtitle') }}
             </p>
         </div>
     </div>
@@ -17,10 +16,10 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Fund</th>
-                    <th>Status</th>
-                    <th>Created by</th>
-                    <th>Members</th>
+                    <th>{{ __('admin.funds.table_fund') }}</th>
+                    <th>{{ __('admin.funds.table_status') }}</th>
+                    <th>{{ __('admin.funds.table_created_by') }}</th>
+                    <th>{{ __('admin.funds.table_members') }}</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -39,19 +38,19 @@
                                 @if ($fund->status === \App\Models\Group::STATUS_SUSPENDED)
                                     <form method="POST" action="{{ route('admin.funds.reinstate', $fund) }}">
                                         @csrf
-                                        <button class="btn btn-small">Reinstate</button>
+                                        <button class="btn btn-small">{{ __('admin.funds.reinstate') }}</button>
                                     </form>
                                 @else
                                     <form method="POST" action="{{ route('admin.funds.suspend', $fund) }}">
                                         @csrf
-                                        <button class="btn btn-small btn-danger">Suspend</button>
+                                        <button class="btn btn-small btn-danger">{{ __('admin.funds.suspend') }}</button>
                                     </form>
                                 @endif
                             </div>
                         </td>
                     </tr>
                 @empty
-                    <x-empty colspan="5">No funds yet.</x-empty>
+                    <x-empty colspan="5">{{ __('admin.funds.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>

@@ -14,7 +14,7 @@ class AccountingPolicy extends PolicyCategory
 
     public static function label(): string
     {
-        return 'Accounting';
+        return __('policies.fields.categories.accounting');
     }
 
     public static function fields(): array
@@ -32,10 +32,10 @@ class AccountingPolicy extends PolicyCategory
         return [
             'functional_currency' => PolicyField::enum(
                 'functional_currency',
-                'Functional currency',
+                __('policies.fields.accounting.functional_currency'),
                 $currencies,
                 (string) config('fund.default_functional_currency'),
-                'The reporting currency journal entries balance in. Separate from the 18K gold valuation layer.'
+                __('policies.fields.accounting.functional_currency_help')
             ),
         ];
     }

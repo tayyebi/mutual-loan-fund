@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Users')
+@section('title', __('admin.users.index_title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Users</h1>
-            <p class="muted small">Every account registered on the platform, across every fund.</p>
+            <h1>{{ __('admin.users.index_title') }}</h1>
+            <p class="muted small">{{ __('admin.users.index_subtitle') }}</p>
         </div>
     </div>
 
@@ -14,10 +14,10 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Role</th>
-                    <th>Memberships</th>
+                    <th>{{ __('admin.users.table_name') }}</th>
+                    <th>{{ __('admin.users.table_status') }}</th>
+                    <th>{{ __('admin.users.table_role') }}</th>
+                    <th>{{ __('admin.users.table_memberships') }}</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -31,7 +31,7 @@
                         <td><x-status :value="$user->status" /></td>
                         <td>
                             @if ($user->isSystemAdmin())
-                                <span class="badge badge-info">System admin</span>
+                                <span class="badge badge-info">{{ __('admin.users.system_admin_badge') }}</span>
                             @else
                                 <span class="muted small">—</span>
                             @endif
@@ -42,31 +42,31 @@
                                 @if ($user->status === \App\Models\User::STATUS_SUSPENDED)
                                     <form method="POST" action="{{ route('admin.users.reinstate', $user) }}">
                                         @csrf
-                                        <button class="btn btn-small">Reinstate</button>
+                                        <button class="btn btn-small">{{ __('admin.users.reinstate') }}</button>
                                     </form>
                                 @else
                                     <form method="POST" action="{{ route('admin.users.suspend', $user) }}">
                                         @csrf
-                                        <button class="btn btn-small btn-danger">Suspend</button>
+                                        <button class="btn btn-small btn-danger">{{ __('admin.users.suspend') }}</button>
                                     </form>
                                 @endif
 
                                 @if ($user->isSystemAdmin())
                                     <form method="POST" action="{{ route('admin.users.demote', $user) }}">
                                         @csrf
-                                        <button class="btn btn-small">Revoke admin</button>
+                                        <button class="btn btn-small">{{ __('admin.users.revoke_admin') }}</button>
                                     </form>
                                 @else
                                     <form method="POST" action="{{ route('admin.users.promote', $user) }}">
                                         @csrf
-                                        <button class="btn btn-small">Make system admin</button>
+                                        <button class="btn btn-small">{{ __('admin.users.make_admin') }}</button>
                                     </form>
                                 @endif
                             </div>
                         </td>
                     </tr>
                 @empty
-                    <x-empty colspan="5">No users yet.</x-empty>
+                    <x-empty colspan="5">{{ __('admin.users.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>

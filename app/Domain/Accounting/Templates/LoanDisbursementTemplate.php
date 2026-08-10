@@ -24,7 +24,7 @@ class LoanDisbursementTemplate extends BaseTemplate
     public function build(Transaction $transaction): EntryDraft
     {
         $loan = $transaction->loan ?? throw new PostingException(
-            "Transaction #{$transaction->getKey()} is a disbursement with no loan attached."
+            __('exceptions.disbursement_no_loan', ['id' => $transaction->getKey()])
         );
 
         $treasury = $this->treasury($transaction);

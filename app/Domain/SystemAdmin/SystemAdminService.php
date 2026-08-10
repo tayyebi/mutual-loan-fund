@@ -162,7 +162,7 @@ class SystemAdminService
             ->count();
 
         if ($others === 0) {
-            throw new RuntimeException('This is the platform\'s only administrator. Promote another user first.');
+            throw new RuntimeException(__('exceptions.last_system_admin'));
         }
     }
 }

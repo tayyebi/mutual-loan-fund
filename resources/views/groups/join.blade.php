@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', 'Join '.$group->name)
+@section('title', __('groups.join.title', ['name' => $group->name]))
 
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('home') }}">Your funds</a></p>
+            <p class="breadcrumb"><a href="{{ route('home') }}">{{ __('groups.join.breadcrumb') }}</a></p>
             <h1>{{ $group->name }}</h1>
         </div>
     </div>
@@ -15,19 +15,18 @@
         @endif
 
         @if ($membership?->status === \App\Models\GroupMembership::STATUS_REQUESTED)
-            <p>Your request is waiting for an administrator.</p>
+            <p>{{ __('groups.join.pending') }}</p>
         @elseif ($membership?->status === \App\Models\GroupMembership::STATUS_REJECTED)
-            <p>A previous request was declined. You can ask again.</p>
+            <p>{{ __('groups.join.rejected') }}</p>
         @endif
 
         <form method="POST" action="{{ route('groups.join', $group) }}">
             @csrf
-            <button type="submit" class="btn btn-primary">Request membership</button>
+            <button type="submit" class="btn btn-primary">{{ __('groups.join.submit') }}</button>
         </form>
 
         <p class="small muted" style="margin: 0.9rem 0 0;">
-            Membership gives you access to this fund's financial activity. It gives
-            you no access to any other fund.
+            {{ __('groups.join.hint') }}
         </p>
     </div>
 @endsection

@@ -1,16 +1,15 @@
 @extends('layouts.app')
-@section('title', 'Loans')
+@section('title', __('loans.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Loans</h1>
+            <h1>{{ __('loans.index.heading') }}</h1>
             <p class="muted small">
-                Each loan is governed for its whole life by the policy version it was
-                created under.
+                {{ __('loans.index.intro') }}
             </p>
         </div>
-        <a class="btn btn-primary" href="{{ route('g.loans.create', $group) }}">Request a loan</a>
+        <a class="btn btn-primary" href="{{ route('g.loans.create', $group) }}">{{ __('loans.index.request_button') }}</a>
     </div>
 
     <div class="card">
@@ -18,13 +17,13 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Reference</th>
-                    @if ($isAdmin)<th>Member</th>@endif
-                    <th class="num">Principal</th>
-                    <th class="num">Rate</th>
-                    <th class="num">Term</th>
-                    <th>Policy</th>
-                    <th>Status</th>
+                    <th>{{ __('loans.index.col_reference') }}</th>
+                    @if ($isAdmin)<th>{{ __('loans.index.col_member') }}</th>@endif
+                    <th class="num">{{ __('loans.index.col_principal') }}</th>
+                    <th class="num">{{ __('loans.index.col_rate') }}</th>
+                    <th class="num">{{ __('loans.index.col_term') }}</th>
+                    <th>{{ __('loans.index.col_policy') }}</th>
+                    <th>{{ __('loans.index.col_status') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -34,7 +33,7 @@
                         @if ($isAdmin)<td>{{ $loan->member?->displayName() }}</td>@endif
                         <td class="num"><x-amount :value="$loan->principal" :currency="$loan->currency" /></td>
                         <td class="num">{{ rtrim(rtrim($loan->interest_rate, '0'), '.') ?: '0' }}%</td>
-                        <td class="num">{{ $loan->term_months }} mo</td>
+                        <td class="num">{{ $loan->term_months }} {{ __('loans.index.term_unit') }}</td>
                         <td class="small">
                             <a href="{{ route('g.policies.show', [$group, $loan->policyVersion->version]) }}">
                                 v{{ $loan->policyVersion->version }}
@@ -43,7 +42,7 @@
                         <td><x-status :value="$loan->status" /></td>
                     </tr>
                 @empty
-                    <x-empty colspan="{{ $isAdmin ? 7 : 6 }}">No loans yet.</x-empty>
+                    <x-empty colspan="{{ $isAdmin ? 7 : 6 }}">{{ __('loans.index.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>

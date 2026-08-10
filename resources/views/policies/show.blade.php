@@ -1,41 +1,41 @@
 @extends('layouts.app')
-@section('title', 'Policy v'.$policy->version)
+@section('title', __('policies.show.title', ['version' => $policy->version]))
 
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.policies.index', $group) }}">Policies</a></p>
-            <h1>Policy v{{ $policy->version }}</h1>
+            <p class="breadcrumb"><a href="{{ route('g.policies.index', $group) }}">{{ __('policies.show.breadcrumb') }}</a></p>
+            <h1>{{ __('policies.show.heading', ['version' => $policy->version]) }}</h1>
             <p class="muted small">
                 @if ($policy->isActive())
-                    <span class="badge badge-ok">Active</span>
+                    <span class="badge badge-ok">{{ __('policies.show.active_badge') }}</span>
                 @else
                     <x-status :value="$policy->status" />
                 @endif
                 @if ($policy->effective_from)
-                    · {{ $policy->effective_from->format('j M Y') }}
-                    – {{ $policy->effective_until?->format('j M Y') ?? 'present' }}
+                    · <x-datetime :value="$policy->effective_from" />
+                    – @if ($policy->effective_until)<x-datetime :value="$policy->effective_until" />@else{{ __('policies.show.present') }}@endif
                 @endif
             </p>
         </div>
 
         @if ($policy->isDraft())
             <div class="actions">
-                <a class="btn" href="{{ route('g.policies.edit', [$group, $policy->version]) }}">Edit draft</a>
-                <a class="btn btn-primary" href="{{ route('g.policies.publish.confirm', [$group, $policy->version]) }}">Publish</a>
+                <a class="btn" href="{{ route('g.policies.edit', [$group, $policy->version]) }}">{{ __('policies.show.edit_link') }}</a>
+                <a class="btn btn-primary" href="{{ route('g.policies.publish.confirm', [$group, $policy->version]) }}">{{ __('policies.show.publish_link') }}</a>
             </div>
         @endif
     </div>
 
     @if ($policy->isDraft())
         <div class="alert alert-warn">
-            This is a draft. It governs nothing and is not authoritative until published.
+            {{ __('policies.show.draft_notice') }}
         </div>
     @endif
 
     @if ($framework_warnings !== [])
         <div class="alert alert-warn">
-            This policy drifts from your chosen financial framework:
+            {{ __('policies.show.framework_drift_heading') }}
             <ul>
                 @foreach ($framework_warnings as $message)
                     <li>{{ $message }}</li>
@@ -61,38 +61,38 @@
 
         <div class="stack">
             <div class="card">
-                <h3>Provenance</h3>
+                <h3>{{ __('policies.show.provenance_heading') }}</h3>
                 <dl class="deflist">
-                    <dt>Created by</dt>
-                    <dd>{{ $policy->creator?->name }} · {{ $policy->created_at->format('j M Y') }}</dd>
+                    <dt>{{ __('policies.show.created_by') }}</dt>
+                    <dd>{{ $policy->creator?->name }} · <x-datetime :value="$policy->created_at" /></dd>
                     @if ($policy->published_at)
-                        <dt>Published by</dt>
-                        <dd>{{ $policy->publisher?->name }} · {{ $policy->published_at->format('j M Y H:i') }}</dd>
+                        <dt>{{ __('policies.show.published_by') }}</dt>
+                        <dd>{{ $policy->publisher?->name }} · <x-datetime :value="$policy->published_at" format="j M Y H:i" /></dd>
                     @endif
                 </dl>
             </div>
 
             <div class="card">
-                <h3>Governs</h3>
+                <h3>{{ __('policies.show.governs_heading') }}</h3>
                 <dl class="deflist">
-                    <dt>Loans</dt>
+                    <dt>{{ __('policies.show.loans') }}</dt>
                     <dd>{{ $usage['loans'] }}</dd>
-                    <dt>Transactions</dt>
+                    <dt>{{ __('policies.show.transactions') }}</dt>
                     <dd>{{ $usage['transactions'] }}</dd>
                 </dl>
                 <p class="small muted" style="margin-top:0.6rem">
-                    These records keep this version permanently, whatever is published later.
+                    {{ __('policies.show.governs_note') }}
                 </p>
             </div>
 
             @if ($policy->isDraft())
                 <div class="card">
-                    <h3>Discard</h3>
-                    <p class="small muted">A draft can be deleted; a published version cannot.</p>
+                    <h3>{{ __('policies.show.discard_heading') }}</h3>
+                    <p class="small muted">{{ __('policies.show.discard_note') }}</p>
                     <form method="POST" action="{{ route('g.policies.destroy', [$group, $policy->version]) }}">
                         @csrf
                         @method('DELETE')
-                        <button class="btn btn-danger btn-small">Delete draft</button>
+                        <button class="btn btn-danger btn-small">{{ __('policies.show.delete_draft') }}</button>
                     </form>
                 </div>
             @endif

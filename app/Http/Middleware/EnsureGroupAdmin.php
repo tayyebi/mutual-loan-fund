@@ -18,7 +18,7 @@ class EnsureGroupAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (! $this->context->isAdmin()) {
-            abort(403, 'This action is restricted to group administrators.');
+            abort(403, __('exceptions.restricted_to_group_admins'));
         }
 
         return $next($request);

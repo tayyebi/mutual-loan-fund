@@ -1,39 +1,38 @@
 @extends('layouts.app')
-@section('title', 'Ledger')
+@section('title', __('ledger.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>General ledger</h1>
+            <h1>{{ __('ledger.index.heading') }}</h1>
             <p class="muted small">
-                Posted entries are immutable. Corrections are reversals and adjustments,
-                so the whole history stays visible.
+                {{ __('ledger.index.intro') }}
             </p>
         </div>
         @if ($groupContext->isAdmin())
-            <a class="btn" href="{{ route('g.ledger.adjustments.create', $group) }}">New adjustment</a>
+            <a class="btn" href="{{ route('g.ledger.adjustments.create', $group) }}">{{ __('ledger.index.new_adjustment') }}</a>
         @endif
     </div>
 
     <form method="GET" class="filters card">
         <div class="field">
-            <label for="status">Status</label>
+            <label for="status">{{ __('ledger.index.filter_status_label') }}</label>
             <select id="status" name="status">
-                <option value="">All</option>
+                <option value="">{{ __('ledger.index.filter_all') }}</option>
                 @foreach (['draft','posted','reversed'] as $status)
-                    <option value="{{ $status }}" @selected(($filters['status'] ?? '') === $status)>{{ ucfirst($status) }}</option>
+                    <option value="{{ $status }}" @selected(($filters['status'] ?? '') === $status)>{{ __('ledger.index.status_'.$status) }}</option>
                 @endforeach
             </select>
         </div>
         <div class="field">
-            <label for="from">From</label>
+            <label for="from">{{ __('ledger.index.filter_from_label') }}</label>
             <input id="from" name="from" type="date" value="{{ $filters['from'] ?? '' }}">
         </div>
         <div class="field">
-            <label for="to">To</label>
+            <label for="to">{{ __('ledger.index.filter_to_label') }}</label>
             <input id="to" name="to" type="date" value="{{ $filters['to'] ?? '' }}">
         </div>
-        <button class="btn">Filter</button>
+        <button class="btn">{{ __('ledger.index.filter_submit') }}</button>
     </form>
 
     <div class="card">
@@ -41,12 +40,12 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Entry</th>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Template</th>
-                    <th class="num">Value</th>
-                    <th>Status</th>
+                    <th>{{ __('ledger.index.col_entry') }}</th>
+                    <th>{{ __('ledger.index.col_date') }}</th>
+                    <th>{{ __('ledger.index.col_description') }}</th>
+                    <th>{{ __('ledger.index.col_template') }}</th>
+                    <th class="num">{{ __('ledger.index.col_value') }}</th>
+                    <th>{{ __('ledger.index.col_status') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -59,11 +58,11 @@
                         <td class="mono">
                             <a href="{{ route('g.ledger.show', [$group, $entry]) }}">{{ $entry->entry_number }}</a>
                         </td>
-                        <td class="num">{{ $entry->entry_date->format('j M Y') }}</td>
+                        <td class="num"><x-datetime :value="$entry->entry_date" /></td>
                         <td>
                             {{ $entry->description }}
                             @if ($entry->transaction)
-                                <br><a class="small" href="{{ route('g.transactions.show', [$group, $entry->transaction]) }}">transaction #{{ $entry->transaction_id }}</a>
+                                <br><a class="small" href="{{ route('g.transactions.show', [$group, $entry->transaction]) }}">{{ __('ledger.index.transaction_link', ['id' => $entry->transaction_id]) }}</a>
                             @endif
                         </td>
                         <td class="small muted">{{ $entry->template }}</td>
@@ -71,7 +70,7 @@
                         <td><x-status :value="$entry->status" /></td>
                     </tr>
                 @empty
-                    <x-empty colspan="6">No journal entries yet.</x-empty>
+                    <x-empty colspan="6">{{ __('ledger.index.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>

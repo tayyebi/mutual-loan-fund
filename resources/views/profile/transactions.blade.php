@@ -1,13 +1,13 @@
 @extends('layouts.app')
-@section('title', 'My transactions')
+@section('title', __('profile.transactions.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>My transactions</h1>
-            <p class="muted small">Activity in which you were a member, across all your funds.</p>
+            <h1>{{ __('profile.transactions.heading') }}</h1>
+            <p class="muted small">{{ __('profile.transactions.intro') }}</p>
         </div>
-        <a class="btn" href="{{ route('p.home') }}">Back to my account</a>
+        <a class="btn" href="{{ route('p.home') }}">{{ __('profile.transactions.back_link') }}</a>
     </div>
 
     <div class="card">
@@ -15,11 +15,11 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Fund</th>
-                    <th>Date</th>
-                    <th class="num">Amount</th>
-                    <th>Type</th>
-                    <th>Status</th>
+                    <th>{{ __('profile.transactions.fund_header') }}</th>
+                    <th>{{ __('profile.transactions.date_header') }}</th>
+                    <th class="num">{{ __('profile.transactions.amount_header') }}</th>
+                    <th>{{ __('profile.transactions.type_header') }}</th>
+                    <th>{{ __('profile.transactions.status_header') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -30,7 +30,7 @@
                         </td>
                         <td class="num">
                             <a href="{{ route('g.transactions.show', [$transaction->group, $transaction]) }}">
-                                {{ $transaction->occurred_on->format('j M Y') }}
+                                <x-datetime :value="$transaction->occurred_on" />
                             </a>
                         </td>
                         <td class="num {{ $transaction->direction === 'in' ? 'pos' : ($transaction->direction === 'out' ? 'neg' : '') }}">
@@ -45,7 +45,7 @@
                         <td><x-status :value="$transaction->status" /></td>
                     </tr>
                 @empty
-                    <x-empty colspan="5">You have no transactions yet.</x-empty>
+                    <x-empty colspan="5">{{ __('profile.transactions.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>

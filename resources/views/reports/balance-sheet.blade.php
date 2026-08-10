@@ -9,7 +9,7 @@
             <div class="table-wrap">
                 <table>
                     <tbody>
-                    @foreach ([\App\Models\Account::TYPE_ASSET => 'Assets', \App\Models\Account::TYPE_LIABILITY => 'Liabilities', \App\Models\Account::TYPE_EQUITY => 'Equity'] as $type => $label)
+                    @foreach ([\App\Models\Account::TYPE_ASSET => __('reports.balance_sheet.assets'), \App\Models\Account::TYPE_LIABILITY => __('reports.balance_sheet.liabilities'), \App\Models\Account::TYPE_EQUITY => __('reports.balance_sheet.equity')] as $type => $label)
                         <tr class="row-header">
                             <td colspan="2">{{ $label }}</td>
                         </tr>
@@ -24,17 +24,17 @@
                     @endforeach
 
                     <tr class="row-header">
-                        <td>Result for the period</td>
+                        <td>{{ __('reports.balance_sheet.result_for_period') }}</td>
                         <td class="num"><x-amount :value="$sheet['result']" signed /></td>
                     </tr>
                     </tbody>
                     <tfoot>
                     <tr>
-                        <td>Assets</td>
+                        <td>{{ __('reports.balance_sheet.assets') }}</td>
                         <td class="num"><x-amount :value="$sheet['assets']" /></td>
                     </tr>
                     <tr>
-                        <td>Liabilities + equity (including result)</td>
+                        <td>{{ __('reports.balance_sheet.liabilities_plus_equity') }}</td>
                         <td class="num"><x-amount :value="$sheet['liabilities']->plus($sheet['equity'])" /></td>
                     </tr>
                     </tfoot>
@@ -43,16 +43,15 @@
         </div>
 
         <div class="card">
-            <h3>Balance</h3>
+            <h3>{{ __('reports.balance_sheet.balance_title') }}</h3>
             @if ($sheet['balanced'])
-                <p><span class="badge badge-ok">balanced</span></p>
+                <p><span class="badge badge-ok">{{ __('reports.common.balanced') }}</span></p>
             @else
-                <p><span class="badge badge-danger">out by
+                <p><span class="badge badge-danger">{{ __('reports.common.out_by') }}
                     {{ $sheet['assets']->minus($sheet['liabilities']->plus($sheet['equity']))->format(2) }}</span></p>
             @endif
             <p class="small muted">
-                Income and expenses for the period are folded into equity as the result;
-                without that the sheet would not balance.
+                {{ __('reports.balance_sheet.note') }}
             </p>
         </div>
     </div>

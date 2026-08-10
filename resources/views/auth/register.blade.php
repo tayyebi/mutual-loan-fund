@@ -1,43 +1,42 @@
 @extends('layouts.guest')
-@section('title', 'Register')
+@section('title', __('auth.register.page_title'))
 
 @section('content')
     <div class="card">
-        <h2>Create an account</h2>
+        <h2>{{ __('auth.register.title') }}</h2>
         <p class="small muted">
-            An account is a person. Funds are private: you join one through a link
-            from its administrator.
+            {{ __('auth.register.intro') }}
         </p>
 
         <form method="POST" action="{{ route('register') }}">
             @csrf
 
             <div class="field">
-                <label for="name">Name</label>
+                <label for="name">{{ __('auth.register.name') }}</label>
                 <input id="name" name="name" type="text" value="{{ old('name') }}" required autofocus>
             </div>
 
             <div class="field">
-                <label for="email">Email</label>
+                <label for="email">{{ __('auth.register.email') }}</label>
                 <input id="email" name="email" type="email" value="{{ old('email') }}" required autocomplete="username">
             </div>
 
             <div class="field">
-                <label for="password">Password</label>
+                <label for="password">{{ __('auth.register.password') }}</label>
                 <input id="password" name="password" type="password" required autocomplete="new-password">
-                <span class="hint">At least 10 characters.</span>
+                <span class="hint">{{ __('auth.register.password_hint') }}</span>
             </div>
 
             <div class="field">
-                <label for="password_confirmation">Confirm password</label>
+                <label for="password_confirmation">{{ __('auth.register.password_confirmation') }}</label>
                 <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password">
             </div>
 
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-primary">{{ __('auth.register.submit') }}</button>
         </form>
     </div>
 
     <p class="small muted" style="margin-top: 1rem;">
-        Already registered? <a href="{{ route('login') }}">Sign in</a>.
+        {{ __('auth.register.already_registered') }} <a href="{{ route('login') }}">{{ __('auth.register.login_link') }}</a>.
     </p>
 @endsection

@@ -1,24 +1,23 @@
 @extends('layouts.app')
-@section('title', 'Audit log')
+@section('title', __('audit.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Audit log</h1>
+            <h1>{{ __('audit.index.title') }}</h1>
             <p class="muted small">
-                Append-only. Each entry is written in the same database transaction as the
-                action it records, so a committed action always has its trace.
+                {{ __('audit.index.subtitle') }}
             </p>
         </div>
     </div>
 
     <form method="GET" class="filters card">
         <div class="field">
-            <label for="action">Action starts with</label>
+            <label for="action">{{ __('audit.index.filter_label') }}</label>
             <input id="action" name="action" type="text" value="{{ $filters['action'] ?? '' }}" placeholder="loan.">
         </div>
-        <button class="btn">Filter</button>
-        <a class="btn" href="{{ route('g.audit.index', $group) }}">Clear</a>
+        <button class="btn">{{ __('audit.index.filter_button') }}</button>
+        <a class="btn" href="{{ route('g.audit.index', $group) }}">{{ __('audit.index.clear') }}</a>
     </form>
 
     <div class="grid grid-side">
@@ -27,18 +26,18 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>When</th>
-                        <th>Actor</th>
-                        <th>Action</th>
-                        <th>Object</th>
-                        <th>Detail</th>
+                        <th>{{ __('audit.index.table_when') }}</th>
+                        <th>{{ __('audit.index.table_actor') }}</th>
+                        <th>{{ __('audit.index.table_action') }}</th>
+                        <th>{{ __('audit.index.table_object') }}</th>
+                        <th>{{ __('audit.index.table_detail') }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     @forelse ($logs as $log)
                         <tr>
-                            <td class="small num">{{ $log->created_at->format('j M Y H:i') }}</td>
-                            <td class="small">{{ $log->actor?->name ?? 'system' }}</td>
+                            <td class="small num"><x-datetime :value="$log->created_at" format="j M Y H:i" /></td>
+                            <td class="small">{{ $log->actor?->name ?? __('audit.index.system_actor') }}</td>
                             <td class="small mono">{{ $log->action }}</td>
                             <td class="small muted">{{ $log->objectLabel() ?? '—' }}</td>
                             <td class="small muted">
@@ -50,7 +49,7 @@
                             </td>
                         </tr>
                     @empty
-                        <x-empty colspan="5">No audit entries match.</x-empty>
+                        <x-empty colspan="5">{{ __('audit.index.empty') }}</x-empty>
                     @endforelse
                     </tbody>
                 </table>
@@ -60,18 +59,18 @@
         </div>
 
         <div class="card">
-            <h2>Policy changes</h2>
-            <p class="small muted">Kept separately, with the full configuration before and after.</p>
+            <h2>{{ __('audit.index.policy_changes_title') }}</h2>
+            <p class="small muted">{{ __('audit.index.policy_changes_subtitle') }}</p>
 
             @forelse ($policyEvents as $event)
                 <p class="small" style="margin-bottom:0.5rem">
                     <strong>v{{ $event->version }}</strong> {{ $event->action }}
                     <br><span class="muted">
-                        {{ $event->actor?->name ?? 'system' }} · {{ $event->created_at->format('j M Y H:i') }}
+                        {{ $event->actor?->name ?? __('audit.index.system_actor') }} · <x-datetime :value="$event->created_at" format="j M Y H:i" />
                     </span>
                 </p>
             @empty
-                <p class="small muted">No policy changes recorded.</p>
+                <p class="small muted">{{ __('audit.index.policy_changes_empty') }}</p>
             @endforelse
         </div>
     </div>

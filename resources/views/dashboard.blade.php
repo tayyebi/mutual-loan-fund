@@ -7,49 +7,48 @@
             <h1>{{ $group->name }}</h1>
             <p class="muted small">
                 @if ($policy)
-                    Governed by policy <a href="{{ route('g.policies.show', [$group, $policy->version]) }}">v{{ $policy->version }}</a>,
-                    active since {{ $policy->effective_from?->format('j M Y') }}.
+                    {{ __('dashboard.governed_by_policy') }} <a href="{{ route('g.policies.show', [$group, $policy->version]) }}">v{{ $policy->version }}</a>,
+                    {{ __('dashboard.active_since') }} <x-datetime :value="$policy->effective_from" />.
                 @else
-                    No active policy. Financial operations are refused until one is published.
+                    {{ __('dashboard.no_active_policy') }}
                 @endif
             </p>
         </div>
         <div class="actions">
-            <a class="btn" href="{{ route('g.transactions.create', $group) }}">Contribute</a>
-            <a class="btn" href="{{ route('g.loans.create', $group) }}">Request a loan</a>
+            <a class="btn" href="{{ route('g.transactions.create', $group) }}">{{ __('dashboard.contribute') }}</a>
+            <a class="btn" href="{{ route('g.loans.create', $group) }}">{{ __('dashboard.request_loan') }}</a>
         </div>
     </div>
 
     <div class="grid grid-3">
         <div class="card">
-            <p class="figure-sub">Fund value</p>
+            <p class="figure-sub">{{ __('dashboard.fund_value') }}</p>
             <p class="figure">{{ $summary['gold']->format(4) }}</p>
-            <p class="small muted">grams of 18K gold ({{ $goldUnit }})</p>
+            <p class="small muted">{{ __('dashboard.gold_grams', ['unit' => $goldUnit]) }}</p>
             @if ($summary['unvalued_lines'] > 0)
                 <p class="small muted" style="margin:0">
-                    {{ $summary['unvalued_lines'] }} posted lines have no gold valuation:
-                    no rate existed for their currency when they were posted.
+                    {{ __('dashboard.unvalued_lines', ['count' => $summary['unvalued_lines']]) }}
                 </p>
             @endif
         </div>
 
         <div class="card">
-            <p class="figure-sub">Loans outstanding</p>
+            <p class="figure-sub">{{ __('dashboard.loans_outstanding') }}</p>
             @forelse ($summary['outstanding_loans'] as $currency => $amount)
                 <p class="figure" style="font-size:1.4rem"><x-amount :value="$amount" :currency="$currency" /></p>
             @empty
-                <p class="figure" style="font-size:1.4rem">None</p>
+                <p class="figure" style="font-size:1.4rem">{{ __('dashboard.none') }}</p>
             @endforelse
             <p class="small muted" style="margin:0">
-                <a href="{{ route('g.reports.show', [$group, 'receivables']) }}">Receivables by member</a>
+                <a href="{{ route('g.reports.show', [$group, 'receivables']) }}">{{ __('dashboard.receivables_by_member') }}</a>
             </p>
         </div>
 
         <div class="card">
-            <p class="figure-sub">Awaiting verification</p>
+            <p class="figure-sub">{{ __('dashboard.awaiting_verification') }}</p>
             <p class="figure">{{ $summary['pending'] }}</p>
             <p class="small muted" style="margin:0">
-                <a href="{{ route('g.transactions.index', [$group, 'status' => 'pending']) }}">Pending transactions</a>
+                <a href="{{ route('g.transactions.index', [$group, 'status' => 'pending']) }}">{{ __('dashboard.pending_transactions') }}</a>
             </p>
         </div>
     </div>
@@ -58,17 +57,17 @@
         <div class="stack">
             <div class="card">
                 <div class="card-head">
-                    <h2>Treasuries</h2>
-                    <a class="small" href="{{ route('g.treasuries.index', $group) }}">Manage</a>
+                    <h2>{{ __('dashboard.treasuries') }}</h2>
+                    <a class="small" href="{{ route('g.treasuries.index', $group) }}">{{ __('dashboard.manage') }}</a>
                 </div>
 
                 <div class="table-wrap">
                     <table>
                         <thead>
                         <tr>
-                            <th>Treasury</th>
-                            <th class="num">Balance</th>
-                            <th class="num">≈ 18K gold</th>
+                            <th>{{ __('dashboard.treasury') }}</th>
+                            <th class="num">{{ __('dashboard.balance') }}</th>
+                            <th class="num">{{ __('dashboard.approx_gold') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -83,12 +82,12 @@
                                     @if ($row['gold'])
                                         {{ $row['gold']->format(4) }} g
                                     @else
-                                        <span class="muted">no rate</span>
+                                        <span class="muted">{{ __('dashboard.no_rate') }}</span>
                                     @endif
                                 </td>
                             </tr>
                         @empty
-                            <x-empty colspan="3">No treasuries yet. An administrator creates the first one.</x-empty>
+                            <x-empty colspan="3">{{ __('dashboard.no_treasuries') }}</x-empty>
                         @endforelse
                         </tbody>
                     </table>
@@ -97,24 +96,24 @@
 
             <div class="card">
                 <div class="card-head">
-                    <h2>Recent activity</h2>
-                    <a class="small" href="{{ route('g.transactions.index', $group) }}">All activity</a>
+                    <h2>{{ __('dashboard.recent_activity') }}</h2>
+                    <a class="small" href="{{ route('g.transactions.index', $group) }}">{{ __('dashboard.all_activity') }}</a>
                 </div>
 
                 <div class="table-wrap">
                     <table>
                         <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Member</th>
-                            <th class="num">Amount</th>
-                            <th>Type</th>
+                            <th>{{ __('dashboard.date') }}</th>
+                            <th>{{ __('dashboard.member') }}</th>
+                            <th class="num">{{ __('dashboard.amount') }}</th>
+                            <th>{{ __('dashboard.type') }}</th>
                         </tr>
                         </thead>
                         <tbody>
                         @forelse ($summary['activity'] as $transaction)
                             <tr>
-                                <td class="num">{{ $transaction->occurred_on->format('j M') }}</td>
+                                <td class="num"><x-datetime :value="$transaction->occurred_on" format="j M" /></td>
                                 <td>{{ $transaction->member?->displayName() ?? '—' }}</td>
                                 <td class="num">
                                     <a href="{{ route('g.transactions.show', [$group, $transaction]) }}">
@@ -124,7 +123,7 @@
                                 <td class="small muted">{{ $transaction->typeLabel() }}</td>
                             </tr>
                         @empty
-                            <x-empty colspan="4">Nothing has been posted yet.</x-empty>
+                            <x-empty colspan="4">{{ __('dashboard.nothing_posted') }}</x-empty>
                         @endforelse
                         </tbody>
                     </table>
@@ -133,24 +132,24 @@
         </div>
 
         <div class="card">
-            <h2>Your position</h2>
+            <h2>{{ __('dashboard.your_position') }}</h2>
             <dl class="deflist">
-                <dt>Contributed</dt>
+                <dt>{{ __('dashboard.contributed') }}</dt>
                 <dd><x-amount :value="$position['contributed']" :currency="$position['currency']" /></dd>
 
-                <dt>Outstanding</dt>
+                <dt>{{ __('dashboard.outstanding') }}</dt>
                 <dd><x-amount :value="$position['outstanding']" :currency="$position['currency']" /></dd>
 
-                <dt>Interest paid</dt>
+                <dt>{{ __('dashboard.interest_paid') }}</dt>
                 <dd><x-amount :value="$position['interest_paid']" :currency="$position['currency']" /></dd>
 
                 @if ($position['gold'])
-                    <dt>≈ 18K gold</dt>
+                    <dt>{{ __('dashboard.approx_gold') }}</dt>
                     <dd class="num">{{ $position['gold']->format(4) }} g</dd>
                 @endif
             </dl>
             <p class="small muted" style="margin-top:0.8rem">
-                Calculated from the ledger, not stored as a balance.
+                {{ __('dashboard.calculated_note') }}
             </p>
         </div>
     </div>

@@ -17,10 +17,9 @@ class MissingRateException extends RuntimeException implements DomainRefusal
 {
     public function __construct(public readonly string $unit, public readonly Carbon $date)
     {
-        parent::__construct(sprintf(
-            'No 18K gold rate has been entered for %s on or before %s. Enter a rate before recording this operation.',
-            $unit,
-            $date->toDateString()
-        ));
+        parent::__construct(__('exceptions.missing_gold_rate', [
+            'unit' => $unit,
+            'date' => $date->toDateString(),
+        ]));
     }
 }

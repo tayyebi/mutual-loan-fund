@@ -1,13 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Accounting periods')
+@section('title', __('periods.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Accounting periods</h1>
+            <h1>{{ __('periods.index.title') }}</h1>
             <p class="muted small">
-                A closed period accepts no postings. Corrections for a closed month are
-                posted as adjustments in an open one.
+                {{ __('periods.index.subtitle') }}
             </p>
         </div>
     </div>
@@ -17,9 +16,9 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Period</th>
-                    <th>Status</th>
-                    <th>Closed</th>
+                    <th>{{ __('periods.index.table_period') }}</th>
+                    <th>{{ __('periods.index.table_status') }}</th>
+                    <th>{{ __('periods.index.table_closed') }}</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -30,7 +29,7 @@
                         <td><x-status :value="$period->status" /></td>
                         <td class="small muted">
                             @if ($period->closed_at)
-                                {{ $period->closer?->name }} · {{ $period->closed_at->format('j M Y') }}
+                                {{ $period->closer?->name }} · <x-datetime :value="$period->closed_at" />
                             @else
                                 —
                             @endif
@@ -39,25 +38,24 @@
                             @if ($period->isClosed())
                                 <form method="POST" action="{{ route('g.periods.reopen', [$group, $period]) }}">
                                     @csrf
-                                    <button class="btn btn-small">Reopen</button>
+                                    <button class="btn btn-small">{{ __('periods.index.reopen') }}</button>
                                 </form>
                             @else
                                 <form method="POST" action="{{ route('g.periods.close', [$group, $period]) }}">
                                     @csrf
-                                    <button class="btn btn-small">Close</button>
+                                    <button class="btn btn-small">{{ __('periods.index.close') }}</button>
                                 </form>
                             @endif
                         </td>
                     </tr>
                 @empty
-                    <x-empty colspan="4">Periods are created as entries are posted.</x-empty>
+                    <x-empty colspan="4">{{ __('periods.index.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>
         </div>
         <p class="small muted" style="margin-top:0.8rem">
-            Reopening is possible but audited: it corrects an administrative mistake, not
-            a routine step.
+            {{ __('periods.index.reopen_note') }}
         </p>
     </div>
 @endsection

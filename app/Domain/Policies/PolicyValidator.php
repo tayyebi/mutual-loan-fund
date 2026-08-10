@@ -62,20 +62,20 @@ class PolicyValidator
 
                 if ($value === null) {
                     if (! $field->nullable) {
-                        $errors["{$key}.{$field->key}"] = "{$field->label} is required.";
+                        $errors["{$key}.{$field->key}"] = __('exceptions.policy_field_required', ['field' => $field->label]);
                     }
 
                     continue;
                 }
 
                 if (! Decimal::isValid((string) $value)) {
-                    $errors["{$key}.{$field->key}"] = "{$field->label} must be a number.";
+                    $errors["{$key}.{$field->key}"] = __('exceptions.policy_field_must_be_number', ['field' => $field->label]);
 
                     continue;
                 }
 
                 if (Decimal::of((string) $value)->isNegative()) {
-                    $errors["{$key}.{$field->key}"] = "{$field->label} cannot be negative.";
+                    $errors["{$key}.{$field->key}"] = __('exceptions.policy_field_cannot_be_negative', ['field' => $field->label]);
                 }
             }
         }
@@ -91,11 +91,10 @@ class PolicyValidator
         $rate = $loans->interestRate();
 
         if ($rate->lessThan($rateMin) || $rate->greaterThan($rateMax)) {
-            $errors['loans.interest_rate'] = sprintf(
-                'Interest rate must be between %s%% and %s%%.',
-                $rateMin->format(2),
-                $rateMax->format(2)
-            );
+            $errors['loans.interest_rate'] = __('exceptions.interest_rate_out_of_range', [
+                'min' => $rateMin->format(2),
+                'max' => $rateMax->format(2),
+            ]);
         }
 
         $minTerm = $loans->minimumTermMonths();
@@ -103,54 +102,54 @@ class PolicyValidator
         $termCeiling = (int) config('fund.policy_bounds.max_term_months', 600);
 
         if ($minTerm < 1) {
-            $errors['loans.minimum_term_months'] = 'Minimum term must be at least 1 month.';
+            $errors['loans.minimum_term_months'] = __('exceptions.minimum_term_at_least_one');
         }
 
         if ($maxTerm < 1) {
-            $errors['loans.maximum_term_months'] = 'Maximum term must be at least 1 month.';
+            $errors['loans.maximum_term_months'] = __('exceptions.maximum_term_at_least_one');
         } elseif ($maxTerm > $termCeiling) {
-            $errors['loans.maximum_term_months'] = "Maximum term cannot exceed {$termCeiling} months.";
+            $errors['loans.maximum_term_months'] = __('exceptions.maximum_term_exceeds_ceiling', ['ceiling' => $termCeiling]);
         }
 
         if ($minTerm > $maxTerm) {
-            $errors['loans.minimum_term_months'] = 'Minimum term cannot exceed the maximum term.';
+            $errors['loans.minimum_term_months'] = __('exceptions.minimum_term_exceeds_maximum');
         }
 
         $minAmount = $loans->minimumAmount();
         $maxAmount = $loans->maximumAmount();
 
         if ($maxAmount === null) {
-            $errors['loans.maximum_amount'] = 'A maximum loan amount is required.';
+            $errors['loans.maximum_amount'] = __('exceptions.maximum_loan_amount_required');
         } else {
             if ($maxAmount->isZero() && $loans->enabled()) {
-                $errors['loans.maximum_amount'] = 'Maximum loan amount must be greater than zero while loans are enabled.';
+                $errors['loans.maximum_amount'] = __('exceptions.maximum_loan_amount_must_be_positive');
             }
 
             if ($minAmount->greaterThan($maxAmount)) {
-                $errors['loans.minimum_amount'] = 'Minimum loan amount cannot exceed the maximum amount.';
+                $errors['loans.minimum_amount'] = __('exceptions.minimum_loan_amount_exceeds_maximum');
             }
         }
 
         if ($loans->maximumActiveLoans() < 1) {
-            $errors['loans.maximum_active_loans'] = 'At least one active loan must be permitted.';
+            $errors['loans.maximum_active_loans'] = __('exceptions.at_least_one_active_loan');
         }
 
         if ($loans->minimumMembershipDays() < 0) {
-            $errors['loans.minimum_membership_days'] = 'Minimum membership days cannot be negative.';
+            $errors['loans.minimum_membership_days'] = __('exceptions.minimum_membership_days_negative');
         }
 
         if (! array_key_exists($loans->interestMethod(), LoanPolicy::INTEREST_METHODS)) {
-            $errors['loans.interest_method'] = 'Unknown interest method.';
+            $errors['loans.interest_method'] = __('exceptions.unknown_interest_method');
         }
 
         // A rate with no method (or a method with no rate) is contradictory and
         // would make loan schedules ambiguous.
         if ($loans->interestMethod() === 'none' && $rate->isPositive()) {
-            $errors['loans.interest_method'] = 'An interest rate above zero requires an interest method.';
+            $errors['loans.interest_method'] = __('exceptions.interest_rate_needs_method');
         }
 
         if ($loans->interestMethod() !== 'none' && $rate->isZero()) {
-            $errors['loans.interest_rate'] = 'An interest method requires a rate above zero.';
+            $errors['loans.interest_rate'] = __('exceptions.interest_method_needs_rate');
         }
     }
 
@@ -163,11 +162,11 @@ class PolicyValidator
         $max = $contributions->maximumAmount();
 
         if ($max !== null && $min->greaterThan($max)) {
-            $errors['contributions.minimum_amount'] = 'Minimum contribution cannot exceed the maximum.';
+            $errors['contributions.minimum_amount'] = __('exceptions.minimum_contribution_exceeds_maximum');
         }
 
         if ($max !== null && $max->isZero()) {
-            $errors['contributions.maximum_amount'] = 'Maximum contribution must be greater than zero, or blank for no limit.';
+            $errors['contributions.maximum_amount'] = __('exceptions.maximum_contribution_must_be_positive');
         }
     }
 
@@ -180,12 +179,12 @@ class PolicyValidator
         $supported = array_keys((array) config('fund.currencies', []));
 
         if (! in_array($currency, $supported, true)) {
-            $errors['accounting.functional_currency'] = 'Functional currency is not supported.';
+            $errors['accounting.functional_currency'] = __('exceptions.functional_currency_unsupported');
         }
 
         if ($currency === config('fund.gold_unit')) {
             $errors['accounting.functional_currency'] =
-                'The 18K gold unit is a valuation layer and cannot be a functional currency.';
+                __('exceptions.gold_unit_cannot_be_functional_currency');
         }
     }
 }

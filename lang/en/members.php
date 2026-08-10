@@ -1,0 +1,63 @@
+<?php
+
+return [
+
+    'index' => [
+        'title' => 'Members',
+        'heading' => 'Members',
+        'intro' => 'Every active member has a cost center; their activity is attributed to it.',
+        'requests_link' => 'Membership requests',
+        'member_header' => 'Member',
+        'cost_center_header' => 'Cost center',
+        'role_header' => 'Role',
+        'status_header' => 'Status',
+        'member_since_header' => 'Member since',
+        'reinstate' => 'Reinstate',
+        'suspend' => 'Suspend',
+        'make_member' => 'Make member',
+        'make_admin' => 'Make admin',
+        'empty' => 'No members yet.',
+        'invite_heading' => 'Invite someone',
+        'invite_hint' => 'Funds are not discoverable. Send this link to the person you want to join:',
+    ],
+
+    'requests' => [
+        'title' => 'Membership requests',
+        'breadcrumb' => 'Members',
+        'heading' => 'Membership requests',
+        'intro' => 'Approving a member creates their cost center.',
+        'person_header' => 'Person',
+        'requested_header' => 'Requested',
+        'approve' => 'Approve',
+        'reject' => 'Reject',
+        'reason_placeholder' => 'Reason (optional)',
+        'empty' => 'No requests are waiting.',
+    ],
+
+    'show' => [
+        'breadcrumb' => 'Members',
+        'position_heading' => 'Position',
+        'position_intro' => 'Every figure below is derived from posted journal lines.',
+        'account_header' => 'Account',
+        'debit_header' => 'Debit',
+        'credit_header' => 'Credit',
+        'balance_header' => 'Balance (:currency)',
+        'no_activity' => 'No activity attributed to this member yet.',
+        'loans_heading' => 'Loans',
+        'reference_header' => 'Reference',
+        'principal_header' => 'Principal',
+        'policy_header' => 'Policy',
+        'status_header' => 'Status',
+        'no_loans' => 'No loans.',
+        'summary_heading' => 'Summary',
+        'contributed' => 'Contributed',
+        'outstanding' => 'Outstanding',
+        'interest_paid' => 'Interest paid',
+        'member_for' => 'Member for',
+        'days_count' => ':days days',
+        'wallets_heading' => 'Wallets',
+        'no_wallets' => 'No registered wallets.',
+        'wallets_note' => 'The application never stores keys or seed phrases.',
+    ],
+
+];

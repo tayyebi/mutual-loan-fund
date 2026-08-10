@@ -9,11 +9,11 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Code</th>
-                    <th>Account</th>
-                    <th class="num">Debit</th>
-                    <th class="num">Credit</th>
-                    <th class="num">Balance</th>
+                    <th>{{ __('reports.trial_balance.table_code') }}</th>
+                    <th>{{ __('reports.trial_balance.table_account') }}</th>
+                    <th class="num">{{ __('reports.trial_balance.table_debit') }}</th>
+                    <th class="num">{{ __('reports.trial_balance.table_credit') }}</th>
+                    <th class="num">{{ __('reports.trial_balance.table_balance') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -28,19 +28,19 @@
                         <td class="num"><x-amount :value="$row['balance']" signed /></td>
                     </tr>
                 @empty
-                    <x-empty colspan="5">Nothing has been posted yet.</x-empty>
+                    <x-empty colspan="5">{{ __('reports.trial_balance.empty') }}</x-empty>
                 @endforelse
                 </tbody>
                 <tfoot>
                 <tr>
-                    <td colspan="2">Totals ({{ $currency }})</td>
+                    <td colspan="2">{{ __('reports.trial_balance.totals', ['currency' => $currency]) }}</td>
                     <td class="num"><x-amount :value="$totals['debit']" /></td>
                     <td class="num"><x-amount :value="$totals['credit']" /></td>
                     <td class="num">
                         @if ($totals['balanced'])
-                            <span class="badge badge-ok">balanced</span>
+                            <span class="badge badge-ok">{{ __('reports.common.balanced') }}</span>
                         @else
-                            <span class="badge badge-danger">out by {{ $totals['debit']->minus($totals['credit'])->format(2) }}</span>
+                            <span class="badge badge-danger">{{ __('reports.common.out_by') }} {{ $totals['debit']->minus($totals['credit'])->format(2) }}</span>
                         @endif
                     </td>
                 </tr>

@@ -1,13 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Chart of accounts')
+@section('title', __('accounts.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Chart of accounts</h1>
+            <h1>{{ __('accounts.index.heading') }}</h1>
             <p class="muted small">
-                A ledger account says what something is. Who it belongs to is a cost
-                center; where it is held is a treasury.
+                {{ __('accounts.index.intro') }}
             </p>
         </div>
     </div>
@@ -17,11 +16,11 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Code</th>
-                    <th>Account</th>
-                    <th>Type</th>
-                    <th>Cost center</th>
-                    <th class="num">Balance ({{ $currency }})</th>
+                    <th>{{ __('accounts.index.col_code') }}</th>
+                    <th>{{ __('accounts.index.col_account') }}</th>
+                    <th>{{ __('accounts.index.col_type') }}</th>
+                    <th>{{ __('accounts.index.col_cost_center') }}</th>
+                    <th class="num">{{ __('accounts.index.col_balance', ['currency' => $currency]) }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -31,10 +30,10 @@
                         <td class="mono">{{ $account->code }}</td>
                         <td style="{{ $account->isHeader() ? '' : 'padding-left:1.5rem' }}">
                             <a href="{{ route('g.accounts.show', [$group, $account]) }}">{{ $account->name }}</a>
-                            @unless ($account->is_active)<span class="badge">inactive</span>@endunless
+                            @unless ($account->is_active)<span class="badge">{{ __('accounts.index.inactive_badge') }}</span>@endunless
                         </td>
                         <td class="small muted">{{ $account->type }}</td>
-                        <td class="small muted">{{ $account->requires_cost_center ? 'required' : '—' }}</td>
+                        <td class="small muted">{{ $account->requires_cost_center ? __('accounts.index.required_label') : '—' }}</td>
                         <td class="num">
                             @if ($row)
                                 <x-amount :value="$row['balance']" signed />
@@ -48,8 +47,7 @@
             </table>
         </div>
         <p class="small muted" style="margin-top:0.8rem">
-            Balances are signed by the account's normal side and derived from posted
-            lines only.
+            {{ __('accounts.index.footer_note') }}
         </p>
     </div>
 @endsection

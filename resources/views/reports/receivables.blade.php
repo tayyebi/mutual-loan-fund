@@ -9,9 +9,9 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Cost center</th>
-                    <th>Member</th>
-                    <th class="num">Outstanding principal</th>
+                    <th>{{ __('reports.receivables.table_cost_center') }}</th>
+                    <th>{{ __('reports.receivables.table_member') }}</th>
+                    <th class="num">{{ __('reports.receivables.table_outstanding_principal') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -30,14 +30,13 @@
                         </td>
                     </tr>
                 @empty
-                    <x-empty colspan="3">No outstanding loan principal.</x-empty>
+                    <x-empty colspan="3">{{ __('reports.receivables.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>
         </div>
         <p class="small muted" style="margin-top:0.8rem">
-            Taken from the Loans Receivable balance per cost center — the ledger, not the
-            loan records.
+            {{ __('reports.receivables.note') }}
         </p>
     </div>
 @endsection

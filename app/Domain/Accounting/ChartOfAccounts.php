@@ -103,7 +103,7 @@ class ChartOfAccounts
     public function require(Group $group, string $code): Account
     {
         return $this->find($group, $code) ?? throw new PostingException(
-            "Group '{$group->name}' has no account {$code}. The chart of accounts is incomplete."
+            __('exceptions.chart_account_missing', ['group' => $group->name, 'code' => $code])
         );
     }
 
@@ -129,7 +129,7 @@ class ChartOfAccounts
         $next = $last ? ((int) $last) + 1 : 1101;
 
         if ($next > 1199) {
-            throw new PostingException('No treasury account codes remain in the 1101–1199 range.');
+            throw new PostingException(__('exceptions.no_treasury_codes_remaining'));
         }
 
         return (string) $next;

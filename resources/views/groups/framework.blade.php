@@ -1,14 +1,13 @@
 @extends('layouts.app')
-@section('title', 'Financial framework')
+@section('title', __('groups.framework.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.policies.index', $group) }}">Policies</a></p>
-            <h1>Financial framework</h1>
+            <p class="breadcrumb"><a href="{{ route('g.policies.index', $group) }}">{{ __('groups.framework.breadcrumb') }}</a></p>
+            <h1>{{ __('groups.framework.heading') }}</h1>
             <p class="muted small">
-                A named preset of advisory rules. It never blocks anything: if your
-                policy drifts from it, you'll see a warning on the policy screens.
+                {{ __('groups.framework.intro') }}
             </p>
         </div>
     </div>
@@ -20,9 +19,9 @@
                 @method('PUT')
 
                 <div class="field">
-                    <label for="financial_framework_id">Framework</label>
+                    <label for="financial_framework_id">{{ __('groups.framework.field_label') }}</label>
                     <select id="financial_framework_id" name="financial_framework_id">
-                        <option value="" @selected($group->financial_framework_id === null)>None</option>
+                        <option value="" @selected($group->financial_framework_id === null)>{{ __('groups.framework.none') }}</option>
                         @foreach ($frameworks as $framework)
                             <option value="{{ $framework->id }}" @selected($group->financial_framework_id === $framework->id)>
                                 {{ $framework->name }}
@@ -34,12 +33,12 @@
                     <p class="hint error">{{ $message }}</p>
                 @enderror
 
-                <button class="btn btn-primary">Save</button>
+                <button class="btn btn-primary">{{ __('groups.framework.submit') }}</button>
             </form>
         </div>
 
         <div class="card">
-            <h3>Available frameworks</h3>
+            <h3>{{ __('groups.framework.available_heading') }}</h3>
             <dl class="deflist">
                 @foreach ($frameworks as $framework)
                     <dt>{{ $framework->name }}</dt>

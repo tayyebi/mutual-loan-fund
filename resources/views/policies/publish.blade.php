@@ -1,28 +1,28 @@
 @extends('layouts.app')
-@section('title', 'Publish policy v'.$policy->version)
+@section('title', __('policies.publish.title', ['version' => $policy->version]))
 
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.policies.index', $group) }}">Policies</a></p>
-            <h1>You are publishing policy v{{ $policy->version }}</h1>
+            <p class="breadcrumb"><a href="{{ route('g.policies.index', $group) }}">{{ __('policies.publish.breadcrumb') }}</a></p>
+            <h1>{{ __('policies.publish.heading', ['version' => $policy->version]) }}</h1>
         </div>
     </div>
 
     <div class="grid grid-side">
         <div class="card">
-            <h2>Changes</h2>
+            <h2>{{ __('policies.publish.changes_heading') }}</h2>
 
             @if ($changes === [])
-                <p class="muted">This draft makes no changes to the active policy.</p>
+                <p class="muted">{{ __('policies.publish.no_changes') }}</p>
             @else
                 <div class="table-wrap">
                     <table>
                         <thead>
                         <tr>
-                            <th>Setting</th>
-                            <th>Now</th>
-                            <th>After publishing</th>
+                            <th>{{ __('policies.publish.setting_header') }}</th>
+                            <th>{{ __('policies.publish.now_header') }}</th>
+                            <th>{{ __('policies.publish.after_header') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -42,15 +42,12 @@
             @endif
 
             <div class="alert alert-warn" style="margin-top:1rem">
-                This policy will apply to operations created after publication.
-                Existing loans and transactions remain governed by their original
-                policy versions.
+                {{ __('policies.publish.applies_note') }}
             </div>
 
             @if ($framework_warnings !== [])
                 <div class="alert alert-warn" style="margin-top:1rem">
-                    This policy drifts from your chosen financial framework. You can still
-                    publish it — this is informational only.
+                    {{ __('policies.publish.framework_drift_heading') }}
                     <ul>
                         @foreach ($framework_warnings as $message)
                             <li>{{ $message }}</li>
@@ -61,7 +58,7 @@
 
             @if ($errors_from_validator !== [])
                 <div class="alert alert-error">
-                    This draft cannot be published yet:
+                    {{ __('policies.publish.blocked_heading') }}
                     <ul>
                         @foreach ($errors_from_validator as $message)
                             <li>{{ $message }}</li>
@@ -74,27 +71,26 @@
                     <div class="field check">
                         <input id="confirm" name="confirm" type="checkbox" value="1" required>
                         <label for="confirm">
-                            I understand that v{{ $policy->version }} becomes the active policy
-                            @if ($active) and v{{ $active->version }} is superseded @endif.
+                            {{ __('policies.publish.confirm_line', ['version' => $policy->version]) }}
+                            @if ($active) {{ __('policies.publish.confirm_superseded', ['active_version' => $active->version]) }} @endif.
                         </label>
                     </div>
-                    <button class="btn btn-primary">Publish version {{ $policy->version }}</button>
+                    <button class="btn btn-primary">{{ __('policies.publish.submit', ['version' => $policy->version]) }}</button>
                 </form>
             @endif
         </div>
 
         <div class="card">
-            <h3>What publishing does</h3>
+            <h3>{{ __('policies.publish.what_happens_heading') }}</h3>
             <ol class="small muted" style="padding-left:1.1rem;margin:0">
-                <li>Validates the complete policy.</li>
-                <li>Closes the current active version.</li>
-                <li>Makes v{{ $policy->version }} active from today.</li>
-                <li>Records who published it, and when.</li>
-                <li>Writes an audit event.</li>
+                <li>{{ __('policies.publish.step_validates') }}</li>
+                <li>{{ __('policies.publish.step_closes') }}</li>
+                <li>{{ __('policies.publish.step_makes_active', ['version' => $policy->version]) }}</li>
+                <li>{{ __('policies.publish.step_records') }}</li>
+                <li>{{ __('policies.publish.step_audit') }}</li>
             </ol>
             <p class="small muted" style="margin-top:0.8rem">
-                All of it in one database transaction: the fund is never left with two
-                active versions, or none.
+                {{ __('policies.publish.transaction_note') }}
             </p>
         </div>
     </div>

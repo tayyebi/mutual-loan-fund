@@ -56,7 +56,7 @@ class AccountingService
     {
         if ($transaction->journalEntry()->exists()) {
             throw new PostingException(
-                "Transaction #{$transaction->getKey()} has already been posted to the ledger."
+                __('exceptions.transaction_already_posted', ['id' => $transaction->getKey()])
             );
         }
 
@@ -74,7 +74,7 @@ class AccountingService
     public function templateFor(Transaction $transaction): TransactionTemplate
     {
         $class = self::TEMPLATES[$transaction->type] ?? throw new PostingException(
-            "No accounting template is defined for transaction type '{$transaction->type}'."
+            __('exceptions.no_accounting_template', ['type' => $transaction->type])
         );
 
         return app($class);
@@ -97,7 +97,7 @@ class AccountingService
         ?string $description = null,
     ): JournalEntry {
         if (trim($reason) === '') {
-            throw new PostingException('Every adjustment requires a reason.');
+            throw new PostingException(__('exceptions.adjustment_requires_reason'));
         }
 
         $draft = EntryDraft::make('Adjustment', $date, $description ?: 'Accounting adjustment')
@@ -131,7 +131,7 @@ class AccountingService
     public function reverse(JournalEntry $entry, string $reason, User $actor, ?Carbon $date = null): JournalEntry
     {
         if (trim($reason) === '') {
-            throw new PostingException('Every reversal requires a reason.');
+            throw new PostingException(__('exceptions.reversal_requires_reason'));
         }
 
         return $this->posting->reverse($entry, $reason, $actor, $date);

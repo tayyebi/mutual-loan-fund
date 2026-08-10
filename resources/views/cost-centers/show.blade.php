@@ -4,7 +4,7 @@
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.cost-centers.index', $group) }}">Cost centers</a></p>
+            <p class="breadcrumb"><a href="{{ route('g.cost-centers.index', $group) }}">{{ __('cost_centers.show.breadcrumb') }}</a></p>
             <h1>{{ $costCenter->label() }}</h1>
             <p class="muted small">
                 @if ($costCenter->member)
@@ -16,15 +16,15 @@
     </div>
 
     <div class="card">
-        <h2>Statement</h2>
+        <h2>{{ __('cost_centers.show.statement_title') }}</h2>
         <div class="table-wrap">
             <table>
                 <thead>
                 <tr>
-                    <th>Account</th>
-                    <th class="num">Debit</th>
-                    <th class="num">Credit</th>
-                    <th class="num">Balance ({{ $currency }})</th>
+                    <th>{{ __('cost_centers.show.table_account') }}</th>
+                    <th class="num">{{ __('cost_centers.show.table_debit') }}</th>
+                    <th class="num">{{ __('cost_centers.show.table_credit') }}</th>
+                    <th class="num">{{ __('cost_centers.show.table_balance', ['currency' => $currency]) }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -38,7 +38,7 @@
                         <td class="num"><x-amount :value="$row['balance']" signed /></td>
                     </tr>
                 @empty
-                    <x-empty colspan="4">Nothing has been attributed to this cost center.</x-empty>
+                    <x-empty colspan="4">{{ __('cost_centers.show.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>

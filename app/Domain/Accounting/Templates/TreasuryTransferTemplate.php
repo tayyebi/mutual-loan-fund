@@ -27,12 +27,12 @@ class TreasuryTransferTemplate extends BaseTemplate
     {
         $source = $this->treasury($transaction);
         $destination = $transaction->counterTreasury ?? throw new PostingException(
-            "Transfer #{$transaction->getKey()} has no destination treasury."
+            __('exceptions.transfer_no_destination_treasury', ['id' => $transaction->getKey()])
         );
 
         if ($source->currency !== $destination->currency) {
             throw new PostingException(
-                'A transfer between treasuries of different currencies is an exchange; record it as one.'
+                __('exceptions.transfer_currency_mismatch')
             );
         }
 

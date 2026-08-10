@@ -1,14 +1,13 @@
 @extends('layouts.app')
-@section('title', 'New adjustment')
+@section('title', __('ledger.adjustment.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.ledger.index', $group) }}">Ledger</a></p>
-            <h1>Accounting adjustment</h1>
+            <p class="breadcrumb"><a href="{{ route('g.ledger.index', $group) }}">{{ __('ledger.adjustment.breadcrumb') }}</a></p>
+            <h1>{{ __('ledger.adjustment.heading') }}</h1>
             <p class="muted small">
-                Posted entries are never edited. A correction is its own entry, with a
-                reason, and it must balance.
+                {{ __('ledger.adjustment.intro') }}
             </p>
         </div>
     </div>
@@ -19,41 +18,40 @@
         <div class="card">
             <div class="field-row field-row-2">
                 <div class="field">
-                    <label for="entry_date">Entry date</label>
+                    <label for="entry_date">{{ __('ledger.adjustment.entry_date_label') }}</label>
                     <input id="entry_date" name="entry_date" type="date"
                            value="{{ old('entry_date', now()->toDateString()) }}" required>
-                    <span class="hint">Decides the period. A closed month is refused.</span>
+                    <span class="hint">{{ __('ledger.adjustment.entry_date_hint') }}</span>
                 </div>
                 <div class="field">
-                    <label for="description">Description</label>
+                    <label for="description">{{ __('ledger.adjustment.description_label') }}</label>
                     <input id="description" name="description" type="text" value="{{ old('description') }}" required>
                 </div>
             </div>
 
             <div class="field">
-                <label for="reason">Reason</label>
+                <label for="reason">{{ __('ledger.adjustment.reason_label') }}</label>
                 <textarea id="reason" name="reason" required>{{ old('reason') }}</textarea>
-                <span class="hint">Recorded on the entry and in the audit log.</span>
+                <span class="hint">{{ __('ledger.adjustment.reason_hint') }}</span>
             </div>
         </div>
 
         <div class="card">
-            <h2>Lines</h2>
+            <h2>{{ __('ledger.adjustment.lines_heading') }}</h2>
             <p class="small muted">
-                Total debits must equal total credits. Accounts marked as requiring a cost
-                center will refuse a line without one.
+                {{ __('ledger.adjustment.lines_intro') }}
             </p>
 
             <div class="table-wrap">
                 <table>
                     <thead>
                     <tr>
-                        <th>Account</th>
-                        <th>Cost center</th>
-                        <th>Side</th>
-                        <th>Currency</th>
-                        <th>Amount</th>
-                        <th>Note</th>
+                        <th>{{ __('ledger.adjustment.col_account') }}</th>
+                        <th>{{ __('ledger.adjustment.col_cost_center') }}</th>
+                        <th>{{ __('ledger.adjustment.col_side') }}</th>
+                        <th>{{ __('ledger.adjustment.col_currency') }}</th>
+                        <th>{{ __('ledger.adjustment.col_amount') }}</th>
+                        <th>{{ __('ledger.adjustment.col_note') }}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -83,8 +81,8 @@
                             </td>
                             <td>
                                 <select name="lines[{{ $i }}][side]">
-                                    <option value="debit" @selected(old("lines.$i.side") === 'debit')>Debit</option>
-                                    <option value="credit" @selected(old("lines.$i.side") === 'credit')>Credit</option>
+                                    <option value="debit" @selected(old("lines.$i.side") === 'debit')>{{ __('ledger.adjustment.side_debit') }}</option>
+                                    <option value="credit" @selected(old("lines.$i.side") === 'credit')>{{ __('ledger.adjustment.side_credit') }}</option>
                                 </select>
                             </td>
                             <td>
@@ -106,8 +104,8 @@
             </div>
 
             <div class="actions" style="margin-top:1rem">
-                <button class="btn btn-primary">Post adjustment</button>
-                <a class="btn" href="{{ route('g.ledger.index', $group) }}">Cancel</a>
+                <button class="btn btn-primary">{{ __('ledger.adjustment.submit') }}</button>
+                <a class="btn" href="{{ route('g.ledger.index', $group) }}">{{ __('ledger.adjustment.cancel') }}</a>
             </div>
         </div>
     </form>

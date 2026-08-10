@@ -149,11 +149,11 @@ class RateService
         $unit = strtoupper($unit);
 
         if ($unit === $this->goldUnit()) {
-            throw new InvalidArgumentException('The gold unit is the reference and cannot be quoted against itself.');
+            throw new InvalidArgumentException(__('exceptions.gold_unit_cannot_be_quoted'));
         }
 
         if (! in_array($unit, $this->quotableUnits(), true)) {
-            throw new InvalidArgumentException("{$unit} is not a supported valuation unit.");
+            throw new InvalidArgumentException(__('exceptions.valuation_unit_unsupported', ['unit' => $unit]));
         }
 
         if ($unitsPerGram18k === null && $troyOunce24k !== null) {
@@ -161,7 +161,7 @@ class RateService
         }
 
         if ($unitsPerGram18k === null || ! $unitsPerGram18k->isPositive()) {
-            throw new InvalidArgumentException('A rate above zero is required.');
+            throw new InvalidArgumentException(__('exceptions.rate_must_be_positive'));
         }
 
         $rate = ExchangeRate::updateOrCreate(

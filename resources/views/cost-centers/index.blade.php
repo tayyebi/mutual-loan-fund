@@ -1,13 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Cost centers')
+@section('title', __('cost_centers.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Cost centers</h1>
+            <h1>{{ __('cost_centers.index.title') }}</h1>
             <p class="muted small">
-                A cost center owns no money. It says who or what an amount belongs to, and
-                stays stable even when a member's name changes.
+                {{ __('cost_centers.index.subtitle') }}
             </p>
         </div>
     </div>
@@ -18,10 +17,10 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>Code</th>
-                        <th>Name</th>
-                        <th>Member</th>
-                        <th>Status</th>
+                        <th>{{ __('cost_centers.index.table_code') }}</th>
+                        <th>{{ __('cost_centers.index.table_name') }}</th>
+                        <th>{{ __('cost_centers.index.table_member') }}</th>
+                        <th>{{ __('cost_centers.index.table_status') }}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -35,7 +34,7 @@
                             <td><x-status :value="$costCenter->status" /></td>
                         </tr>
                     @empty
-                        <x-empty colspan="4">No cost centers yet.</x-empty>
+                        <x-empty colspan="4">{{ __('cost_centers.index.empty') }}</x-empty>
                     @endforelse
                     </tbody>
                 </table>
@@ -44,21 +43,21 @@
 
         @if ($groupContext->isAdmin())
             <div class="card">
-                <h2>Add a cost center</h2>
+                <h2>{{ __('cost_centers.index.add_title') }}</h2>
                 <p class="small muted">
-                    Members get one automatically. Add others for activities or shared costs.
+                    {{ __('cost_centers.index.add_subtitle') }}
                 </p>
                 <form method="POST" action="{{ route('g.cost-centers.store', $group) }}">
                     @csrf
                     <div class="field">
-                        <label for="name">Name</label>
+                        <label for="name">{{ __('cost_centers.index.field_name') }}</label>
                         <input id="name" name="name" type="text" value="{{ old('name') }}" required>
                     </div>
                     <div class="field">
-                        <label for="description">Description</label>
+                        <label for="description">{{ __('cost_centers.index.field_description') }}</label>
                         <textarea id="description" name="description">{{ old('description') }}</textarea>
                     </div>
-                    <button class="btn btn-primary">Create</button>
+                    <button class="btn btn-primary">{{ __('cost_centers.index.create') }}</button>
                 </form>
             </div>
         @endif

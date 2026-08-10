@@ -11,27 +11,26 @@ use Illuminate\View\View;
 class ReportController extends Controller
 {
     /**
-     * Report keys and their titles. Adding a report means adding a case here and
-     * a view; nothing else changes.
+     * Report keys. Adding a report means adding a case here, a title in
+     * lang/{en,fa}/reports.php's 'index.titles', and a view; nothing else changes.
      */
     private const REPORTS = [
-        'trial-balance' => 'Trial Balance',
-        'balance-sheet' => 'Balance Sheet',
-        'income-statement' => 'Income Statement',
-        'treasuries' => 'Treasury Report',
-        'receivables' => 'Loan Receivables',
-        'cost-centers' => 'Cost Center Statements',
-        'gold' => 'Gold Valuation',
+        'trial-balance', 'balance-sheet', 'income-statement',
+        'treasuries', 'receivables', 'cost-centers', 'gold',
     ];
 
     public function index(Group $group): View
     {
-        return view('reports.index', ['group' => $group, 'reports' => self::REPORTS]);
+        $reports = collect(self::REPORTS)->mapWithKeys(
+            fn (string $key) => [$key => __("reports.index.titles.{$key}")]
+        )->all();
+
+        return view('reports.index', ['group' => $group, 'reports' => $reports]);
     }
 
     public function show(Request $request, Group $group, string $report, ReportService $reports): View
     {
-        abort_unless(array_key_exists($report, self::REPORTS), 404);
+        abort_unless(in_array($report, self::REPORTS, true), 404);
 
         $asOf = $request->query('as_of') ? Carbon::parse($request->query('as_of')) : null;
         $from = $request->query('from') ? Carbon::parse($request->query('from')) : null;
@@ -54,7 +53,7 @@ class ReportController extends Controller
 
         return view("reports.{$report}", $data + [
             'group' => $group,
-            'title' => self::REPORTS[$report],
+            'title' => __("reports.index.titles.{$report}"),
             'asOf' => $asOf,
             'from' => $from,
             'currency' => $group->functionalCurrency(),

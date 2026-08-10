@@ -30,7 +30,7 @@ class PolicyPublisher
     public function publish(GroupPolicy $draft, User $actor, ?Carbon $effectiveFrom = null): GroupPolicy
     {
         if (! $draft->isDraft()) {
-            throw new RuntimeException("Policy v{$draft->version} is not a draft and cannot be published again.");
+            throw new RuntimeException(__('exceptions.policy_not_draft', ['version' => $draft->version]));
         }
 
         // Validate before opening the transaction: an invalid policy is refused

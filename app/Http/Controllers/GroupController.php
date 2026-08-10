@@ -84,7 +84,7 @@ class GroupController extends Controller
     public function join(Request $request, Group $group, MembershipService $memberships): RedirectResponse
     {
         if (! $group->isActive()) {
-            return back()->withErrors(['group' => 'This fund is not accepting members.']);
+            return back()->withErrors(['group' => __('exceptions.fund_not_accepting_members')]);
         }
 
         try {

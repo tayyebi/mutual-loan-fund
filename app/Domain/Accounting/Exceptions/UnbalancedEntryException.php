@@ -17,13 +17,11 @@ class UnbalancedEntryException extends RuntimeException implements DomainRefusal
         public readonly Decimal $credits,
         string $currency,
     ) {
-        parent::__construct(sprintf(
-            'Journal entry does not balance: debits %s %s, credits %s %s (difference %s).',
-            $debits->format(2),
-            $currency,
-            $credits->format(2),
-            $currency,
-            $debits->minus($credits)->format(2)
-        ));
+        parent::__construct(__('exceptions.journal_unbalanced', [
+            'debits' => $debits->format(2),
+            'credits' => $credits->format(2),
+            'currency' => $currency,
+            'difference' => $debits->minus($credits)->format(2),
+        ]));
     }
 }

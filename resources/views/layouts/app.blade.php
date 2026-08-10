@@ -3,22 +3,22 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Mutual Loan Fund')</title>
+    <title>@yield('title', __('nav.default_title'))</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
 <header class="masthead">
     <div class="masthead-inner">
-        <a class="brand" href="{{ route('home') }}">Mutual Loan Fund</a>
+        <a class="brand" href="{{ route('home') }}">{{ __('nav.brand') }}</a>
         <nav class="masthead-actions">
-            <a href="{{ route('exchange-rates.index') }}">Exchange rates</a>
+            <a href="{{ route('exchange-rates.index') }}">{{ __('nav.exchange_rates') }}</a>
             @if (auth()->user()?->isSystemAdmin())
-                <a href="{{ route('admin.dashboard') }}">Site settings</a>
+                <a href="{{ route('admin.dashboard') }}">{{ __('nav.site_settings') }}</a>
             @endif
             <a href="{{ route('p.home') }}">{{ auth()->user()->name }}</a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="btn-link">Sign out</button>
+                <button type="submit" class="btn-link">{{ __('nav.sign_out') }}</button>
             </form>
         </nav>
     </div>
@@ -28,17 +28,17 @@
     <nav class="groupnav">
         <ul>
             @php($nav = [
-                'g.dashboard' => ['Dashboard', []],
-                'g.transactions.index' => ['Activity', []],
-                'g.loans.index' => ['Loans', []],
-                'g.treasuries.index' => ['Treasuries', []],
-                'g.wallets.index' => ['Wallets', []],
-                'g.members.index' => ['Members', []],
-                'g.policies.index' => ['Policies', []],
-                'g.ledger.index' => ['Ledger', []],
-                'g.accounts.index' => ['Accounts', []],
-                'g.cost-centers.index' => ['Cost centers', []],
-                'g.reports.index' => ['Reports', []],
+                'g.dashboard' => [__('nav.links.dashboard'), []],
+                'g.transactions.index' => [__('nav.links.activity'), []],
+                'g.loans.index' => [__('nav.links.loans'), []],
+                'g.treasuries.index' => [__('nav.links.treasuries'), []],
+                'g.wallets.index' => [__('nav.links.wallets'), []],
+                'g.members.index' => [__('nav.links.members'), []],
+                'g.policies.index' => [__('nav.links.policies'), []],
+                'g.ledger.index' => [__('nav.links.ledger'), []],
+                'g.accounts.index' => [__('nav.links.accounts'), []],
+                'g.cost-centers.index' => [__('nav.links.cost_centers'), []],
+                'g.reports.index' => [__('nav.links.reports'), []],
             ])
             @foreach ($nav as $route => [$label, $params])
                 <li>
@@ -51,11 +51,11 @@
             @if (($groupContext ?? null)?->isAdmin())
                 <li>
                     <a href="{{ route('g.periods.index', $group) }}"
-                       @if (request()->routeIs('g.periods.*')) aria-current="page" @endif>Periods</a>
+                       @if (request()->routeIs('g.periods.*')) aria-current="page" @endif>{{ __('nav.links.periods') }}</a>
                 </li>
                 <li>
                     <a href="{{ route('g.audit.index', $group) }}"
-                       @if (request()->routeIs('g.audit.*')) aria-current="page" @endif>Audit</a>
+                       @if (request()->routeIs('g.audit.*')) aria-current="page" @endif>{{ __('nav.links.audit') }}</a>
                 </li>
             @endif
         </ul>

@@ -103,7 +103,7 @@ class LedgerController extends Controller
             $account = $accounts->get((int) $line['account_id']);
 
             if (! $account) {
-                return back()->withInput()->withErrors(['lines' => 'One of the chosen accounts does not belong to this fund.']);
+                return back()->withInput()->withErrors(['lines' => __('exceptions.account_not_in_fund')]);
             }
 
             /** @var ?CostCenter $costCenter */

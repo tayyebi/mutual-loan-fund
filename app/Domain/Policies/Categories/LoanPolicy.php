@@ -8,12 +8,6 @@ use App\Domain\Policies\PolicyField;
 
 class LoanPolicy extends PolicyCategory
 {
-    public const INTEREST_METHODS = [
-        'none' => 'No interest',
-        'flat' => 'Flat on principal',
-        'declining' => 'Declining balance',
-    ];
-
     public static function key(): string
     {
         return 'loans';
@@ -21,22 +15,31 @@ class LoanPolicy extends PolicyCategory
 
     public static function label(): string
     {
-        return 'Loans';
+        return __('policies.fields.categories.loans');
+    }
+
+    public static function interestMethods(): array
+    {
+        return [
+            'none' => __('policies.fields.loans.interest_method_none'),
+            'flat' => __('policies.fields.loans.interest_method_flat'),
+            'declining' => __('policies.fields.loans.interest_method_declining'),
+        ];
     }
 
     public static function fields(): array
     {
         return [
-            'enabled' => PolicyField::bool('enabled', 'Loans enabled', true),
-            'minimum_amount' => PolicyField::money('minimum_amount', 'Minimum amount', '0'),
-            'maximum_amount' => PolicyField::money('maximum_amount', 'Maximum amount', '2500'),
-            'interest_rate' => PolicyField::rate('interest_rate', 'Interest rate', '0'),
-            'interest_method' => PolicyField::enum('interest_method', 'Interest method', self::INTEREST_METHODS, 'none'),
-            'minimum_term_months' => PolicyField::integer('minimum_term_months', 'Minimum term', 1, 'months'),
-            'maximum_term_months' => PolicyField::integer('maximum_term_months', 'Maximum term', 12, 'months'),
-            'maximum_active_loans' => PolicyField::integer('maximum_active_loans', 'Maximum active loans', 1),
-            'minimum_membership_days' => PolicyField::integer('minimum_membership_days', 'Minimum membership', 30, 'days'),
-            'early_repayment_allowed' => PolicyField::bool('early_repayment_allowed', 'Early repayment allowed', true),
+            'enabled' => PolicyField::bool('enabled', __('policies.fields.loans.enabled'), true),
+            'minimum_amount' => PolicyField::money('minimum_amount', __('policies.fields.loans.minimum_amount'), '0'),
+            'maximum_amount' => PolicyField::money('maximum_amount', __('policies.fields.loans.maximum_amount'), '2500'),
+            'interest_rate' => PolicyField::rate('interest_rate', __('policies.fields.loans.interest_rate'), '0'),
+            'interest_method' => PolicyField::enum('interest_method', __('policies.fields.loans.interest_method'), self::interestMethods(), 'none'),
+            'minimum_term_months' => PolicyField::integer('minimum_term_months', __('policies.fields.loans.minimum_term_months'), 1, 'months'),
+            'maximum_term_months' => PolicyField::integer('maximum_term_months', __('policies.fields.loans.maximum_term_months'), 12, 'months'),
+            'maximum_active_loans' => PolicyField::integer('maximum_active_loans', __('policies.fields.loans.maximum_active_loans'), 1),
+            'minimum_membership_days' => PolicyField::integer('minimum_membership_days', __('policies.fields.loans.minimum_membership_days'), 30, 'days'),
+            'early_repayment_allowed' => PolicyField::bool('early_repayment_allowed', __('policies.fields.loans.early_repayment_allowed'), true),
         ];
     }
 

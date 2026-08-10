@@ -16,7 +16,7 @@ class NoActivePolicyException extends RuntimeException implements DomainRefusal
     public function __construct(Group $group)
     {
         parent::__construct(
-            "Group '{$group->name}' has no active policy version. Publish a policy before recording financial operations."
+            __('exceptions.no_active_policy', ['group' => $group->name])
         );
     }
 }

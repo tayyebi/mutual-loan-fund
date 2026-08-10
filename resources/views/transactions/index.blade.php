@@ -1,63 +1,63 @@
 @extends('layouts.app')
-@section('title', 'Activity')
+@section('title', __('transactions.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Activity</h1>
-            <p class="muted small">One timeline for this fund. Only verified transactions have moved money.</p>
+            <h1>{{ __('transactions.index.heading') }}</h1>
+            <p class="muted small">{{ __('transactions.index.intro') }}</p>
         </div>
-        <a class="btn btn-primary" href="{{ route('g.transactions.create', $group) }}">Record a transaction</a>
+        <a class="btn btn-primary" href="{{ route('g.transactions.create', $group) }}">{{ __('transactions.index.record_button') }}</a>
     </div>
 
     <form method="GET" class="filters card">
         <div class="field">
-            <label for="type">Type</label>
+            <label for="type">{{ __('transactions.index.filter_type_label') }}</label>
             <select id="type" name="type">
-                <option value="">All</option>
+                <option value="">{{ __('transactions.index.filter_all') }}</option>
                 @foreach (['contribution','loan_disbursement','loan_repayment','treasury_transfer','treasury_exchange','fee','adjustment'] as $type)
-                    <option value="{{ $type }}" @selected(($filters['type'] ?? '') === $type)>{{ ucfirst(str_replace('_',' ',$type)) }}</option>
+                    <option value="{{ $type }}" @selected(($filters['type'] ?? '') === $type)>{{ __('transactions.index.type_'.$type) }}</option>
                 @endforeach
             </select>
         </div>
         <div class="field">
-            <label for="status">Status</label>
+            <label for="status">{{ __('transactions.index.filter_status_label') }}</label>
             <select id="status" name="status">
-                <option value="">All</option>
+                <option value="">{{ __('transactions.index.filter_all') }}</option>
                 @foreach (['pending','verified','rejected'] as $status)
-                    <option value="{{ $status }}" @selected(($filters['status'] ?? '') === $status)>{{ ucfirst($status) }}</option>
+                    <option value="{{ $status }}" @selected(($filters['status'] ?? '') === $status)>{{ __('transactions.index.status_'.$status) }}</option>
                 @endforeach
             </select>
         </div>
         <div class="field">
-            <label for="member_id">Member</label>
+            <label for="member_id">{{ __('transactions.index.filter_member_label') }}</label>
             <select id="member_id" name="member_id">
-                <option value="">All</option>
+                <option value="">{{ __('transactions.index.filter_all') }}</option>
                 @foreach ($members as $member)
                     <option value="{{ $member->id }}" @selected((int) ($filters['member_id'] ?? 0) === $member->id)>{{ $member->displayName() }}</option>
                 @endforeach
             </select>
         </div>
         <div class="field">
-            <label for="treasury_id">Treasury</label>
+            <label for="treasury_id">{{ __('transactions.index.filter_treasury_label') }}</label>
             <select id="treasury_id" name="treasury_id">
-                <option value="">All</option>
+                <option value="">{{ __('transactions.index.filter_all') }}</option>
                 @foreach ($treasuries as $treasury)
                     <option value="{{ $treasury->id }}" @selected((int) ($filters['treasury_id'] ?? 0) === $treasury->id)>{{ $treasury->name }}</option>
                 @endforeach
             </select>
         </div>
         <div class="field">
-            <label for="from">From</label>
+            <label for="from">{{ __('transactions.index.filter_from_label') }}</label>
             <input id="from" name="from" type="date" value="{{ $filters['from'] ?? '' }}">
         </div>
         <div class="field">
-            <label for="to">To</label>
+            <label for="to">{{ __('transactions.index.filter_to_label') }}</label>
             <input id="to" name="to" type="date" value="{{ $filters['to'] ?? '' }}">
         </div>
         <div class="actions">
-            <button class="btn">Filter</button>
-            <a class="btn" href="{{ route('g.transactions.index', $group) }}">Clear</a>
+            <button class="btn">{{ __('transactions.index.filter_submit') }}</button>
+            <a class="btn" href="{{ route('g.transactions.index', $group) }}">{{ __('transactions.index.filter_clear') }}</a>
         </div>
     </form>
 
@@ -66,12 +66,12 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Member</th>
-                    <th class="num">Amount</th>
-                    <th>Type</th>
-                    <th>Treasury</th>
-                    <th>Status</th>
+                    <th>{{ __('transactions.index.col_date') }}</th>
+                    <th>{{ __('transactions.index.col_member') }}</th>
+                    <th class="num">{{ __('transactions.index.col_amount') }}</th>
+                    <th>{{ __('transactions.index.col_type') }}</th>
+                    <th>{{ __('transactions.index.col_treasury') }}</th>
+                    <th>{{ __('transactions.index.col_status') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -79,7 +79,7 @@
                     <tr>
                         <td class="num">
                             <a href="{{ route('g.transactions.show', [$group, $transaction]) }}">
-                                {{ $transaction->occurred_on->format('j M Y') }}
+                                <x-datetime :value="$transaction->occurred_on" />
                             </a>
                         </td>
                         <td>{{ $transaction->member?->displayName() ?? '—' }}</td>
@@ -96,7 +96,7 @@
                         <td><x-status :value="$transaction->status" /></td>
                     </tr>
                 @empty
-                    <x-empty colspan="6">Nothing matches these filters.</x-empty>
+                    <x-empty colspan="6">{{ __('transactions.index.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>

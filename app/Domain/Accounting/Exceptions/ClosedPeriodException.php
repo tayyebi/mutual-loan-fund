@@ -15,7 +15,7 @@ class ClosedPeriodException extends RuntimeException implements DomainRefusal
     public function __construct(public readonly AccountingPeriod $period)
     {
         parent::__construct(
-            "Accounting period {$period->label()} is closed and cannot receive postings. Post the correction in an open period instead."
+            __('exceptions.accounting_period_closed', ['period' => $period->label()])
         );
     }
 }

@@ -82,7 +82,7 @@ class PolicyService
         return DB::transaction(function () use ($group, $actor) {
             if ($existing = $this->draftPolicy($group)) {
                 throw new RuntimeException(
-                    "Group '{$group->name}' already has draft v{$existing->version}. Edit or delete it first."
+                    __('exceptions.draft_already_exists', ['group' => $group->name, 'version' => $existing->version])
                 );
             }
 
@@ -98,7 +98,7 @@ class PolicyService
     public function updateDraft(GroupPolicy $draft, array $input, User $actor): GroupPolicy
     {
         if (! $draft->isDraft()) {
-            throw new RuntimeException("Policy v{$draft->version} is published and cannot be edited.");
+            throw new RuntimeException(__('exceptions.policy_published_cannot_edit', ['version' => $draft->version]));
         }
 
         return DB::transaction(function () use ($draft, $input, $actor) {
@@ -123,7 +123,7 @@ class PolicyService
     public function deleteDraft(GroupPolicy $draft, User $actor): void
     {
         if (! $draft->isDraft()) {
-            throw new RuntimeException("Policy v{$draft->version} is published and cannot be deleted.");
+            throw new RuntimeException(__('exceptions.policy_published_cannot_delete', ['version' => $draft->version]));
         }
 
         DB::transaction(function () use ($draft, $actor) {

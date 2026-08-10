@@ -58,7 +58,7 @@ class LoanService
         $failures = [];
 
         if (! $loans->enabled()) {
-            $failures[] = 'Loans are not enabled for this fund.';
+            $failures[] = __('exceptions.loans_disabled');
         }
 
         $outstanding = $this->outstandingPrincipalFor($member, $currency, $excluding);
@@ -66,49 +66,51 @@ class LoanService
         $membershipDays = $member->membershipDays();
 
         if ($amount->lessThan($loans->minimumAmount())) {
-            $failures[] = "The minimum loan is {$loans->minimumAmount()->format(2)} {$currency}.";
+            $failures[] = __('exceptions.loan_minimum_amount', [
+                'amount' => $loans->minimumAmount()->format(2),
+                'currency' => $currency,
+            ]);
         }
 
         $maximum = $loans->maximumAmount();
 
         if ($maximum !== null) {
             if ($amount->greaterThan($maximum)) {
-                $failures[] = "The maximum loan is {$maximum->format(2)} {$currency}.";
+                $failures[] = __('exceptions.loan_maximum_amount', [
+                    'amount' => $maximum->format(2),
+                    'currency' => $currency,
+                ]);
             }
 
             // Exposure is judged on the total the member would owe, not on this
             // request alone.
             if ($amount->plus($outstanding)->greaterThan($maximum)) {
-                $failures[] = sprintf(
-                    'This would take total borrowing to %s %s, above the %s %s maximum.',
-                    $amount->plus($outstanding)->format(2),
-                    $currency,
-                    $maximum->format(2),
-                    $currency
-                );
+                $failures[] = __('exceptions.loan_exceeds_total_exposure', [
+                    'total' => $amount->plus($outstanding)->format(2),
+                    'currency' => $currency,
+                    'maximum' => $maximum->format(2),
+                ]);
             }
         }
 
         if ($termMonths < $loans->minimumTermMonths() || $termMonths > $loans->maximumTermMonths()) {
-            $failures[] = sprintf(
-                'The term must be between %d and %d months.',
-                $loans->minimumTermMonths(),
-                $loans->maximumTermMonths()
-            );
+            $failures[] = __('exceptions.loan_term_out_of_range', [
+                'min' => $loans->minimumTermMonths(),
+                'max' => $loans->maximumTermMonths(),
+            ]);
         }
 
         if ($activeLoans >= $loans->maximumActiveLoans()) {
             $failures[] = $loans->maximumActiveLoans() === 1
-                ? 'This fund allows one active loan at a time.'
-                : "This fund allows {$loans->maximumActiveLoans()} active loans at a time.";
+                ? __('exceptions.loan_active_limit_one')
+                : __('exceptions.loan_active_limit_many', ['count' => $loans->maximumActiveLoans()]);
         }
 
         if ($membershipDays < $loans->minimumMembershipDays()) {
-            $failures[] = sprintf(
-                'Members must belong to the fund for %d days before borrowing (currently %d).',
-                $loans->minimumMembershipDays(),
-                $membershipDays
-            );
+            $failures[] = __('exceptions.loan_membership_days_required', [
+                'required' => $loans->minimumMembershipDays(),
+                'current' => $membershipDays,
+            ]);
         }
 
         return new LoanEligibility(
@@ -142,7 +144,7 @@ class LoanService
         );
 
         if (! $eligibility->eligible) {
-            throw new PolicyViolationException($eligibility->firstFailure() ?? 'This loan is not permitted.');
+            throw new PolicyViolationException($eligibility->firstFailure() ?? __('exceptions.loan_not_permitted'));
         }
 
         return DB::transaction(function () use ($member, $group, $policy, $data, $actor) {
@@ -191,7 +193,10 @@ class LoanService
     public function approve(Loan $loan, User $actor, ?string $note = null): Loan
     {
         if ($loan->status !== Loan::STATUS_REQUESTED) {
-            throw new RuntimeException("Loan {$loan->reference} is {$loan->statusLabel()} and cannot be approved.");
+            throw new RuntimeException(__('exceptions.loan_cannot_approve', [
+                'reference' => $loan->reference,
+                'status' => $loan->statusLabel(),
+            ]));
         }
 
         $eligibility = $this->eligibility(
@@ -204,7 +209,7 @@ class LoanService
         );
 
         if (! $eligibility->eligible) {
-            throw new PolicyViolationException($eligibility->firstFailure() ?? 'This loan is no longer permitted.');
+            throw new PolicyViolationException($eligibility->firstFailure() ?? __('exceptions.loan_no_longer_permitted'));
         }
 
         $loan->forceFill([
@@ -229,7 +234,10 @@ class LoanService
     public function reject(Loan $loan, User $actor, string $reason): Loan
     {
         if ($loan->status !== Loan::STATUS_REQUESTED) {
-            throw new RuntimeException("Loan {$loan->reference} is {$loan->statusLabel()} and cannot be rejected.");
+            throw new RuntimeException(__('exceptions.loan_cannot_reject', [
+                'reference' => $loan->reference,
+                'status' => $loan->statusLabel(),
+            ]));
         }
 
         $loan->forceFill([
@@ -254,7 +262,7 @@ class LoanService
     public function cancel(Loan $loan, User $actor): Loan
     {
         if (! in_array($loan->status, [Loan::STATUS_REQUESTED, Loan::STATUS_APPROVED], true)) {
-            throw new RuntimeException("Loan {$loan->reference} can no longer be cancelled.");
+            throw new RuntimeException(__('exceptions.loan_cannot_cancel', ['reference' => $loan->reference]));
         }
 
         $previous = $loan->status;
@@ -288,11 +296,14 @@ class LoanService
         ?string $txHash = null,
     ): Transaction {
         if ($loan->status !== Loan::STATUS_APPROVED) {
-            throw new RuntimeException("Loan {$loan->reference} must be approved before it can be disbursed.");
+            throw new RuntimeException(__('exceptions.loan_must_be_approved_to_disburse', ['reference' => $loan->reference]));
         }
 
         if ($treasury->currency !== $loan->currency) {
-            throw new RuntimeException("Loan {$loan->reference} is denominated in {$loan->currency}.");
+            throw new RuntimeException(__('exceptions.loan_currency_mismatch', [
+                'reference' => $loan->reference,
+                'currency' => $loan->currency,
+            ]));
         }
 
         return $this->transactions->record($loan->group, [

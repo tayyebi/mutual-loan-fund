@@ -1,21 +1,21 @@
 @extends('layouts.app')
-@section('title', 'Edit policy draft v'.$policy->version)
+@section('title', __('policies.edit.title', ['version' => $policy->version]))
 
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.policies.index', $group) }}">Policies</a></p>
-            <h1>Draft v{{ $policy->version }}</h1>
+            <p class="breadcrumb"><a href="{{ route('g.policies.index', $group) }}">{{ __('policies.edit.breadcrumb') }}</a></p>
+            <h1>{{ __('policies.edit.heading', ['version' => $policy->version]) }}</h1>
             <p class="muted small">
-                Saving a draft changes nothing. Publishing is a separate, explicit action.
+                {{ __('policies.edit.intro') }}
             </p>
         </div>
-        <a class="btn btn-primary" href="{{ route('g.policies.publish.confirm', [$group, $policy->version]) }}">Publish…</a>
+        <a class="btn btn-primary" href="{{ route('g.policies.publish.confirm', [$group, $policy->version]) }}">{{ __('policies.edit.publish_link') }}</a>
     </div>
 
     @if ($framework_warnings !== [])
         <div class="alert alert-warn">
-            This draft drifts from your chosen financial framework:
+            {{ __('policies.edit.framework_drift_heading') }}
             <ul>
                 @foreach ($framework_warnings as $message)
                     <li>{{ $message }}</li>
@@ -83,12 +83,11 @@
 
         <div class="card" style="margin-top:1rem">
             <div class="actions">
-                <button class="btn btn-primary">Save draft</button>
-                <a class="btn" href="{{ route('g.policies.show', [$group, $policy->version]) }}">View draft</a>
+                <button class="btn btn-primary">{{ __('policies.edit.save') }}</button>
+                <a class="btn" href="{{ route('g.policies.show', [$group, $policy->version]) }}">{{ __('policies.edit.view_draft') }}</a>
             </div>
             <p class="hint">
-                Monetary limits are compared against the amount of each operation in the
-                operation's own currency.
+                {{ __('policies.edit.monetary_hint') }}
             </p>
         </div>
     </form>

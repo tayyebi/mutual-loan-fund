@@ -1,14 +1,14 @@
 @extends('layouts.app')
-@section('title', 'Request a loan')
+@section('title', __('loans.create.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.loans.index', $group) }}">Loans</a></p>
-            <h1>Request a loan</h1>
+            <p class="breadcrumb"><a href="{{ route('g.loans.index', $group) }}">{{ __('loans.create.breadcrumb') }}</a></p>
+            <h1>{{ __('loans.create.heading') }}</h1>
             <p class="muted small">
-                Under policy <a href="{{ route('g.policies.show', [$group, $policy->version]) }}">v{{ $policy->version }}</a>.
-                The rules below are enforced, not just displayed.
+                {{ __('loans.create.intro_prefix') }} <a href="{{ route('g.policies.show', [$group, $policy->version]) }}">v{{ $policy->version }}</a>.
+                {{ __('loans.create.intro_suffix') }}
             </p>
         </div>
     </div>
@@ -16,16 +16,16 @@
     <div class="grid grid-side">
         <div class="card">
             @unless ($loanPolicy->enabled())
-                <div class="alert alert-warn">This fund is not currently lending.</div>
+                <div class="alert alert-warn">{{ __('loans.create.not_lending_notice') }}</div>
             @endunless
 
             <form method="GET" class="filters" style="margin-bottom:1rem">
                 <div class="field">
-                    <label for="check_amount">Amount</label>
+                    <label for="check_amount">{{ __('loans.create.amount_label') }}</label>
                     <input id="check_amount" name="amount" type="text" inputmode="decimal" value="{{ $amount }}">
                 </div>
                 <div class="field">
-                    <label for="check_currency">Currency</label>
+                    <label for="check_currency">{{ __('loans.create.currency_label') }}</label>
                     <select id="check_currency" name="currency">
                         @foreach ($currencies as $code)
                             <option value="{{ $code }}" @selected($currency === $code)>{{ $code }}</option>
@@ -33,42 +33,42 @@
                     </select>
                 </div>
                 <div class="field">
-                    <label for="check_term">Term (months)</label>
+                    <label for="check_term">{{ __('loans.create.term_label') }}</label>
                     <input id="check_term" name="term_months" type="number" min="1" value="{{ $term }}">
                 </div>
-                <button class="btn">Check eligibility</button>
+                <button class="btn">{{ __('loans.create.check_button') }}</button>
             </form>
 
             <div class="card" style="background: var(--surface-2);">
-                <h3 style="margin-top:0">Eligibility</h3>
+                <h3 style="margin-top:0">{{ __('loans.create.eligibility_heading') }}</h3>
                 <dl class="deflist">
-                    <dt>Requested</dt>
+                    <dt>{{ __('loans.create.requested_label') }}</dt>
                     <dd><x-amount :value="$eligibility->requested" :currency="$eligibility->currency" /></dd>
 
-                    <dt>Maximum</dt>
+                    <dt>{{ __('loans.create.maximum_label') }}</dt>
                     <dd>
                         @if ($eligibility->maximum)
                             <x-amount :value="$eligibility->maximum" :currency="$eligibility->currency" />
                         @else
-                            <span class="muted">unlimited</span>
+                            <span class="muted">{{ __('loans.create.unlimited') }}</span>
                         @endif
                     </dd>
 
-                    <dt>Outstanding</dt>
+                    <dt>{{ __('loans.create.outstanding_label') }}</dt>
                     <dd><x-amount :value="$eligibility->outstanding" :currency="$eligibility->currency" /></dd>
 
-                    <dt>Active loans</dt>
-                    <dd>{{ $eligibility->activeLoans }} of {{ $eligibility->maximumActiveLoans }}</dd>
+                    <dt>{{ __('loans.create.active_loans_label') }}</dt>
+                    <dd>{{ __('loans.create.active_loans_value', ['active' => $eligibility->activeLoans, 'max' => $eligibility->maximumActiveLoans]) }}</dd>
 
-                    <dt>Membership</dt>
-                    <dd>{{ $eligibility->membershipDays }} days (needs {{ $eligibility->requiredMembershipDays }})</dd>
+                    <dt>{{ __('loans.create.membership_label') }}</dt>
+                    <dd>{{ __('loans.create.membership_value', ['days' => $eligibility->membershipDays, 'required' => $eligibility->requiredMembershipDays]) }}</dd>
 
-                    <dt>Eligible</dt>
+                    <dt>{{ __('loans.create.eligible_label') }}</dt>
                     <dd>
                         @if ($eligibility->eligible)
-                            <span class="badge badge-ok">Yes</span>
+                            <span class="badge badge-ok">{{ __('loans.create.eligible_yes') }}</span>
                         @else
-                            <span class="badge badge-danger">No</span>
+                            <span class="badge badge-danger">{{ __('loans.create.eligible_no') }}</span>
                         @endif
                     </dd>
                 </dl>
@@ -88,11 +88,11 @@
                 @csrf
                 <div class="field-row field-row-3">
                     <div class="field">
-                        <label for="amount">Amount</label>
+                        <label for="amount">{{ __('loans.create.amount_label') }}</label>
                         <input id="amount" name="amount" type="text" inputmode="decimal" value="{{ old('amount', (string) $amount) }}" required>
                     </div>
                     <div class="field">
-                        <label for="currency">Currency</label>
+                        <label for="currency">{{ __('loans.create.currency_label') }}</label>
                         <select id="currency" name="currency" required>
                             @foreach ($currencies as $code)
                                 <option value="{{ $code }}" @selected(old('currency', $currency) === $code)>{{ $code }}</option>
@@ -100,43 +100,42 @@
                         </select>
                     </div>
                     <div class="field">
-                        <label for="term_months">Term (months)</label>
+                        <label for="term_months">{{ __('loans.create.term_label') }}</label>
                         <input id="term_months" name="term_months" type="number" min="{{ $loanPolicy->minimumTermMonths() }}"
                                max="{{ $loanPolicy->maximumTermMonths() }}" value="{{ old('term_months', $term) }}" required>
                     </div>
                 </div>
 
                 <div class="field">
-                    <label for="purpose">Purpose</label>
+                    <label for="purpose">{{ __('loans.create.purpose_label') }}</label>
                     <textarea id="purpose" name="purpose">{{ old('purpose') }}</textarea>
                 </div>
 
-                <button class="btn btn-primary">Request loan</button>
+                <button class="btn btn-primary">{{ __('loans.create.submit') }}</button>
             </form>
         </div>
 
         <div class="card">
-            <h3>Policy v{{ $policy->version }}</h3>
+            <h3>{{ __('loans.create.policy_heading', ['version' => $policy->version]) }}</h3>
             <dl class="deflist">
-                <dt>Interest</dt>
+                <dt>{{ __('loans.create.interest_label') }}</dt>
                 <dd>{{ $loanPolicy->interestRate()->format(2) }}% ({{ \App\Domain\Policies\Categories\LoanPolicy::INTEREST_METHODS[$loanPolicy->interestMethod()] }})</dd>
-                <dt>Amount</dt>
+                <dt>{{ __('loans.create.amount_range_label') }}</dt>
                 <dd>
                     {{ $loanPolicy->minimumAmount()->format(2) }} –
-                    {{ $loanPolicy->maximumAmount()?->format(2) ?? 'unlimited' }}
+                    {{ $loanPolicy->maximumAmount()?->format(2) ?? __('loans.create.unlimited') }}
                 </dd>
-                <dt>Term</dt>
-                <dd>{{ $loanPolicy->minimumTermMonths() }}–{{ $loanPolicy->maximumTermMonths() }} months</dd>
-                <dt>Active loans</dt>
+                <dt>{{ __('loans.create.term_range_label') }}</dt>
+                <dd>{{ __('loans.create.term_range_value', ['min' => $loanPolicy->minimumTermMonths(), 'max' => $loanPolicy->maximumTermMonths()]) }}</dd>
+                <dt>{{ __('loans.create.active_loans_policy_label') }}</dt>
                 <dd>{{ $loanPolicy->maximumActiveLoans() }}</dd>
-                <dt>Membership</dt>
-                <dd>{{ $loanPolicy->minimumMembershipDays() }} days minimum</dd>
-                <dt>Early repayment</dt>
-                <dd>{{ $loanPolicy->allowsEarlyRepayment() ? 'Allowed' : 'Not allowed' }}</dd>
+                <dt>{{ __('loans.create.membership_policy_label') }}</dt>
+                <dd>{{ __('loans.create.membership_policy_value', ['days' => $loanPolicy->minimumMembershipDays()]) }}</dd>
+                <dt>{{ __('loans.create.early_repayment_label') }}</dt>
+                <dd>{{ $loanPolicy->allowsEarlyRepayment() ? __('loans.create.early_repayment_allowed') : __('loans.create.early_repayment_not_allowed') }}</dd>
             </dl>
             <p class="small muted" style="margin-top:0.8rem">
-                If the administrator publishes a new policy later, this loan keeps these
-                rules.
+                {{ __('loans.create.footer_note') }}
             </p>
         </div>
     </div>

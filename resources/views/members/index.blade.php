@@ -1,15 +1,15 @@
 @extends('layouts.app')
-@section('title', 'Members')
+@section('title', __('members.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Members</h1>
-            <p class="muted small">Every active member has a cost center; their activity is attributed to it.</p>
+            <h1>{{ __('members.index.heading') }}</h1>
+            <p class="muted small">{{ __('members.index.intro') }}</p>
         </div>
         @if ($groupContext->isAdmin())
             <a class="btn" href="{{ route('g.members.requests', $group) }}">
-                Membership requests @if ($pending > 0)<span class="badge badge-warn">{{ $pending }}</span>@endif
+                {{ __('members.index.requests_link') }} @if ($pending > 0)<span class="badge badge-warn">{{ $pending }}</span>@endif
             </a>
         @endif
     </div>
@@ -19,11 +19,11 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Member</th>
-                    <th>Cost center</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Member since</th>
+                    <th>{{ __('members.index.member_header') }}</th>
+                    <th>{{ __('members.index.cost_center_header') }}</th>
+                    <th>{{ __('members.index.role_header') }}</th>
+                    <th>{{ __('members.index.status_header') }}</th>
+                    <th>{{ __('members.index.member_since_header') }}</th>
                     @if ($groupContext->isAdmin())<th></th>@endif
                 </tr>
                 </thead>
@@ -37,19 +37,21 @@
                         <td class="mono">{{ $member->costCenter?->code ?? '—' }}</td>
                         <td>{{ $member->role }}</td>
                         <td><x-status :value="$member->status" /></td>
-                        <td class="small muted">{{ $member->approved_at?->format('j M Y') ?? '—' }}</td>
+                        <td class="small muted">
+                            @if ($member->approved_at)<x-datetime :value="$member->approved_at" />@else —@endif
+                        </td>
                         @if ($groupContext->isAdmin())
                             <td>
                                 <div class="actions">
                                     @if ($member->status === \App\Models\GroupMembership::STATUS_SUSPENDED)
                                         <form method="POST" action="{{ route('g.members.reinstate', [$group, $member]) }}">
                                             @csrf
-                                            <button class="btn btn-small">Reinstate</button>
+                                            <button class="btn btn-small">{{ __('members.index.reinstate') }}</button>
                                         </form>
                                     @else
                                         <form method="POST" action="{{ route('g.members.suspend', [$group, $member]) }}">
                                             @csrf
-                                            <button class="btn btn-small btn-danger">Suspend</button>
+                                            <button class="btn btn-small btn-danger">{{ __('members.index.suspend') }}</button>
                                         </form>
                                     @endif
 
@@ -58,7 +60,7 @@
                                         <input type="hidden" name="role"
                                                value="{{ $member->role === 'admin' ? 'member' : 'admin' }}">
                                         <button class="btn btn-small">
-                                            {{ $member->role === 'admin' ? 'Make member' : 'Make admin' }}
+                                            {{ $member->role === 'admin' ? __('members.index.make_member') : __('members.index.make_admin') }}
                                         </button>
                                     </form>
                                 </div>
@@ -66,7 +68,7 @@
                         @endif
                     </tr>
                 @empty
-                    <x-empty colspan="{{ $groupContext->isAdmin() ? 6 : 5 }}">No members yet.</x-empty>
+                    <x-empty colspan="{{ $groupContext->isAdmin() ? 6 : 5 }}">{{ __('members.index.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>
@@ -75,9 +77,9 @@
 
     @if ($groupContext->isAdmin())
         <div class="card" style="margin-top: 1rem;">
-            <h3>Invite someone</h3>
+            <h3>{{ __('members.index.invite_heading') }}</h3>
             <p class="small muted">
-                Funds are not discoverable. Send this link to the person you want to join:
+                {{ __('members.index.invite_hint') }}
             </p>
             <p class="mono small">{{ route('groups.join', $group) }}</p>
         </div>

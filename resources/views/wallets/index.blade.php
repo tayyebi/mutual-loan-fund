@@ -1,28 +1,27 @@
 @extends('layouts.app')
-@section('title', 'Wallets')
+@section('title', __('wallets.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Wallets</h1>
+            <h1>{{ __('wallets.index.heading') }}</h1>
             <p class="muted small">
-                External addresses only. This application is non-custodial: it never
-                asks for, and cannot store, a private key or seed phrase.
+                {{ __('wallets.index.intro') }}
             </p>
         </div>
     </div>
 
     <div class="grid grid-side">
         <div class="card">
-            <h2>Your wallets</h2>
+            <h2>{{ __('wallets.index.your_wallets_heading') }}</h2>
             <div class="table-wrap">
                 <table>
                     <thead>
                     <tr>
-                        <th>Label</th>
-                        <th>Network</th>
-                        <th>Address</th>
-                        <th>Status</th>
+                        <th>{{ __('wallets.index.col_label') }}</th>
+                        <th>{{ __('wallets.index.col_network') }}</th>
+                        <th>{{ __('wallets.index.col_address') }}</th>
+                        <th>{{ __('wallets.index.col_status') }}</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -47,13 +46,13 @@
                                     <input type="hidden" name="status"
                                            value="{{ $wallet->status === 'active' ? 'inactive' : 'active' }}">
                                     <button class="btn btn-small">
-                                        {{ $wallet->status === 'active' ? 'Deactivate' : 'Activate' }}
+                                        {{ $wallet->status === 'active' ? __('wallets.index.deactivate_button') : __('wallets.index.activate_button') }}
                                     </button>
                                 </form>
                             </td>
                         </tr>
                     @empty
-                        <x-empty colspan="5">You have not registered a wallet yet.</x-empty>
+                        <x-empty colspan="5">{{ __('wallets.index.empty') }}</x-empty>
                     @endforelse
                     </tbody>
                 </table>
@@ -61,12 +60,12 @@
         </div>
 
         <div class="card">
-            <h2>Register a wallet</h2>
+            <h2>{{ __('wallets.index.register_heading') }}</h2>
             <form method="POST" action="{{ route('g.wallets.store', $group) }}">
                 @csrf
 
                 <div class="field">
-                    <label for="network">Network</label>
+                    <label for="network">{{ __('wallets.index.network_label') }}</label>
                     <select id="network" name="network" required>
                         @foreach ($networks as $key => $network)
                             <option value="{{ $key }}" @selected(old('network') === $key)>{{ $network['label'] }}</option>
@@ -75,7 +74,7 @@
                 </div>
 
                 <div class="field">
-                    <label for="currency">Currency</label>
+                    <label for="currency">{{ __('wallets.index.currency_label') }}</label>
                     <select id="currency" name="currency" required>
                         @foreach ($currencies as $code => $meta)
                             @continue($code === config('fund.gold_unit'))
@@ -85,33 +84,33 @@
                 </div>
 
                 <div class="field">
-                    <label for="address">Address</label>
+                    <label for="address">{{ __('wallets.index.address_label') }}</label>
                     <input id="address" name="address" type="text" value="{{ old('address') }}" required>
-                    <span class="hint">The public address only.</span>
+                    <span class="hint">{{ __('wallets.index.address_hint') }}</span>
                 </div>
 
                 <div class="field">
-                    <label for="label">Label</label>
+                    <label for="label">{{ __('wallets.index.label_label') }}</label>
                     <input id="label" name="label" type="text" value="{{ old('label') }}">
                 </div>
 
-                <button class="btn btn-primary">Register</button>
+                <button class="btn btn-primary">{{ __('wallets.index.register_button') }}</button>
             </form>
         </div>
     </div>
 
     @if ($groupWallets->isNotEmpty())
         <div class="card" style="margin-top: 1rem;">
-            <h2>All registered wallets</h2>
-            <p class="small muted">Shown to administrators so incoming transfers can be recognised.</p>
+            <h2>{{ __('wallets.index.all_wallets_heading') }}</h2>
+            <p class="small muted">{{ __('wallets.index.all_wallets_intro') }}</p>
             <div class="table-wrap">
                 <table>
                     <thead>
                     <tr>
-                        <th>Member</th>
-                        <th>Network</th>
-                        <th>Address</th>
-                        <th>Status</th>
+                        <th>{{ __('wallets.index.col_member') }}</th>
+                        <th>{{ __('wallets.index.col_network') }}</th>
+                        <th>{{ __('wallets.index.col_address') }}</th>
+                        <th>{{ __('wallets.index.col_status') }}</th>
                     </tr>
                     </thead>
                     <tbody>

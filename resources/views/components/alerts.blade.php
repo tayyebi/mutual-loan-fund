@@ -7,7 +7,7 @@
         @if ($errors->count() === 1)
             {{ $errors->first() }}
         @else
-            The following problems need attention:
+            {{ __('components.alerts.errors_heading') }}
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>

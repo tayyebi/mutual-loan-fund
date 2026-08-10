@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Reports')
+@section('title', __('reports.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Reports</h1>
-            <p class="muted small">Every figure is derived from posted journal lines.</p>
+            <h1>{{ __('reports.index.title') }}</h1>
+            <p class="muted small">{{ __('reports.index.subtitle') }}</p>
         </div>
     </div>
 
@@ -15,13 +15,13 @@
                 <h2 style="margin:0 0 0.4rem"><a href="{{ route('g.reports.show', [$group, $key]) }}">{{ $title }}</a></h2>
                 <p class="small muted" style="margin:0">
                     {{ match ($key) {
-                        'trial-balance' => 'Debits and credits per account, and the proof they agree.',
-                        'balance-sheet' => 'Assets against liabilities and equity.',
-                        'income-statement' => 'Income, expenses and the net result.',
-                        'treasuries' => 'What the fund holds, and where.',
-                        'receivables' => 'Outstanding principal by member.',
-                        'cost-centers' => 'Activity grouped by who it belongs to.',
-                        'gold' => 'The fund expressed in grams of 18K gold.',
+                        'trial-balance' => __('reports.index.descriptions.trial-balance'),
+                        'balance-sheet' => __('reports.index.descriptions.balance-sheet'),
+                        'income-statement' => __('reports.index.descriptions.income-statement'),
+                        'treasuries' => __('reports.index.descriptions.treasuries'),
+                        'receivables' => __('reports.index.descriptions.receivables'),
+                        'cost-centers' => __('reports.index.descriptions.cost-centers'),
+                        'gold' => __('reports.index.descriptions.gold'),
                         default => '',
                     } }}
                 </p>

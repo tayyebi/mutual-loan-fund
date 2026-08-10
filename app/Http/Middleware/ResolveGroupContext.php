@@ -34,7 +34,7 @@ class ResolveGroupContext
         $user = $request->user();
 
         if (! $user || ! $user->isActive()) {
-            abort(403, 'Your account is not active.');
+            abort(403, __('exceptions.account_not_active'));
         }
 
         $membership = $user->membershipFor($group);
@@ -45,7 +45,7 @@ class ResolveGroupContext
         }
 
         if (! $group->isActive()) {
-            abort(403, 'This fund is suspended.');
+            abort(403, __('exceptions.fund_suspended'));
         }
 
         $this->assertBoundModelsBelongToGroup($request, $group);

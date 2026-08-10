@@ -4,19 +4,19 @@
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.accounts.index', $group) }}">Chart of accounts</a></p>
+            <p class="breadcrumb"><a href="{{ route('g.accounts.index', $group) }}">{{ __('accounts.show.breadcrumb') }}</a></p>
             <h1>{{ $account->label() }}</h1>
             <p class="muted small">
                 {{ $account->type }}
-                · balance <x-amount :value="$balance" :currency="$currency" signed />
-                @if ($account->requires_cost_center) · cost center required @endif
+                · {{ __('accounts.show.balance_prefix') }} <x-amount :value="$balance" :currency="$currency" signed />
+                @if ($account->requires_cost_center) · {{ __('accounts.show.cost_center_required') }} @endif
             </p>
         </div>
     </div>
 
     @if ($nativeBalances->isNotEmpty())
         <div class="card">
-            <h3>Native balances</h3>
+            <h3>{{ __('accounts.show.native_balances_heading') }}</h3>
             <div class="actions">
                 @foreach ($nativeBalances as $currencyCode => $amount)
                     <span class="badge"><x-amount :value="$amount" :currency="$currencyCode" signed /></span>
@@ -27,34 +27,34 @@
 
     <form method="GET" class="filters card">
         <div class="field">
-            <label for="from">From</label>
+            <label for="from">{{ __('accounts.show.filter_from_label') }}</label>
             <input id="from" name="from" type="date" value="{{ $filters['from'] ?? '' }}">
         </div>
         <div class="field">
-            <label for="to">To</label>
+            <label for="to">{{ __('accounts.show.filter_to_label') }}</label>
             <input id="to" name="to" type="date" value="{{ $filters['to'] ?? '' }}">
         </div>
-        <button class="btn">Filter</button>
+        <button class="btn">{{ __('accounts.show.filter_submit') }}</button>
     </form>
 
     <div class="card">
-        <h2>General ledger</h2>
+        <h2>{{ __('accounts.show.ledger_heading') }}</h2>
         <div class="table-wrap">
             <table>
                 <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Entry</th>
-                    <th>Description</th>
-                    <th>Cost center</th>
-                    <th class="num">Debit</th>
-                    <th class="num">Credit</th>
+                    <th>{{ __('accounts.show.col_date') }}</th>
+                    <th>{{ __('accounts.show.col_entry') }}</th>
+                    <th>{{ __('accounts.show.col_description') }}</th>
+                    <th>{{ __('accounts.show.col_cost_center') }}</th>
+                    <th class="num">{{ __('accounts.show.col_debit') }}</th>
+                    <th class="num">{{ __('accounts.show.col_credit') }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 @forelse ($lines as $line)
                     <tr>
-                        <td class="num">{{ $line->journalEntry->entry_date->format('j M Y') }}</td>
+                        <td class="num"><x-datetime :value="$line->journalEntry->entry_date" /></td>
                         <td class="mono">
                             <a href="{{ route('g.ledger.show', [$group, $line->journalEntry]) }}">
                                 {{ $line->journalEntry->entry_number }}
@@ -63,7 +63,7 @@
                         <td>
                             {{ $line->description ?? $line->journalEntry->description }}
                             @if ($line->journalEntry->isReversed())
-                                <span class="badge badge-danger">reversed</span>
+                                <span class="badge badge-danger">{{ __('accounts.show.reversed_badge') }}</span>
                             @endif
                         </td>
                         <td class="small">
@@ -77,7 +77,7 @@
                         <td class="num">@if (! $line->isDebit())<x-amount :value="$line->credit" :currency="$line->currency" />@endif</td>
                     </tr>
                 @empty
-                    <x-empty colspan="6">No posted lines for this account.</x-empty>
+                    <x-empty colspan="6">{{ __('accounts.show.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>

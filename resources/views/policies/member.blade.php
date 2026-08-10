@@ -1,26 +1,24 @@
 @extends('layouts.app')
-@section('title', 'Fund rules')
+@section('title', __('policies.member.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Fund rules</h1>
+            <h1>{{ __('policies.member.heading') }}</h1>
             <p class="muted small">
-                The rules currently governing new operations. Loans and contributions you
-                already have keep the rules they were created under.
+                {{ __('policies.member.intro') }}
             </p>
         </div>
     </div>
 
     @unless ($policy)
         <div class="alert alert-warn">
-            This fund has no active policy. New financial operations are refused until
-            an administrator publishes one.
+            {{ __('policies.member.no_active_policy') }}
         </div>
     @else
         @if ($framework_warnings !== [])
             <div class="alert alert-warn">
-                This fund's rules drift from its chosen financial framework:
+                {{ __('policies.member.framework_drift_heading') }}
                 <ul>
                     @foreach ($framework_warnings as $message)
                         <li>{{ $message }}</li>
@@ -29,7 +27,10 @@
             </div>
         @endif
 
-        <p class="muted small">Policy v{{ $policy->version }}, active since {{ $policy->effective_from?->format('j M Y') }}.</p>
+        <p class="muted small">
+            {{ __('policies.member.active_since', ['version' => $policy->version]) }}
+            @if ($policy->effective_from)<x-datetime :value="$policy->effective_from" />@endif.
+        </p>
 
         <div class="grid grid-2">
             @foreach ($config->categories() as $key => $category)

@@ -79,11 +79,11 @@ class WalletService
         $pattern = config("fund.networks.{$network}.address_pattern");
 
         if (! $pattern) {
-            throw new InvalidArgumentException("Unsupported network '{$network}'.");
+            throw new InvalidArgumentException(__('exceptions.network_unsupported', ['network' => $network]));
         }
 
         if (! preg_match($pattern, $address)) {
-            throw new InvalidArgumentException("That does not look like a valid {$network} address.");
+            throw new InvalidArgumentException(__('exceptions.address_invalid', ['network' => $network]));
         }
     }
 }

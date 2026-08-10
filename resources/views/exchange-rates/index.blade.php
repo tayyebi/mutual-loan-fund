@@ -1,13 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Exchange rates')
+@section('title', __('exchange_rates.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Exchange rates</h1>
+            <h1>{{ __('exchange_rates.index.heading') }}</h1>
             <p class="muted small">
-                Global data, shared by every fund. The reference asset is one gram of 18K
-                gold ({{ $goldUnit }}) — not a troy ounce of pure gold.
+                {{ __('exchange_rates.index.intro', ['unit' => $goldUnit]) }}
             </p>
         </div>
     </div>
@@ -16,10 +15,10 @@
         <div class="stack">
             <div class="card">
                 <div class="card-head">
-                    <h2>Rates on {{ $date->format('j M Y') }}</h2>
+                    <h2>{{ __('exchange_rates.index.rates_on') }} <x-datetime :value="$date" /></h2>
                     <form method="GET" class="filters">
                         <input type="date" name="date" value="{{ $date->toDateString() }}">
-                        <button class="btn btn-small">Show</button>
+                        <button class="btn btn-small">{{ __('exchange_rates.index.show_button') }}</button>
                     </form>
                 </div>
 
@@ -27,10 +26,10 @@
                     <table>
                         <thead>
                         <tr>
-                            <th>Unit</th>
-                            <th class="num">Per gram of 18K</th>
-                            <th>Effective</th>
-                            <th>Source</th>
+                            <th>{{ __('exchange_rates.index.col_unit') }}</th>
+                            <th class="num">{{ __('exchange_rates.index.col_per_gram') }}</th>
+                            <th>{{ __('exchange_rates.index.col_effective') }}</th>
+                            <th>{{ __('exchange_rates.index.col_source') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -39,23 +38,22 @@
                                 <td>{{ $unit }}</td>
                                 <td class="num">{{ $quote->unitsPerGram18k->format(6) }}</td>
                                 <td class="small">
-                                    {{ $quote->effectiveDate->format('j M Y') }}
+                                    <x-datetime :value="$quote->effectiveDate" />
                                     @if ($quote->isFallback())
-                                        <span class="badge badge-warn">carried forward {{ $quote->ageInDays() }} days</span>
+                                        <span class="badge badge-warn">{{ __('exchange_rates.index.carried_forward', ['days' => $quote->ageInDays()]) }}</span>
                                     @endif
                                 </td>
                                 <td class="small muted">
                                     @if ($quote->isFallback())
-                                        No rate was entered for this date.
+                                        {{ __('exchange_rates.index.source_not_entered') }}
                                     @else
-                                        Entered for this date.
+                                        {{ __('exchange_rates.index.source_entered') }}
                                     @endif
                                 </td>
                             </tr>
                         @empty
                             <x-empty colspan="4">
-                                No rates have been entered. Operations still post in their own
-                                currency; gold valuation is simply unavailable.
+                                {{ __('exchange_rates.index.empty_rates') }}
                             </x-empty>
                         @endforelse
                         </tbody>
@@ -64,22 +62,22 @@
             </div>
 
             <div class="card">
-                <h2>Recently entered</h2>
+                <h2>{{ __('exchange_rates.index.recent_heading') }}</h2>
                 <div class="table-wrap">
                     <table>
                         <thead>
                         <tr>
-                            <th>Effective</th>
-                            <th>Unit</th>
-                            <th class="num">Per gram 18K</th>
-                            <th class="num">Troy oz 24K</th>
-                            <th>Entered by</th>
+                            <th>{{ __('exchange_rates.index.col_effective') }}</th>
+                            <th>{{ __('exchange_rates.index.col_unit') }}</th>
+                            <th class="num">{{ __('exchange_rates.index.col_per_gram_short') }}</th>
+                            <th class="num">{{ __('exchange_rates.index.col_troy_oz') }}</th>
+                            <th>{{ __('exchange_rates.index.col_entered_by') }}</th>
                         </tr>
                         </thead>
                         <tbody>
                         @forelse ($recent as $rate)
                             <tr>
-                                <td class="num">{{ $rate->effective_date->format('j M Y') }}</td>
+                                <td class="num"><x-datetime :value="$rate->effective_date" /></td>
                                 <td>{{ $rate->unit }}</td>
                                 <td class="num">{{ \App\Domain\Money\Decimal::of((string) $rate->units_per_gram_18k)->format(6) }}</td>
                                 <td class="num">
@@ -92,7 +90,7 @@
                                 <td class="small muted">{{ $rate->creator?->name }}</td>
                             </tr>
                         @empty
-                            <x-empty colspan="5">Nothing entered yet.</x-empty>
+                            <x-empty colspan="5">{{ __('exchange_rates.index.empty_recent') }}</x-empty>
                         @endforelse
                         </tbody>
                     </table>
@@ -103,12 +101,12 @@
         <div class="stack">
             @if ($canManage)
                 <div class="card">
-                    <h2>Enter a rate</h2>
+                    <h2>{{ __('exchange_rates.index.enter_heading') }}</h2>
                     <form method="POST" action="{{ route('exchange-rates.store') }}">
                         @csrf
 
                         <div class="field">
-                            <label for="unit">Unit</label>
+                            <label for="unit">{{ __('exchange_rates.index.unit_label') }}</label>
                             <select id="unit" name="unit" required>
                                 @foreach ($units as $unit)
                                     <option value="{{ $unit }}" @selected(old('unit') === $unit)>{{ $unit }}</option>
@@ -117,56 +115,54 @@
                         </div>
 
                         <div class="field">
-                            <label for="units_per_gram_18k">1 gram of 18K gold =</label>
+                            <label for="units_per_gram_18k">{{ __('exchange_rates.index.units_per_gram_label') }}</label>
                             <input id="units_per_gram_18k" name="units_per_gram_18k" type="text"
                                    inputmode="decimal" value="{{ old('units_per_gram_18k') }}">
-                            <span class="hint">Authoritative when entered.</span>
+                            <span class="hint">{{ __('exchange_rates.index.units_per_gram_hint') }}</span>
                         </div>
 
                         <div class="field">
-                            <label for="troy_ounce_24k">or 1 troy ounce of 24K gold =</label>
+                            <label for="troy_ounce_24k">{{ __('exchange_rates.index.troy_ounce_label') }}</label>
                             <input id="troy_ounce_24k" name="troy_ounce_24k" type="text"
                                    inputmode="decimal" value="{{ old('troy_ounce_24k') }}">
-                            <span class="hint">Converted mathematically, not treated as a separate rate.</span>
+                            <span class="hint">{{ __('exchange_rates.index.troy_ounce_hint') }}</span>
                         </div>
 
                         <div class="field">
-                            <label for="effective_date">Effective date</label>
+                            <label for="effective_date">{{ __('exchange_rates.index.effective_date_label') }}</label>
                             <input id="effective_date" name="effective_date" type="date"
                                    value="{{ old('effective_date', now()->toDateString()) }}" required>
                         </div>
 
                         <div class="field">
-                            <label for="source_note">Source</label>
+                            <label for="source_note">{{ __('exchange_rates.index.source_note_label') }}</label>
                             <input id="source_note" name="source_note" type="text" value="{{ old('source_note') }}">
                         </div>
 
-                        <button class="btn btn-primary">Record rate</button>
+                        <button class="btn btn-primary">{{ __('exchange_rates.index.record_button') }}</button>
                     </form>
                 </div>
             @endif
 
             <div class="card">
-                <h3>The conversions</h3>
+                <h3>{{ __('exchange_rates.index.conversions_heading') }}</h3>
                 <dl class="deflist">
-                    <dt>18K purity</dt>
-                    <dd>75% pure gold</dd>
-                    <dt>Troy ounce</dt>
-                    <dd>31.1034768 g</dd>
-                    <dt>1 troy oz 24K</dt>
-                    <dd>{{ $gramsPerTroyOunce->format(7) }} g of 18K equivalent</dd>
+                    <dt>{{ __('exchange_rates.index.purity_label') }}</dt>
+                    <dd>{{ __('exchange_rates.index.purity_value') }}</dd>
+                    <dt>{{ __('exchange_rates.index.troy_ounce_dt') }}</dt>
+                    <dd>{{ __('exchange_rates.index.troy_ounce_value') }}</dd>
+                    <dt>{{ __('exchange_rates.index.troy_oz_24k_label') }}</dt>
+                    <dd>{{ __('exchange_rates.index.troy_oz_24k_value', ['grams' => $gramsPerTroyOunce->format(7)]) }}</dd>
                 </dl>
                 <p class="small muted" style="margin-top:0.6rem">
-                    These are mathematical constants, never entered by hand.
+                    {{ __('exchange_rates.index.conversions_note') }}
                 </p>
             </div>
 
             <div class="card">
-                <h3>Missing rates</h3>
+                <h3>{{ __('exchange_rates.index.missing_heading') }}</h3>
                 <p class="small muted" style="margin:0">
-                    When no rate exists for a date, the latest earlier one is used and
-                    labelled as carried forward. A rate is never invented: a posting that
-                    genuinely needs one is refused instead.
+                    {{ __('exchange_rates.index.missing_note') }}
                 </p>
             </div>
         </div>

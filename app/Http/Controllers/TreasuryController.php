@@ -78,7 +78,7 @@ class TreasuryController extends Controller
         $balance = Decimal::parse($data['external_balance']);
 
         if ($balance === null) {
-            return back()->withErrors(['external_balance' => 'Enter the balance reported by the bank or explorer.']);
+            return back()->withErrors(['external_balance' => __('exceptions.enter_reported_balance')]);
         }
 
         $result = $reconciliations->reconcile(

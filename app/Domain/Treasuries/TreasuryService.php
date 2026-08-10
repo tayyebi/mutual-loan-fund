@@ -107,15 +107,15 @@ class TreasuryService
         $network = $attributes['network'] ?? null;
 
         if ($isCrypto && blank($network)) {
-            throw new InvalidArgumentException('A crypto treasury needs a network.');
+            throw new InvalidArgumentException(__('exceptions.crypto_treasury_needs_network'));
         }
 
         if (! $isCrypto && filled($network)) {
-            throw new InvalidArgumentException('Only crypto treasuries have a network.');
+            throw new InvalidArgumentException(__('exceptions.only_crypto_treasuries_have_network'));
         }
 
         if ($isCrypto && ! array_key_exists($network, (array) config('fund.networks'))) {
-            throw new InvalidArgumentException("Unsupported network '{$network}'.");
+            throw new InvalidArgumentException(__('exceptions.network_unsupported', ['network' => $network]));
         }
     }
 }

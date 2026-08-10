@@ -1,13 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Treasuries')
+@section('title', __('treasuries.index.title'))
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Treasuries</h1>
+            <h1>{{ __('treasuries.index.heading') }}</h1>
             <p class="muted small">
-                Where the fund's assets are held. Balances are ledger balances —
-                there is no stored balance to drift.
+                {{ __('treasuries.index.intro') }}
             </p>
         </div>
     </div>
@@ -17,11 +16,11 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Treasury</th>
-                    <th>Held at</th>
-                    <th class="num">Ledger balance</th>
-                    <th class="num">≈ 18K gold</th>
-                    <th>Last reconciled</th>
+                    <th>{{ __('treasuries.index.col_treasury') }}</th>
+                    <th>{{ __('treasuries.index.col_held_at') }}</th>
+                    <th class="num">{{ __('treasuries.index.col_ledger_balance') }}</th>
+                    <th class="num">{{ __('treasuries.index.col_gold') }}</th>
+                    <th>{{ __('treasuries.index.col_last_reconciled') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -48,21 +47,21 @@
                             @if ($row['gold'])
                                 {{ $row['gold']->format(4) }} g
                             @else
-                                <span class="muted">no rate</span>
+                                <span class="muted">{{ __('treasuries.index.no_rate') }}</span>
                             @endif
                         </td>
                         <td class="small">
                             @if ($row['latest_reconciliation'])
-                                {{ $row['latest_reconciliation']->as_of->format('j M Y') }}
+                                <x-datetime :value="$row['latest_reconciliation']->as_of" />
                                 @if ($row['latest_reconciliation']->isReconciled())
-                                    <span class="badge badge-ok">reconciled</span>
+                                    <span class="badge badge-ok">{{ __('treasuries.index.reconciled_badge') }}</span>
                                 @else
                                     <span class="badge badge-danger">
-                                        differs by {{ $row['latest_reconciliation']->difference }}
+                                        {{ __('treasuries.index.differs_by', ['difference' => $row['latest_reconciliation']->difference]) }}
                                     </span>
                                 @endif
                             @else
-                                <span class="muted">never</span>
+                                <span class="muted">{{ __('treasuries.index.never') }}</span>
                             @endif
                         </td>
                     </tr>
@@ -76,50 +75,50 @@
                                         @method('PATCH')
                                         <div class="field-row field-row-3">
                                             <div class="field">
-                                                <label>Name</label>
+                                                <label>{{ __('treasuries.index.name_label') }}</label>
                                                 <input type="text" name="name" value="{{ $treasury->name }}" required>
                                             </div>
                                             <div class="field">
-                                                <label>{{ $treasury->isCrypto() ? 'Address' : 'Account identifier' }}</label>
+                                                <label>{{ $treasury->isCrypto() ? __('treasuries.index.address_label') : __('treasuries.index.account_identifier_label') }}</label>
                                                 <input type="text" name="external_identifier" value="{{ $treasury->external_identifier }}">
                                             </div>
                                             <div class="field">
-                                                <label>Status</label>
+                                                <label>{{ __('treasuries.index.status_label') }}</label>
                                                 <select name="status">
-                                                    <option value="active" @selected($treasury->status === 'active')>active</option>
-                                                    <option value="inactive" @selected($treasury->status === 'inactive')>inactive</option>
+                                                    <option value="active" @selected($treasury->status === 'active')>{{ __('treasuries.index.status_active') }}</option>
+                                                    <option value="inactive" @selected($treasury->status === 'inactive')>{{ __('treasuries.index.status_inactive') }}</option>
                                                 </select>
                                             </div>
                                         </div>
-                                        <button class="btn btn-small">Save treasury</button>
-                                        <span class="hint">Currency, type and network are fixed once a treasury exists.</span>
+                                        <button class="btn btn-small">{{ __('treasuries.index.save_button') }}</button>
+                                        <span class="hint">{{ __('treasuries.index.save_hint') }}</span>
                                     </form>
 
                                     <form method="POST" action="{{ route('g.treasuries.reconcile', [$group, $treasury]) }}">
                                         @csrf
                                         <div class="field-row field-row-3">
                                             <div class="field">
-                                                <label>External balance ({{ $treasury->currency }})</label>
+                                                <label>{{ __('treasuries.index.external_balance_label', ['currency' => $treasury->currency]) }}</label>
                                                 <input type="text" name="external_balance" inputmode="decimal" required>
                                             </div>
                                             <div class="field">
-                                                <label>As of</label>
+                                                <label>{{ __('treasuries.index.as_of_label') }}</label>
                                                 <input type="date" name="as_of" value="{{ now()->toDateString() }}" required>
                                             </div>
                                             <div class="field">
-                                                <label>Note</label>
+                                                <label>{{ __('treasuries.index.note_label') }}</label>
                                                 <input type="text" name="note">
                                             </div>
                                         </div>
-                                        <button class="btn btn-small">Reconcile</button>
-                                        <span class="hint">A difference is recorded, never absorbed into the ledger.</span>
+                                        <button class="btn btn-small">{{ __('treasuries.index.reconcile_button') }}</button>
+                                        <span class="hint">{{ __('treasuries.index.reconcile_hint') }}</span>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                     @endif
                 @empty
-                    <x-empty colspan="5">No treasuries yet.</x-empty>
+                    <x-empty colspan="5">{{ __('treasuries.index.empty') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>
@@ -128,23 +127,23 @@
 
     @if ($groupContext->isAdmin())
         <div class="card" style="margin-top: 1rem;">
-            <h2>Add a treasury</h2>
+            <h2>{{ __('treasuries.index.add_heading') }}</h2>
             <form method="POST" action="{{ route('g.treasuries.store', $group) }}">
                 @csrf
                 <div class="field-row field-row-3">
                     <div class="field">
-                        <label for="name">Name</label>
+                        <label for="name">{{ __('treasuries.index.name_label') }}</label>
                         <input id="name" name="name" type="text" value="{{ old('name') }}" required>
                     </div>
                     <div class="field">
-                        <label for="type">Type</label>
+                        <label for="type">{{ __('treasuries.index.type_label') }}</label>
                         <select id="type" name="type" required>
-                            <option value="crypto" @selected(old('type') === 'crypto')>crypto</option>
-                            <option value="bank" @selected(old('type') === 'bank')>bank</option>
+                            <option value="crypto" @selected(old('type') === 'crypto')>{{ __('treasuries.index.type_crypto') }}</option>
+                            <option value="bank" @selected(old('type') === 'bank')>{{ __('treasuries.index.type_bank') }}</option>
                         </select>
                     </div>
                     <div class="field">
-                        <label for="currency">Currency</label>
+                        <label for="currency">{{ __('treasuries.index.currency_label') }}</label>
                         <select id="currency" name="currency" required>
                             @foreach ($currencies as $code => $meta)
                                 @continue($code === config('fund.gold_unit'))
@@ -156,7 +155,7 @@
 
                 <div class="field-row field-row-2">
                     <div class="field">
-                        <label for="network">Network <span class="muted">(crypto only)</span></label>
+                        <label for="network">{{ __('treasuries.index.network_label') }} <span class="muted">{{ __('treasuries.index.network_crypto_only') }}</span></label>
                         <select id="network" name="network">
                             <option value="">—</option>
                             @foreach ($networks as $key => $network)
@@ -165,13 +164,13 @@
                         </select>
                     </div>
                     <div class="field">
-                        <label for="external_identifier">Public address or account identifier</label>
+                        <label for="external_identifier">{{ __('treasuries.index.external_identifier_label') }}</label>
                         <input id="external_identifier" name="external_identifier" type="text" value="{{ old('external_identifier') }}">
                     </div>
                 </div>
 
-                <button class="btn btn-primary">Create treasury</button>
-                <span class="hint">A ledger account is created with it.</span>
+                <button class="btn btn-primary">{{ __('treasuries.index.create_button') }}</button>
+                <span class="hint">{{ __('treasuries.index.create_hint') }}</span>
             </form>
         </div>
     @endif

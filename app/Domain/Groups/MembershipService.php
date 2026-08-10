@@ -40,7 +40,7 @@ class MembershipService
             }
 
             if ($existing && $existing->status === GroupMembership::STATUS_SUSPENDED) {
-                throw new RuntimeException('Your membership in this group is suspended.');
+                throw new RuntimeException(__('exceptions.membership_suspended'));
             }
 
             $approvalRequired = $this->policies->activePolicy($group)
@@ -205,7 +205,7 @@ class MembershipService
             ->count();
 
         if ($others === 0) {
-            throw new RuntimeException('This is the group\'s only administrator. Promote another member first.');
+            throw new RuntimeException(__('exceptions.last_group_admin'));
         }
     }
 }

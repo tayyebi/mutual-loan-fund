@@ -149,11 +149,11 @@ class PostingService
     public function reverse(JournalEntry $entry, string $reason, User $actor, ?Carbon $date = null): JournalEntry
     {
         if (! $entry->isPosted()) {
-            throw new PostingException("Journal entry {$entry->entry_number} is not posted and cannot be reversed.");
+            throw new PostingException(__('exceptions.journal_not_posted_cannot_reverse', ['entry' => $entry->entry_number]));
         }
 
         if ($entry->isReversed()) {
-            throw new PostingException("Journal entry {$entry->entry_number} has already been reversed.");
+            throw new PostingException(__('exceptions.journal_already_reversed', ['entry' => $entry->entry_number]));
         }
 
         $date = ($date ?? Carbon::today())->copy()->startOfDay();
@@ -242,7 +242,7 @@ class PostingService
         }
 
         if ($debits->isZero()) {
-            throw new PostingException("Journal entry {$entry->entry_number} has no value to post.");
+            throw new PostingException(__('exceptions.journal_no_value', ['entry' => $entry->entry_number]));
         }
     }
 
@@ -252,7 +252,7 @@ class PostingService
     private function validateLines(Group $group, array $lines): void
     {
         if (count($lines) < 2) {
-            throw new PostingException('A journal entry needs at least two lines.');
+            throw new PostingException(__('exceptions.entry_needs_two_lines'));
         }
 
         foreach ($lines as $line) {
@@ -261,23 +261,23 @@ class PostingService
             // Tenant isolation reaches into the ledger: an entry may never touch
             // another group's account or cost center.
             if (! $account->belongsToGroup($group)) {
-                throw new PostingException("Account {$account->code} does not belong to this group.");
+                throw new PostingException(__('exceptions.account_foreign_to_group', ['code' => $account->code]));
             }
 
             if (! $account->is_active) {
-                throw new PostingException("Account {$account->label()} is inactive and cannot be posted to.");
+                throw new PostingException(__('exceptions.account_inactive', ['account' => $account->label()]));
             }
 
             if ($line->costCenter && ! $line->costCenter->belongsToGroup($group)) {
-                throw new PostingException('Cost center does not belong to this group.');
+                throw new PostingException(__('exceptions.cost_center_foreign_to_group'));
             }
 
             if ($account->requires_cost_center && ! $line->costCenter) {
-                throw new PostingException("Account {$account->label()} requires a cost center.");
+                throw new PostingException(__('exceptions.account_requires_cost_center', ['account' => $account->label()]));
             }
 
             if (! $line->amount->isPositive()) {
-                throw new PostingException("Line amounts must be greater than zero (account {$account->label()}).");
+                throw new PostingException(__('exceptions.line_amount_must_be_positive', ['account' => $account->label()]));
             }
         }
     }

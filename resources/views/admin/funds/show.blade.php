@@ -4,7 +4,7 @@
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('admin.funds.index') }}">Funds</a></p>
+            <p class="breadcrumb"><a href="{{ route('admin.funds.index') }}">{{ __('admin.funds.show_breadcrumb') }}</a></p>
             <h1>{{ $fund->name }}</h1>
             <p class="muted small"><x-status :value="$fund->status" /></p>
         </div>
@@ -12,33 +12,32 @@
             @if ($fund->status === \App\Models\Group::STATUS_SUSPENDED)
                 <form method="POST" action="{{ route('admin.funds.reinstate', $fund) }}">
                     @csrf
-                    <button class="btn">Reinstate</button>
+                    <button class="btn">{{ __('admin.funds.reinstate') }}</button>
                 </form>
             @else
                 <form method="POST" action="{{ route('admin.funds.suspend', $fund) }}">
                     @csrf
-                    <button class="btn btn-danger">Suspend</button>
+                    <button class="btn btn-danger">{{ __('admin.funds.suspend') }}</button>
                 </form>
             @endif
         </div>
     </div>
 
     <div class="card">
-        <h2>Details</h2>
+        <h2>{{ __('admin.funds.details_title') }}</h2>
         <p class="small muted">
-            Only what's needed to operate the platform — the fund's own members,
-            transactions, loans and ledger are not shown here.
+            {{ __('admin.funds.details_subtitle') }}
         </p>
         <dl class="deflist">
-            <dt>Slug</dt>
+            <dt>{{ __('admin.funds.field_slug') }}</dt>
             <dd class="mono">{{ $fund->slug }}</dd>
-            <dt>Description</dt>
+            <dt>{{ __('admin.funds.field_description') }}</dt>
             <dd>{{ $fund->description ?? '—' }}</dd>
-            <dt>Created by</dt>
+            <dt>{{ __('admin.funds.field_created_by') }}</dt>
             <dd>{{ $fund->creator?->name ?? '—' }}</dd>
-            <dt>Created</dt>
-            <dd>{{ $fund->created_at->format('j M Y') }}</dd>
-            <dt>Active members</dt>
+            <dt>{{ __('admin.funds.field_created') }}</dt>
+            <dd><x-datetime :value="$fund->created_at" /></dd>
+            <dt>{{ __('admin.funds.field_active_members') }}</dt>
             <dd class="num">{{ $fund->active_memberships_count }}</dd>
         </dl>
     </div>

@@ -15,7 +15,7 @@ class EnsureSystemAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (! $request->user()?->isSystemAdmin()) {
-            abort(403, 'This action is restricted to system administrators.');
+            abort(403, __('exceptions.restricted_to_system_admins'));
         }
 
         return $next($request);

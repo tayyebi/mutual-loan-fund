@@ -1,13 +1,13 @@
 @extends('layouts.app')
-@section('title', "Compare v{$from->version} with v{$to->version}")
+@section('title', __('policies.compare.title', ['from' => $from->version, 'to' => $to->version]))
 
 @section('content')
     <div class="page-head">
         <div>
-            <p class="breadcrumb"><a href="{{ route('g.policies.index', $group) }}">Policies</a></p>
+            <p class="breadcrumb"><a href="{{ route('g.policies.index', $group) }}">{{ __('policies.compare.breadcrumb') }}</a></p>
             <h1>v{{ $from->version }} → v{{ $to->version }}</h1>
             <p class="muted small">
-                An administrative comparison. It changes nothing and touches no accounting.
+                {{ __('policies.compare.intro') }}
             </p>
         </div>
     </div>
@@ -17,7 +17,7 @@
             <table>
                 <thead>
                 <tr>
-                    <th>Setting</th>
+                    <th>{{ __('policies.compare.setting_header') }}</th>
                     <th>v{{ $from->version }}</th>
                     <th>v{{ $to->version }}</th>
                 </tr>
@@ -33,7 +33,7 @@
                         <td><strong>{{ $change['to'] }}</strong></td>
                     </tr>
                 @empty
-                    <x-empty colspan="3">These versions are identical.</x-empty>
+                    <x-empty colspan="3">{{ __('policies.compare.identical') }}</x-empty>
                 @endforelse
                 </tbody>
             </table>
