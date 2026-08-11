@@ -74,6 +74,31 @@ class GroupService
     }
 
     /**
+     * Changing a fund's own name/description after creation. Plain identity
+     * metadata, not a financial rule, so it is a group column rather than a
+     * policy field — a group administrator may change it directly.
+     */
+    public function update(Group $group, string $name, ?string $description, User $actor): Group
+    {
+        return DB::transaction(function () use ($group, $name, $description, $actor) {
+            $old = ['name' => $group->name, 'description' => $group->description];
+
+            $group->update(['name' => $name, 'description' => $description]);
+
+            $this->audit->record(
+                AuditAction::GROUP_UPDATED,
+                group: $group,
+                actor: $actor,
+                object: $group,
+                old: $old,
+                new: ['name' => $group->name, 'description' => $group->description]
+            );
+
+            return $group->refresh();
+        });
+    }
+
+    /**
      * Changing a fund's chosen financial framework after creation. Purely
      * advisory data — this never touches the fund's actual policy.
      */

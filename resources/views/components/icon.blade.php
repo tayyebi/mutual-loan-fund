@@ -26,6 +26,7 @@
         'reports' => '<path d="M4 20V10M10 20V4M16 20v-7M20 20H4" />',
         'policies' => '<path d="M12 3.5 19 6v6c0 4.5-3 7.5-7 8.5-4-1-7-4-7-8.5V6Z" /><path d="M9 12l2 2 4-4" />',
         'framework' => '<path d="M12 3.5 4 8l8 4.5L20 8Z" /><path d="M4 13l8 4.5L20 13" /><path d="M4 17.5 12 22l8-4.5" />',
+        'settings' => '<path d="M4 6h6M14 6h6" /><circle cx="10" cy="6" r="2" /><path d="M4 12h10M18 12h2" /><circle cx="16" cy="12" r="2" /><path d="M4 18h6M14 18h6" /><circle cx="10" cy="18" r="2" />',
         'audit' => '<circle cx="10.5" cy="10.5" r="6.5" /><path d="M15.3 15.3 20 20" />',
         'menu' => '<path d="M4 7h16M4 12h16M4 17h16" />',
         'exchange' => '<path d="M6 8h13" /><path d="M16 4l3 4-3 4" /><path d="M18 16H5" /><path d="M8 12l-3 4 3 4" />',

@@ -243,6 +243,11 @@ Route::middleware('auth')->group(function () {
 
             Route::get('audit', [AuditController::class, 'index'])->name('audit.index');
 
+            // The fund's own identity — name and description. Plain Group
+            // columns, not a policy field, so there is no version history.
+            Route::get('settings', [GroupController::class, 'editSettings'])->name('settings.edit');
+            Route::put('settings', [GroupController::class, 'updateSettings'])->name('settings.update');
+
             // The fund's optional, advisory financial framework — a Group
             // concept, not a GroupPolicy version, but grouped here for
             // discoverability.

@@ -30,6 +30,16 @@ return [
         'hint' => "Membership gives you access to this fund's financial activity. It gives you no access to any other fund.",
     ],
 
+    'settings' => [
+        'title' => 'Fund settings',
+        'breadcrumb' => 'Manage',
+        'heading' => 'Fund settings',
+        'intro' => "This fund's own name and description, as shown throughout the app and to anyone you invite.",
+        'name_label' => 'Name',
+        'description_label' => 'Description',
+        'submit' => 'Save',
+    ],
+
     'framework' => [
         'title' => 'Financial framework',
         'breadcrumb' => 'Policies',

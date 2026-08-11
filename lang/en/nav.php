@@ -47,6 +47,7 @@ return [
         'reports' => 'Reports',
         'policies' => 'Policies',
         'framework' => 'Framework',
+        'settings' => 'Settings',
         'audit' => 'Audit',
 
         // System surface.

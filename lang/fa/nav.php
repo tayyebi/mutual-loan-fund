@@ -41,6 +41,7 @@ return [
         'reports' => 'گزارش‌ها',
         'policies' => 'سیاست‌های مالی',
         'framework' => 'چارچوب مالی',
+        'settings' => 'تنظیمات',
         'audit' => 'حسابرسی',
 
         'users' => 'کاربران',

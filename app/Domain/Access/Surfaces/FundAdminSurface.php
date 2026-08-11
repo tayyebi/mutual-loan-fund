@@ -126,6 +126,7 @@ final class FundAdminSurface extends Surface
             new NavSection('nav.sections.governance', [
                 new NavItem('g.policies.index', 'nav.links.policies', icon: 'policies'),
                 new NavItem('g.framework.edit', 'nav.links.framework', match: 'g.framework.*', icon: 'framework'),
+                new NavItem('g.settings.edit', 'nav.links.settings', match: 'g.settings.*', icon: 'settings'),
                 new NavItem('g.audit.index', 'nav.links.audit', icon: 'audit'),
             ]),
         ];

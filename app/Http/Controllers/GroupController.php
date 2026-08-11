@@ -39,6 +39,25 @@ class GroupController extends Controller
             ->with('status', "{$group->name} is ready. Its chart of accounts and policy v1 are in place.");
     }
 
+    public function editSettings(Group $group): View
+    {
+        return view('groups.settings', ['group' => $group]);
+    }
+
+    public function updateSettings(Request $request, Group $group, GroupService $groups): RedirectResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:120'],
+            'description' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $groups->update($group, $data['name'], $data['description'] ?? null, $request->user());
+
+        return redirect()
+            ->route('g.settings.edit', $group)
+            ->with('status', 'Fund settings updated.');
+    }
+
     public function editFramework(Group $group): View
     {
         return view('groups.framework', [
