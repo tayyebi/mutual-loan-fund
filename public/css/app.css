@@ -338,6 +338,13 @@ small, .small { font-size: 0.85rem; }
     font-size: 0.9rem;
 }
 
+.sidebar-switches a svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--muted);
+}
+
 .sidebar-switches a:hover {
     text-decoration: none;
     color: var(--text);
