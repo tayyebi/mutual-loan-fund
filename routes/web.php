@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\Fund\HubController;
+use App\Http\Controllers\Fund\TransactionWizardController;
 use App\Http\Controllers\Fund\TreasuryWizardController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HomeController;
@@ -246,7 +247,13 @@ Route::middleware('auth')->group(function () {
             Route::post('treasuries/{treasury}/reconcile', [TreasuryController::class, 'reconcile'])->name('treasuries.reconcile');
 
             Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
-            Route::get('transactions/create', [TransactionController::class, 'create'])->name('transactions.create');
+            Route::get('transactions/create', [TransactionWizardController::class, 'type'])->name('transactions.create');
+            Route::post('transactions/create', [TransactionWizardController::class, 'typeStore']);
+            Route::get('transactions/create/details', [TransactionWizardController::class, 'details'])->name('transactions.create.details');
+            Route::post('transactions/create/details', [TransactionWizardController::class, 'detailsStore']);
+            Route::get('transactions/create/amount', [TransactionWizardController::class, 'amount'])->name('transactions.create.amount');
+            Route::post('transactions/create/amount', [TransactionWizardController::class, 'amountStore']);
+            Route::get('transactions/create/evidence', [TransactionWizardController::class, 'evidence'])->name('transactions.create.evidence');
             Route::post('transactions', [TransactionController::class, 'store'])->name('transactions.store');
             Route::get('transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
             Route::post('transactions/{transaction}/receipts', [TransactionController::class, 'storeReceipt'])->name('transactions.receipts.store');

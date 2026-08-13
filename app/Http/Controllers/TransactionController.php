@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Domain\Access\SurfaceRoute;
 use App\Domain\Money\Decimal;
 use App\Domain\Policies\Exceptions\PolicyViolationException;
-use App\Domain\Reports\ReportService;
 use App\Domain\Transactions\ReceiptService;
 use App\Domain\Transactions\TransactionService;
 use App\Http\Requests\StoreTransactionRequest;
@@ -48,25 +47,6 @@ class TransactionController extends Controller
             'filters' => $filters,
             'members' => $group->activeMemberships()->with('user')->get(),
             'treasuries' => $group->treasuries()->orderBy('name')->get(),
-        ]);
-    }
-
-    public function create(Request $request, Group $group, ReportService $reports, GroupContext $context): View
-    {
-        return view('transactions.create', [
-            'group' => $group,
-            'type' => $request->query('type', Transaction::TYPE_CONTRIBUTION),
-            'treasuries' => $group->treasuries()->where('status', Treasury::STATUS_ACTIVE)->orderBy('name')->get(),
-            'loans' => $reports->repayableLoans($context->membership()),
-            /*
-            | Whether to offer the administrative movement types — transfers,
-            | exchanges, standalone fees — decided by *surface*, not by role. An
-            | administrator paying their own money in at /u/{group}/money/contribute
-            | is contributing like anyone else and should be shown the simple
-            | form. The server-side guard in recordAdministrative() still checks
-            | the role, which is the check that actually protects anything.
-            */
-            'isAdmin' => SurfaceRoute::serves('transaction.verify'),
         ]);
     }
 
