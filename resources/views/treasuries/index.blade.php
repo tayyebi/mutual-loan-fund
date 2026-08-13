@@ -96,7 +96,7 @@
 
                                     <form method="POST" action="{{ route('g.treasuries.reconcile', [$group, $treasury]) }}">
                                         @csrf
-                                        <div class="field-row field-row-3">
+                                        <div class="field-row field-row-2">
                                             <div class="field">
                                                 <label>{{ __('treasuries.index.external_balance_label', ['currency' => $treasury->currency]) }}</label>
                                                 <input type="text" name="external_balance" inputmode="decimal" required>
@@ -105,12 +105,15 @@
                                                 <label>{{ __('treasuries.index.as_of_label') }}</label>
                                                 <input type="date" name="as_of" value="{{ now()->toDateString() }}" required>
                                             </div>
+                                        </div>
+                                        <details class="disclosure">
+                                            <summary>{{ __('treasuries.index.note_summary') }}</summary>
                                             <div class="field">
                                                 <label>{{ __('treasuries.index.note_label') }}</label>
                                                 <input type="text" name="note">
                                             </div>
-                                        </div>
-                                        <button class="btn btn-small">{{ __('treasuries.index.reconcile_button') }}</button>
+                                        </details>
+                                        <button class="btn btn-small" style="margin-top:0.7rem">{{ __('treasuries.index.reconcile_button') }}</button>
                                         <span class="hint">{{ __('treasuries.index.reconcile_hint') }}</span>
                                     </form>
                                 </div>

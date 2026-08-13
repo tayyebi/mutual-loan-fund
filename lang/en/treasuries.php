@@ -25,6 +25,7 @@ return [
         'external_balance_label' => 'External balance (:currency)',
         'as_of_label' => 'As of',
         'note_label' => 'Note',
+        'note_summary' => 'Add a note (optional)',
         'reconcile_button' => 'Reconcile',
         'reconcile_hint' => 'A difference is recorded, never absorbed into the ledger.',
         'empty' => 'No treasuries yet.',

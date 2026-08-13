@@ -25,6 +25,7 @@ return [
         'external_balance_label' => 'مانده خارجی (:currency)',
         'as_of_label' => 'تاریخ مبنا',
         'note_label' => 'یادداشت',
+        'note_summary' => 'افزودن یادداشت (اختیاری)',
         'reconcile_button' => 'مغایرت‌گیری',
         'reconcile_hint' => 'اختلاف ثبت می‌شود، اما هرگز در دفتر کل جذب نمی‌شود.',
         'empty' => 'هنوز هیچ خزانه‌ای ثبت نشده است.',
