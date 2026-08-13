@@ -29,12 +29,25 @@ return [
         'reconcile_hint' => 'A difference is recorded, never absorbed into the ledger.',
         'empty' => 'No treasuries yet.',
         'add_heading' => 'Add a treasury',
+        'add_intro' => 'A short, step-by-step way to add a new place the fund keeps money.',
+        'create_button' => 'Add a treasury',
+    ],
+
+    'wizard' => [
+        'title' => 'Add a treasury',
+        'steps' => ['Type', 'Details'],
+
+        'type_heading' => 'What kind of treasury, and which currency?',
         'type_label' => 'Type',
-        'type_crypto' => 'crypto',
-        'type_bank' => 'bank',
+        'type_crypto' => 'Crypto wallet',
+        'type_bank' => 'Bank account',
         'currency_label' => 'Currency',
+
+        'details_heading' => 'Name it',
+        'name_label' => 'Name',
+        'extras_summary' => 'Add a network or address/account identifier (optional)',
         'network_label' => 'Network',
-        'network_crypto_only' => '(crypto only)',
+        'network_crypto_only' => 'Only used for crypto treasuries.',
         'external_identifier_label' => 'Public address or account identifier',
         'create_button' => 'Create treasury',
         'create_hint' => 'A ledger account is created with it.',

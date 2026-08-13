@@ -5,7 +5,7 @@
     <x-wizard-step
         :title="__('member.repay_wizard.treasury_heading')"
         :back-href="route('u.borrowing.loan', [$group, $loan])"
-        :back-label="__('member.wizard.cancel')"
+        :back-label="__('wizard.cancel')"
         :steps="__('member.repay_wizard.steps')"
         :current="1"
     >
@@ -23,7 +23,7 @@
             </div>
 
             <div class="actions">
-                <button class="btn btn-primary">{{ __('member.wizard.continue') }}</button>
+                <button class="btn btn-primary">{{ __('wizard.continue') }}</button>
             </div>
         </form>
     </x-wizard-step>

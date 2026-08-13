@@ -25,9 +25,6 @@ class TreasuryController extends Controller
             'rows' => $rows->map(fn (array $row) => $row + [
                 'latest_reconciliation' => $reconciliations->latest($row['treasury']),
             ]),
-            'networks' => config('fund.networks'),
-            'currencies' => config('fund.currencies'),
-            'goldUnit' => config('fund.gold_unit'),
         ]);
     }
 
@@ -47,7 +44,9 @@ class TreasuryController extends Controller
             return back()->withInput()->withErrors(['type' => $e->getMessage()]);
         }
 
-        return back()->with('status', 'Treasury created, with its own ledger account.');
+        return redirect()
+            ->route('g.treasuries.index', $group)
+            ->with('status', 'Treasury created, with its own ledger account.');
     }
 
     public function update(Request $request, Group $group, Treasury $treasury, TreasuryService $treasuries): RedirectResponse

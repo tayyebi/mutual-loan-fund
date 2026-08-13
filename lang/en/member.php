@@ -11,18 +11,6 @@
 
 return [
 
-    /*
-    | Shared across every step-by-step wizard below (Pay in, Request a loan,
-    | Repay a loan) — the words on the Back/Continue/Cancel controls and the
-    | step-progress row, kept in one place so they read identically everywhere.
-    */
-    'wizard' => [
-        'back' => 'Back',
-        'cancel' => 'Cancel',
-        'continue' => 'Continue',
-        'progress_label' => 'Step :current of :total',
-    ],
-
     'overview' => [
         'heading' => 'You in :fund',
         'governed_by' => 'Running under policy v:version.',

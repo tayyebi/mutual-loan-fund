@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\Fund\HubController;
+use App\Http\Controllers\Fund\TreasuryWizardController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LedgerController;
@@ -233,6 +234,9 @@ Route::middleware('auth')->group(function () {
             Route::post('members/{membership}/role', [MemberController::class, 'changeRole'])->name('members.role');
 
             Route::get('treasuries', [TreasuryController::class, 'index'])->name('treasuries.index');
+            Route::get('treasuries/add', [TreasuryWizardController::class, 'type'])->name('treasuries.add');
+            Route::post('treasuries/add', [TreasuryWizardController::class, 'typeStore']);
+            Route::get('treasuries/add/details', [TreasuryWizardController::class, 'details'])->name('treasuries.add.details');
             Route::post('treasuries', [TreasuryController::class, 'store'])->name('treasuries.store');
             Route::patch('treasuries/{treasury}', [TreasuryController::class, 'update'])->name('treasuries.update');
             Route::post('treasuries/{treasury}/reconcile', [TreasuryController::class, 'reconcile'])->name('treasuries.reconcile');

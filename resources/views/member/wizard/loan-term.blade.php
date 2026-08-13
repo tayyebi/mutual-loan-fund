@@ -36,7 +36,7 @@
             @endunless
 
             <div class="actions">
-                <button class="btn btn-primary">{{ __('member.wizard.continue') }}</button>
+                <button class="btn btn-primary">{{ __('wizard.continue') }}</button>
             </div>
         </form>
     </x-wizard-step>

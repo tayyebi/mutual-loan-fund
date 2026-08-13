@@ -128,50 +128,8 @@
     @if ($groupContext->isAdmin())
         <div class="card" style="margin-top: 1rem;">
             <h2>{{ __('treasuries.index.add_heading') }}</h2>
-            <form method="POST" action="{{ route('g.treasuries.store', $group) }}">
-                @csrf
-                <div class="field-row field-row-3">
-                    <div class="field">
-                        <label for="name">{{ __('treasuries.index.name_label') }}</label>
-                        <input id="name" name="name" type="text" value="{{ old('name') }}" required>
-                    </div>
-                    <div class="field">
-                        <label for="type">{{ __('treasuries.index.type_label') }}</label>
-                        <select id="type" name="type" required>
-                            <option value="crypto" @selected(old('type') === 'crypto')>{{ __('treasuries.index.type_crypto') }}</option>
-                            <option value="bank" @selected(old('type') === 'bank')>{{ __('treasuries.index.type_bank') }}</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label for="currency">{{ __('treasuries.index.currency_label') }}</label>
-                        <select id="currency" name="currency" required>
-                            @foreach ($currencies as $code => $meta)
-                                @continue($code === config('fund.gold_unit'))
-                                <option value="{{ $code }}" @selected(old('currency', auth()->user()->preferred_currency) === $code)>{{ $code }} — {{ $meta['label'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div class="field-row field-row-2">
-                    <div class="field">
-                        <label for="network">{{ __('treasuries.index.network_label') }} <span class="muted">{{ __('treasuries.index.network_crypto_only') }}</span></label>
-                        <select id="network" name="network">
-                            <option value="">—</option>
-                            @foreach ($networks as $key => $network)
-                                <option value="{{ $key }}" @selected(old('network') === $key)>{{ $network['label'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label for="external_identifier">{{ __('treasuries.index.external_identifier_label') }}</label>
-                        <input id="external_identifier" name="external_identifier" type="text" value="{{ old('external_identifier') }}">
-                    </div>
-                </div>
-
-                <button class="btn btn-primary">{{ __('treasuries.index.create_button') }}</button>
-                <span class="hint">{{ __('treasuries.index.create_hint') }}</span>
-            </form>
+            <p class="small muted">{{ __('treasuries.index.add_intro') }}</p>
+            <a class="btn btn-primary" href="{{ route('g.treasuries.add', $group) }}">{{ __('treasuries.index.create_button') }}</a>
         </div>
     @endif
 @endsection

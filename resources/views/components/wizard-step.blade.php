@@ -9,7 +9,7 @@
 <div class="page-head">
     <div>
         @if ($backHref)
-            <p class="breadcrumb"><a href="{{ $backHref }}">{{ $backLabel ?? __('member.wizard.back') }}</a></p>
+            <p class="breadcrumb"><a href="{{ $backHref }}">{{ $backLabel ?? __('wizard.back') }}</a></p>
         @endif
         <h1>{{ $title }}</h1>
     </div>
