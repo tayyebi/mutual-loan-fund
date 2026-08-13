@@ -41,17 +41,13 @@ final class Navigation
     }
 
     /**
-     * Only worth rendering a switcher when there is somewhere else to go — more
-     * than one surface, or a single one the actor is not already on. The second
-     * case is what puts /s within reach from the cross-fund home, which belongs
-     * to no surface itself.
+     * Whether this actor holds any surface at all worth showing a switcher for
+     * — including a single one they are already on, so the switcher always
+     * confirms which experience is current rather than appearing and
+     * disappearing as an actor moves between surfaces.
      */
     public function hasSwitches(): bool
     {
-        if (count($this->switches) > 1) {
-            return true;
-        }
-
-        return count($this->switches) === 1 && ! $this->switches[0]->current;
+        return $this->switches !== [];
     }
 }
