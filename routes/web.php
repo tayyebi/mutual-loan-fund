@@ -61,6 +61,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:10,1');
 
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
+    Route::post('/register/identity', [RegisterController::class, 'createStore'])
+        ->middleware('throttle:10,1')
+        ->name('register.identity');
+    Route::get('/register/credentials', [RegisterController::class, 'credentials'])->name('register.credentials');
     Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:10,1');
 });
 
