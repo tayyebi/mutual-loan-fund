@@ -50,6 +50,7 @@ return [
         'from_treasury_label' => 'از خزانه',
         'date_paid_label' => 'تاریخ پرداخت',
         'tx_hash_label' => 'هش بلاکچین',
+        'disburse_extras_summary' => 'افزودن هش بلاکچین (اختیاری)',
         'disburse_button' => 'ثبت پرداخت وام',
         'disburse_hint' => 'یک تراکنش برای تأیید ایجاد می‌کند؛ وام پس از ثبت آن فعال می‌شود.',
         'repay_heading' => 'ثبت بازپرداخت',

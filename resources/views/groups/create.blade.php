@@ -19,30 +19,34 @@
                     <input id="name" name="name" type="text" value="{{ old('name') }}" required autofocus>
                 </div>
 
-                <div class="field">
-                    <label for="description">{{ __('groups.create.description_label') }}</label>
-                    <textarea id="description" name="description">{{ old('description') }}</textarea>
-                </div>
+                <details class="disclosure" @if (old('description') || old('financial_framework_id')) open @endif>
+                    <summary>{{ __('groups.create.extras_summary') }}</summary>
 
-                <div class="field">
-                    <label for="financial_framework_id">{{ __('groups.create.framework_label') }} <span class="muted">({{ __('groups.create.optional') }})</span></label>
-                    <select id="financial_framework_id" name="financial_framework_id">
-                        <option value="" @selected(old('financial_framework_id') === null)>{{ __('groups.create.framework_none') }}</option>
-                        @foreach ($frameworks as $framework)
-                            <option value="{{ $framework->id }}" @selected((string) old('financial_framework_id') === (string) $framework->id)>
-                                {{ $framework->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                @error('financial_framework_id')
-                    <p class="hint error">{{ $message }}</p>
-                @enderror
-                <p class="hint">
-                    {{ __('groups.create.framework_hint') }}
-                </p>
+                    <div class="field">
+                        <label for="description">{{ __('groups.create.description_label') }}</label>
+                        <textarea id="description" name="description">{{ old('description') }}</textarea>
+                    </div>
 
-                <button type="submit" class="btn btn-primary">{{ __('groups.create.submit') }}</button>
+                    <div class="field">
+                        <label for="financial_framework_id">{{ __('groups.create.framework_label') }}</label>
+                        <select id="financial_framework_id" name="financial_framework_id">
+                            <option value="" @selected(old('financial_framework_id') === null)>{{ __('groups.create.framework_none') }}</option>
+                            @foreach ($frameworks as $framework)
+                                <option value="{{ $framework->id }}" @selected((string) old('financial_framework_id') === (string) $framework->id)>
+                                    {{ $framework->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('financial_framework_id')
+                            <p class="hint error">{{ $message }}</p>
+                        @enderror
+                        <p class="hint">
+                            {{ __('groups.create.framework_hint') }}
+                        </p>
+                    </div>
+                </details>
+
+                <button type="submit" class="btn btn-primary" style="margin-top:1rem">{{ __('groups.create.submit') }}</button>
             </form>
         </div>
 

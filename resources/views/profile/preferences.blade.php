@@ -32,56 +32,60 @@
                 @enderror
             </div>
 
-            <div class="field">
-                <label for="preferred_currency">{{ __('profile.preferences.currency_label') }} <span class="muted">({{ __('profile.preferences.optional') }})</span></label>
-                <select id="preferred_currency" name="preferred_currency">
-                    <option value="" @selected(old('preferred_currency', auth()->user()->preferred_currency) === null)>{{ __('profile.preferences.currency_none') }}</option>
-                    @foreach (config('fund.currencies') as $code => $currency)
-                        <option value="{{ $code }}" @selected(old('preferred_currency', auth()->user()->preferred_currency) === $code)>
-                            {{ $currency['label'] }} ({{ $code }})
-                        </option>
+            <details class="disclosure" @if (old('preferred_currency') || old('timezone') || old('weekend_days') || $errors->hasAny(['preferred_currency', 'timezone', 'weekend_days'])) open @endif>
+                <summary>{{ __('profile.preferences.extras_summary') }}</summary>
+
+                <div class="field">
+                    <label for="preferred_currency">{{ __('profile.preferences.currency_label') }}</label>
+                    <select id="preferred_currency" name="preferred_currency">
+                        <option value="" @selected(old('preferred_currency', auth()->user()->preferred_currency) === null)>{{ __('profile.preferences.currency_none') }}</option>
+                        @foreach (config('fund.currencies') as $code => $currency)
+                            <option value="{{ $code }}" @selected(old('preferred_currency', auth()->user()->preferred_currency) === $code)>
+                                {{ $currency['label'] }} ({{ $code }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="hint">{{ __('profile.preferences.currency_hint') }}</p>
+                    @error('preferred_currency')
+                        <p class="hint error">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="field">
+                    <label for="timezone">{{ __('profile.preferences.timezone_label') }}</label>
+                    <select id="timezone" name="timezone">
+                        <option value="" @selected(old('timezone', auth()->user()->timezone) === null)>{{ __('profile.preferences.timezone_server_default') }}</option>
+                        @foreach (\DateTimeZone::listIdentifiers() as $identifier)
+                            <option value="{{ $identifier }}" @selected(old('timezone', auth()->user()->timezone) === $identifier)>
+                                {{ $identifier }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="hint">{{ __('profile.preferences.timezone_hint') }}</p>
+                    @error('timezone')
+                        <p class="hint error">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="field">
+                    <label>{{ __('profile.preferences.weekend_days_label') }}</label>
+                    @php($selectedDays = old('weekend_days', auth()->user()->weekend_days ?? []))
+                    @php($dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'])
+                    @foreach ($dayKeys as $day => $key)
+                        <div class="field check">
+                            <input id="weekend_day_{{ $day }}" name="weekend_days[]" type="checkbox" value="{{ $day }}"
+                                   @checked(in_array($day, $selectedDays ?? [], false))>
+                            <label for="weekend_day_{{ $day }}">{{ __('profile.preferences.days.'.$key) }}</label>
+                        </div>
                     @endforeach
-                </select>
-                <p class="hint">{{ __('profile.preferences.currency_hint') }}</p>
-                @error('preferred_currency')
-                    <p class="hint error">{{ $message }}</p>
-                @enderror
-            </div>
+                    <p class="hint">{{ __('profile.preferences.weekend_days_hint') }}</p>
+                    @error('weekend_days')
+                        <p class="hint error">{{ $message }}</p>
+                    @enderror
+                </div>
+            </details>
 
-            <div class="field">
-                <label for="timezone">{{ __('profile.preferences.timezone_label') }} <span class="muted">({{ __('profile.preferences.optional') }})</span></label>
-                <select id="timezone" name="timezone">
-                    <option value="" @selected(old('timezone', auth()->user()->timezone) === null)>{{ __('profile.preferences.timezone_server_default') }}</option>
-                    @foreach (\DateTimeZone::listIdentifiers() as $identifier)
-                        <option value="{{ $identifier }}" @selected(old('timezone', auth()->user()->timezone) === $identifier)>
-                            {{ $identifier }}
-                        </option>
-                    @endforeach
-                </select>
-                <p class="hint">{{ __('profile.preferences.timezone_hint') }}</p>
-                @error('timezone')
-                    <p class="hint error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="field">
-                <label>{{ __('profile.preferences.weekend_days_label') }} <span class="muted">({{ __('profile.preferences.optional') }})</span></label>
-                @php($selectedDays = old('weekend_days', auth()->user()->weekend_days ?? []))
-                @php($dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'])
-                @foreach ($dayKeys as $day => $key)
-                    <div class="field check">
-                        <input id="weekend_day_{{ $day }}" name="weekend_days[]" type="checkbox" value="{{ $day }}"
-                               @checked(in_array($day, $selectedDays ?? [], false))>
-                        <label for="weekend_day_{{ $day }}">{{ __('profile.preferences.days.'.$key) }}</label>
-                    </div>
-                @endforeach
-                <p class="hint">{{ __('profile.preferences.weekend_days_hint') }}</p>
-                @error('weekend_days')
-                    <p class="hint error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <button type="submit" class="btn btn-primary">{{ __('profile.preferences.submit') }}</button>
+            <button type="submit" class="btn btn-primary" style="margin-top:1rem">{{ __('profile.preferences.submit') }}</button>
         </form>
     </div>
 @endsection

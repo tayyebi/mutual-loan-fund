@@ -157,11 +157,14 @@
                             <label for="occurred_on">{{ __('loans.show.date_paid_label') }}</label>
                             <input id="occurred_on" name="occurred_on" type="date" value="{{ now()->toDateString() }}" required>
                         </div>
-                        <div class="field">
-                            <label for="tx_hash">{{ __('loans.show.tx_hash_label') }}</label>
-                            <input id="tx_hash" name="tx_hash" type="text">
-                        </div>
-                        <button class="btn btn-primary btn-small">{{ __('loans.show.disburse_button') }}</button>
+                        <details class="disclosure">
+                            <summary>{{ __('loans.show.disburse_extras_summary') }}</summary>
+                            <div class="field">
+                                <label for="tx_hash">{{ __('loans.show.tx_hash_label') }}</label>
+                                <input id="tx_hash" name="tx_hash" type="text">
+                            </div>
+                        </details>
+                        <button class="btn btn-primary btn-small" style="margin-top:0.7rem">{{ __('loans.show.disburse_button') }}</button>
                         <span class="hint">{{ __('loans.show.disburse_hint') }}</span>
                     </form>
                 </div>

@@ -50,6 +50,7 @@ return [
         'from_treasury_label' => 'From treasury',
         'date_paid_label' => 'Date paid',
         'tx_hash_label' => 'Blockchain hash',
+        'disburse_extras_summary' => 'Add a blockchain hash (optional)',
         'disburse_button' => 'Record disbursement',
         'disburse_hint' => 'Creates a transaction to verify; the loan activates when it is posted.',
         'repay_heading' => 'Record a repayment',
