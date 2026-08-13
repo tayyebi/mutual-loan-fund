@@ -188,6 +188,23 @@ return [
         'confirm_button' => 'Confirm repayment',
     ],
 
+    'wallet_wizard' => [
+        'title' => 'Register a wallet',
+        'steps' => ['Network', 'Address'],
+
+        'network_heading' => 'Which network and currency?',
+        'network_label' => 'Network',
+        'currency_label' => 'Currency',
+
+        'address_heading' => "What's the address?",
+        'address_intro' => 'A :currency address on the network you chose.',
+        'address_label' => 'Address',
+        'address_hint' => 'The public address only — never a private key or seed phrase.',
+        'extras_summary' => 'Add a label to help you recognise it later (optional)',
+        'label_label' => 'Label',
+        'confirm_button' => 'Register this wallet',
+    ],
+
     'fund' => [
         'title' => 'The fund',
         'heading' => ':fund',

@@ -19,6 +19,7 @@ use App\Http\Controllers\Member\LoanRepayWizardController;
 use App\Http\Controllers\Member\LoanRequestWizardController;
 use App\Http\Controllers\Member\MoneyController;
 use App\Http\Controllers\Member\OverviewController;
+use App\Http\Controllers\Member\WalletRegistrationWizardController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\ProfileController;
@@ -188,6 +189,9 @@ Route::middleware('auth')->group(function () {
             Route::get('receipts/{receipt}', [ReceiptController::class, 'show'])->name('receipts.show');
 
             Route::get('wallets', [WalletController::class, 'index'])->name('wallets.index');
+            Route::get('wallets/register', [WalletRegistrationWizardController::class, 'network'])->name('wallets.register');
+            Route::post('wallets/register', [WalletRegistrationWizardController::class, 'networkStore']);
+            Route::get('wallets/register/address', [WalletRegistrationWizardController::class, 'address'])->name('wallets.register.address');
             Route::post('wallets', [WalletController::class, 'store'])->name('wallets.store');
             Route::patch('wallets/{wallet}', [WalletController::class, 'update'])->name('wallets.update');
 

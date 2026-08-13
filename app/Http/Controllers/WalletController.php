@@ -26,8 +26,6 @@ class WalletController extends Controller
             'groupWallets' => $context->isAdmin()
                 ? $group->wallets()->with('member.user')->orderBy('id')->get()
                 : collect(),
-            'networks' => config('fund.networks'),
-            'currencies' => config('fund.currencies'),
         ]);
     }
 

@@ -61,41 +61,8 @@
 
         <div class="card">
             <h2>{{ __('wallets.index.register_heading') }}</h2>
-            <form method="POST" action="{{ route('u.wallets.store', $group) }}">
-                @csrf
-
-                <div class="field">
-                    <label for="network">{{ __('wallets.index.network_label') }}</label>
-                    <select id="network" name="network" required>
-                        @foreach ($networks as $key => $network)
-                            <option value="{{ $key }}" @selected(old('network') === $key)>{{ $network['label'] }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label for="currency">{{ __('wallets.index.currency_label') }}</label>
-                    <select id="currency" name="currency" required>
-                        @foreach ($currencies as $code => $meta)
-                            @continue($code === config('fund.gold_unit'))
-                            <option value="{{ $code }}" @selected(old('currency', auth()->user()->preferred_currency ?? 'USDT') === $code)>{{ $code }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label for="address">{{ __('wallets.index.address_label') }}</label>
-                    <input id="address" name="address" type="text" value="{{ old('address') }}" required>
-                    <span class="hint">{{ __('wallets.index.address_hint') }}</span>
-                </div>
-
-                <div class="field">
-                    <label for="label">{{ __('wallets.index.label_label') }}</label>
-                    <input id="label" name="label" type="text" value="{{ old('label') }}">
-                </div>
-
-                <button class="btn btn-primary">{{ __('wallets.index.register_button') }}</button>
-            </form>
+            <p class="small muted">{{ __('wallets.index.register_intro') }}</p>
+            <a class="btn btn-primary" href="{{ route('u.wallets.register', $group) }}">{{ __('wallets.index.register_button') }}</a>
         </div>
     </div>
 

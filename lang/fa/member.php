@@ -187,6 +187,23 @@ return [
         'confirm_button' => 'تأیید بازپرداخت',
     ],
 
+    'wallet_wizard' => [
+        'title' => 'ثبت کیف پول',
+        'steps' => ['شبکه', 'آدرس'],
+
+        'network_heading' => 'کدام شبکه و واحد پول؟',
+        'network_label' => 'شبکه',
+        'currency_label' => 'واحد پول',
+
+        'address_heading' => 'آدرس چیست؟',
+        'address_intro' => 'یک آدرس :currency روی شبکه‌ای که انتخاب کردید.',
+        'address_label' => 'آدرس',
+        'address_hint' => 'فقط آدرس عمومی — هرگز کلید خصوصی یا عبارت بازیابی نیست.',
+        'extras_summary' => 'افزودن برچسبی برای شناسایی بعدی آن (اختیاری)',
+        'label_label' => 'برچسب',
+        'confirm_button' => 'ثبت این کیف پول',
+    ],
+
     'fund' => [
         'title' => 'صندوق',
         'heading' => ':fund',
