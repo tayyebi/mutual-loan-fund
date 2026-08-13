@@ -19,10 +19,12 @@ return [
 
     'password' => [
         'title' => 'Change password',
+        'steps' => ['Verify', 'New password'],
         'heading' => 'Change password',
         'intro' => 'Use at least 10 characters.',
         'back_link' => 'Back to my account',
         'current_label' => 'Current password',
+        'new_heading' => 'Choose your new password',
         'new_label' => 'New password',
         'confirm_label' => 'Confirm new password',
         'submit' => 'Change password',

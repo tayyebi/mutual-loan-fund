@@ -78,6 +78,23 @@ class ProfileController extends Controller
         return view('profile.password');
     }
 
+    /**
+     * Step 2 of the password-change wizard, rendered directly from this POST
+     * rather than a redirect to a GET route — so current_password never
+     * travels in a URL or session, only inside this one response's HTML,
+     * carried forward as a hidden field the user immediately re-submits.
+     * The actual current-password check stays solely in updatePassword()'s
+     * StorePasswordRequest; this only confirms the field was filled in.
+     */
+    public function verifyPassword(Request $request): View
+    {
+        $data = $request->validate([
+            'current_password' => ['required', 'string'],
+        ]);
+
+        return view('profile.password-new', ['currentPassword' => $data['current_password']]);
+    }
+
     public function updatePassword(StorePasswordRequest $request): RedirectResponse
     {
         $request->user()->forceFill([

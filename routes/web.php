@@ -88,6 +88,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProfileController::class, 'show'])->name('home');
         Route::get('transactions', [ProfileController::class, 'transactions'])->name('transactions');
         Route::get('password', [ProfileController::class, 'editPassword'])->name('password.edit');
+        Route::post('password/verify', [ProfileController::class, 'verifyPassword'])->name('password.verify');
         Route::put('password', [ProfileController::class, 'updatePassword'])->name('password.update');
         Route::get('preferences', [ProfileController::class, 'editPreferences'])->name('preferences.edit');
         Route::put('preferences', [ProfileController::class, 'updatePreferences'])->name('preferences.update');
