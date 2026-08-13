@@ -1122,6 +1122,105 @@ textarea { min-height: 4.5rem; resize: vertical; }
     vertical-align: bottom;
 }
 
+/* ----------------------------------------------------------------- wizard */
+
+/*
+ * The one-question-per-page member wizards (see resources/views/member/
+ * wizard/* and <x-wizard-step>) — a short "step 2 of 3" progress row of
+ * numbered dots joined by a line, plain HTML, no JS.
+ */
+.step-progress {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.1rem;
+    overflow-x: auto;
+}
+
+.step-progress-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.step-progress-item + .step-progress-item::before {
+    content: "";
+    width: 1rem;
+    height: 1px;
+    background: var(--border);
+    flex-shrink: 0;
+}
+
+.step-progress-dot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    flex-shrink: 0;
+    border-radius: var(--pill);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.step-progress-item.is-done .step-progress-dot {
+    background: var(--ok-soft);
+    border-color: var(--ok);
+    color: var(--ok);
+}
+
+.step-progress-item.is-current .step-progress-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+}
+
+.step-progress-item.is-current .step-progress-label {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.wizard-card { max-width: 30rem; }
+
+/*
+ * A rarely-needed extra (a receipt, a note, a blockchain reference) tucked
+ * behind the native disclosure widget rather than shown by default — fully
+ * functional either way, just closed until asked for.
+ */
+details.disclosure {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-top: 1rem;
+    padding: 0 1rem;
+}
+
+details.disclosure[open] { padding-bottom: 0.9rem; }
+
+details.disclosure summary {
+    padding: 0.7rem 0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 550;
+    color: var(--muted);
+    list-style: none;
+}
+
+details.disclosure summary::-webkit-details-marker { display: none; }
+
+details.disclosure summary::before {
+    content: "+";
+    display: inline-block;
+    width: 1rem;
+    color: var(--accent);
+    font-weight: 700;
+}
+
+details.disclosure[open] summary::before { content: "\2013"; }
+
 /* -------------------------------------------------------------- auth card */
 
 .auth-shell {

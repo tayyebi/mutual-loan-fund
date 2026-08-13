@@ -11,6 +11,18 @@
 
 return [
 
+    /*
+    | Shared across every step-by-step wizard below (Pay in, Request a loan,
+    | Repay a loan) — the words on the Back/Continue/Cancel controls and the
+    | step-progress row, kept in one place so they read identically everywhere.
+    */
+    'wizard' => [
+        'back' => 'Back',
+        'cancel' => 'Cancel',
+        'continue' => 'Continue',
+        'progress_label' => 'Step :current of :total',
+    ],
+
     'overview' => [
         'heading' => 'You in :fund',
         'governed_by' => 'Running under policy v:version.',
@@ -71,6 +83,33 @@ return [
         'calculated_note' => 'These figures come from the fund\'s books, and only count payments an administrator has verified.',
     ],
 
+    'contribute_wizard' => [
+        'title' => 'Pay in',
+        'steps' => ['Where', 'Amount', 'Review'],
+
+        'treasury_heading' => 'Where are you paying this in to?',
+        'treasury_intro' => 'The fund keeps money in more than one place. Pick the one you paid into.',
+        'treasury_label' => 'Paid into',
+
+        'amount_heading' => 'How much did you pay in?',
+        'amount_intro' => 'Into :treasury.',
+        'amount_label' => 'Amount (:currency)',
+
+        'review_heading' => 'Review your payment',
+        'review_summary' => 'into :treasury.',
+        'review_note' => 'This counts towards your stake once an administrator verifies it against the fund\'s records.',
+        'extras_summary' => 'Change the date, or add a note or receipt (optional)',
+        'date_label' => 'Date paid',
+        'note_label' => 'Note',
+        'reference_label' => 'Reference',
+        'receipt_label' => 'Receipt',
+        'receipt_hint' => 'A photo or PDF of your proof of payment.',
+        'tx_hash_label' => 'Transaction hash',
+        'from_address_label' => 'Sent from address',
+        'tx_hash_hint' => 'If you have it, this lets the fund confirm the transfer on the blockchain automatically.',
+        'confirm_button' => 'Confirm payment',
+    ],
+
     'borrowing' => [
         'title' => 'Borrowing',
         'heading' => 'Borrowing',
@@ -99,6 +138,54 @@ return [
         'repay_note' => 'Open a loan to record a repayment against it.',
 
         'past_loans' => 'Past loans',
+    ],
+
+    'loan_wizard' => [
+        'title' => 'Request a loan',
+        'steps' => ['Amount', 'Term', 'Review'],
+
+        'not_lending_notice' => 'This fund is not lending right now, but you can still see what a request would look like.',
+
+        'amount_heading' => 'How much would you like to borrow?',
+        'amount_label' => 'Amount',
+        'currency_label' => 'Currency',
+        'amount_range_note' => 'Between :min and :max.',
+        'unlimited' => 'no maximum',
+
+        'term_heading' => 'How long do you need to pay it back?',
+        'term_label' => 'Repayment term',
+        'term_option' => '{1} 1 month|[2,*] :count months',
+        'cannot_borrow_now' => 'You cannot borrow right now:',
+
+        'review_heading' => 'Review your loan request',
+        'review_summary' => '{1} Borrowed for one month.|[2,*] Borrowed for :count months.',
+        'review_interest_note' => 'At :rate% interest, under this fund\'s current rules.',
+        'extras_summary' => 'Add a note about what it\'s for (optional)',
+        'purpose_label' => 'What is it for?',
+        'confirm_button' => 'Request this loan',
+    ],
+
+    'repay_wizard' => [
+        'title' => 'Repay a loan',
+        'steps' => ['Where', 'Amount', 'Review'],
+
+        'treasury_heading' => 'Where are you paying this back to?',
+        'treasury_intro' => 'The fund keeps money in more than one place. Pick the one you paid into.',
+        'treasury_label' => 'Paid into',
+
+        'amount_heading' => 'How much are you repaying?',
+        'amount_intro' => 'Towards loan :reference. You currently owe :outstanding.',
+        'amount_label' => 'Amount (:currency)',
+
+        'review_heading' => 'Review your repayment',
+        'review_summary' => 'towards loan :reference, into :treasury.',
+        'review_note' => 'This reduces what you owe once an administrator verifies it against the fund\'s records.',
+        'extras_summary' => 'Change the date, or add a reference or blockchain hash (optional)',
+        'date_label' => 'Date paid',
+        'reference_label' => 'Reference',
+        'tx_hash_label' => 'Transaction hash',
+        'tx_hash_hint' => 'If you have it, this lets the fund confirm the transfer on the blockchain automatically.',
+        'confirm_button' => 'Confirm repayment',
     ],
 
     'fund' => [

@@ -66,6 +66,10 @@ final class MemberSurface extends Surface
             'loan.create' => 'u.borrowing.request',
             'loan.store' => 'u.borrowing.store',
             'loan.repay' => 'u.borrowing.repay',
+            // The wizard's first step — FundAdminSurface omits this and keeps
+            // the dense inline form on loans/show.blade.php instead, which is
+            // how an administrator records a repayment on someone's behalf.
+            'loan.repay.start' => 'u.borrowing.repay.start',
             // Cancelling is the borrower's move; it has no administrative
             // counterpart, so FundAdminSurface deliberately omits it.
             'loan.cancel' => 'u.borrowing.cancel',

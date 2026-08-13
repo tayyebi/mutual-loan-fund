@@ -168,34 +168,51 @@
             @endif
 
             @can('repay', $loan)
-                <div class="card">
-                    <h3>{{ __('loans.show.repay_heading') }}</h3>
-                    <form method="POST" action="@surface('loan.repay', $group, $loan)">
-                        @csrf
-                        <div class="field">
-                            <label for="repay_treasury">{{ __('loans.show.into_treasury_label') }}</label>
-                            <select id="repay_treasury" name="treasury_id" required>
-                                @foreach ($treasuries as $treasury)
-                                    <option value="{{ $treasury->id }}">{{ $treasury->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label for="repay_amount">{{ __('loans.show.repay_amount_label', ['currency' => $loan->currency]) }}</label>
-                            <input id="repay_amount" name="amount" type="text" inputmode="decimal" required>
-                        </div>
-                        <div class="field">
-                            <label for="repay_date">{{ __('loans.show.repay_date_label') }}</label>
-                            <input id="repay_date" name="occurred_on" type="date" value="{{ now()->toDateString() }}" required>
-                        </div>
-                        <div class="field">
-                            <label for="repay_hash">{{ __('loans.show.repay_hash_label') }}</label>
-                            <input id="repay_hash" name="tx_hash" type="text">
-                        </div>
-                        <button class="btn btn-primary btn-small">{{ __('loans.show.repay_button') }}</button>
-                        <span class="hint">{{ __('loans.show.repay_hint') }}</span>
-                    </form>
-                </div>
+                {{--
+                    A member repays through the short wizard (Member\LoanRepayWizardController)
+                    rather than this dense form — MemberSurface is the only one that declares
+                    the 'loan.repay.start' intent, which is why the surface guard below is the
+                    right check: an administrator recording a repayment on someone's behalf
+                    keeps the original all-in-one form.
+                --}}
+                @surfaces('loan.repay.start')
+                    <div class="card">
+                        <h3>{{ __('loans.show.repay_start_heading') }}</h3>
+                        <p class="small muted">{{ __('loans.show.repay_start_intro') }}</p>
+                        <a class="btn btn-primary btn-small" href="@surface('loan.repay.start', $group, $loan)">
+                            {{ __('loans.show.repay_start_button') }}
+                        </a>
+                    </div>
+                @else
+                    <div class="card">
+                        <h3>{{ __('loans.show.repay_heading') }}</h3>
+                        <form method="POST" action="@surface('loan.repay', $group, $loan)">
+                            @csrf
+                            <div class="field">
+                                <label for="repay_treasury">{{ __('loans.show.into_treasury_label') }}</label>
+                                <select id="repay_treasury" name="treasury_id" required>
+                                    @foreach ($treasuries as $treasury)
+                                        <option value="{{ $treasury->id }}">{{ $treasury->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="repay_amount">{{ __('loans.show.repay_amount_label', ['currency' => $loan->currency]) }}</label>
+                                <input id="repay_amount" name="amount" type="text" inputmode="decimal" required>
+                            </div>
+                            <div class="field">
+                                <label for="repay_date">{{ __('loans.show.repay_date_label') }}</label>
+                                <input id="repay_date" name="occurred_on" type="date" value="{{ now()->toDateString() }}" required>
+                            </div>
+                            <div class="field">
+                                <label for="repay_hash">{{ __('loans.show.repay_hash_label') }}</label>
+                                <input id="repay_hash" name="tx_hash" type="text">
+                            </div>
+                            <button class="btn btn-primary btn-small">{{ __('loans.show.repay_button') }}</button>
+                            <span class="hint">{{ __('loans.show.repay_hint') }}</span>
+                        </form>
+                    </div>
+                @endsurfaces
             @endcan
 
             @if (\Illuminate\Support\Facades\Gate::allows('approve', $loan) && \App\Domain\Access\SurfaceRoute::serves('loan.reject'))

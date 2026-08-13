@@ -6,7 +6,6 @@ use App\Domain\Access\SurfaceRoute;
 use App\Domain\Loans\LoanService;
 use App\Domain\Money\Decimal;
 use App\Domain\Policies\Exceptions\PolicyViolationException;
-use App\Domain\Policies\PolicyService;
 use App\Domain\Transactions\TransactionService;
 use App\Models\Group;
 use App\Models\Loan;
@@ -34,29 +33,6 @@ class LoanController extends Controller
             'group' => $group,
             'loans' => $loans,
             'isAdmin' => $context->isAdmin(),
-        ]);
-    }
-
-    public function create(Request $request, Group $group, LoanService $loans, PolicyService $policies, GroupContext $context): View
-    {
-        $policy = $policies->requireActivePolicy($group);
-        $loanPolicy = $policy->toPolicyConfig()->loans();
-
-        $currency = $request->query('currency', $group->functionalCurrency());
-        $amount = Decimal::parse($request->query('amount')) ?? $loanPolicy->maximumAmount() ?? Decimal::zero();
-        $term = (int) $request->query('term_months', $loanPolicy->maximumTermMonths());
-
-        return view('loans.create', [
-            'group' => $group,
-            'policy' => $policy,
-            'loanPolicy' => $loanPolicy,
-            // Shown before submission, and enforced again on the server: the two
-            // come from the same call, so they cannot disagree.
-            'eligibility' => $loans->eligibility($context->membership(), $amount, $currency, $term, $policy),
-            'currencies' => $this->loanCurrencies($group),
-            'amount' => $amount,
-            'term' => $term,
-            'currency' => $currency,
         ]);
     }
 
@@ -210,20 +186,5 @@ class LoanController extends Controller
         }
 
         return back()->with('status', "Loan {$loan->reference} cancelled.");
-    }
-
-    /**
-     * Loans can only be made in a currency the fund actually holds.
-     *
-     * @return array<int, string>
-     */
-    private function loanCurrencies(Group $group): array
-    {
-        return $group->treasuries()
-            ->where('status', Treasury::STATUS_ACTIVE)
-            ->pluck('currency')
-            ->unique()
-            ->values()
-            ->all();
     }
 }

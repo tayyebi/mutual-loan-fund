@@ -13,7 +13,10 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\Member\BorrowingController;
+use App\Http\Controllers\Member\ContributeWizardController;
 use App\Http\Controllers\Member\FundController as MemberFundController;
+use App\Http\Controllers\Member\LoanRepayWizardController;
+use App\Http\Controllers\Member\LoanRequestWizardController;
 use App\Http\Controllers\Member\MoneyController;
 use App\Http\Controllers\Member\OverviewController;
 use App\Http\Controllers\MemberController;
@@ -137,15 +140,43 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [OverviewController::class, 'show'])->name('dashboard');
 
             // "What have I put in, and what is it worth?"
+            //
+            // Paying in is a short, one-question-per-page wizard rather than the
+            // dense multi-field form /g uses — see Member\ContributeWizardController.
+            // It ends at the same, unchanged TransactionController::store an
+            // administrator's own form posts to, so nothing about validation or
+            // what a contribution *is* differs between the two surfaces.
             Route::get('money', [MoneyController::class, 'show'])->name('money');
-            Route::get('money/contribute', [TransactionController::class, 'create'])->name('money.contribute');
-            Route::post('money/contribute', [TransactionController::class, 'store'])->name('money.store');
+            Route::get('money/contribute', [ContributeWizardController::class, 'treasury'])->name('money.contribute');
+            Route::post('money/contribute', [ContributeWizardController::class, 'treasuryStore']);
+            Route::get('money/contribute/amount', [ContributeWizardController::class, 'amount'])->name('money.contribute.amount');
+            Route::post('money/contribute/amount', [ContributeWizardController::class, 'amountStore']);
+            Route::get('money/contribute/review', [ContributeWizardController::class, 'review'])->name('money.contribute.review');
+            Route::post('money/contribute/submit', [TransactionController::class, 'store'])->name('money.store');
 
             // "Can I borrow, what do I owe, and how do I pay it back?"
+            //
+            // Requesting a loan and repaying one are the same kind of short wizard,
+            // both ending at the existing LoanController actions, unchanged.
             Route::get('borrowing', [BorrowingController::class, 'show'])->name('borrowing');
-            Route::get('borrowing/request', [LoanController::class, 'create'])->name('borrowing.request');
-            Route::post('borrowing/request', [LoanController::class, 'store'])->name('borrowing.store');
+
+            Route::get('borrowing/request', [LoanRequestWizardController::class, 'amount'])->name('borrowing.request');
+            Route::post('borrowing/request', [LoanRequestWizardController::class, 'amountStore']);
+            Route::get('borrowing/request/term', [LoanRequestWizardController::class, 'term'])->name('borrowing.request.term');
+            Route::post('borrowing/request/term', [LoanRequestWizardController::class, 'termStore']);
+            Route::get('borrowing/request/review', [LoanRequestWizardController::class, 'review'])->name('borrowing.request.review');
+            Route::post('borrowing/request/submit', [LoanController::class, 'store'])->name('borrowing.store');
+
             Route::get('borrowing/{loan}', [LoanController::class, 'show'])->name('borrowing.loan');
+
+            // Repaying has no administrative counterpart at this URL — an admin
+            // records a repayment on someone's behalf from the shared loan page
+            // instead (loans/show.blade.php) — this wizard is member-only.
+            Route::get('borrowing/{loan}/repay', [LoanRepayWizardController::class, 'treasury'])->name('borrowing.repay.start');
+            Route::post('borrowing/{loan}/repay/treasury', [LoanRepayWizardController::class, 'treasuryStore']);
+            Route::get('borrowing/{loan}/repay/amount', [LoanRepayWizardController::class, 'amount'])->name('borrowing.repay.amount');
+            Route::post('borrowing/{loan}/repay/amount', [LoanRepayWizardController::class, 'amountStore']);
+            Route::get('borrowing/{loan}/repay/review', [LoanRepayWizardController::class, 'review'])->name('borrowing.repay.review');
             Route::post('borrowing/{loan}/repay', [LoanController::class, 'repay'])->name('borrowing.repay');
             Route::post('borrowing/{loan}/cancel', [LoanController::class, 'cancel'])->name('borrowing.cancel');
 
