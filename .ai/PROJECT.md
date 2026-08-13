@@ -170,6 +170,58 @@ does its trace. Policy changes get a second, fuller trail via `AuditRecorder::re
   inline-SVG icons live in `resources/views/components/icon.blade.php` (`<x-icon name="...">`) —
   still zero external resources/CDNs.
 
+## User-facing forms: the two-field rule
+
+Golden rule, `/u` and `/g` alike (the only exemption is `/s`, the system administrator): **at any
+one moment, on any one page, a user should not see more than two text boxes and two buttons.**
+Nothing is ever removed to satisfy this — every capability a dense form used to offer still
+exists, just reached one short decision at a time. Two techniques, applied per field:
+
+- **Optional field → `<details class="disclosure">`.** If a field is `nullable` in its
+  controller's validation, it doesn't need its own page — collapse it behind a native `<details>`
+  toggle (no JS) alongside the form's other optional fields, and leave only the required field(s)
+  visible by default. See `resources/views/loans/show.blade.php`'s disburse card or
+  `resources/views/groups/create.blade.php` for the pattern.
+- **More than two required fields → a wizard.** One question per page, ending at the same,
+  unchanged controller action the old dense form posted to — the wizard only collects input, it
+  never reimplements a business rule. `<x-wizard-step>` + `<x-step-progress>`
+  (`resources/views/components/*`) supply the shared shell; their own chrome text
+  (Back/Continue/Cancel/"Step X of Y") comes from `lang/{en,fa}/wizard.php`, a file shared by every
+  wizard on every surface — not `member.php`, which is member-vocabulary-only. Non-secret state
+  (an amount, a chosen type, a treasury id) travels between steps as GET query parameters; a step
+  that needs to redirect after a POST reuses the exact validation-light pattern already in
+  `App\Http\Controllers\Member\ContributeWizardController` and its siblings. **A secret (a
+  password) must never appear in a URL** — see `ProfileController::verifyPassword()` for the
+  alternative: render the next step directly as that step's own POST response (no redirect), so
+  the value only ever exists inside that one response's hidden field, never a query string or
+  session. Member-surface wizards live under `App\Http\Controllers\Member\*` /
+  `resources/views/member/wizard/*`; fund-admin-surface wizards live under
+  `App\Http\Controllers\Fund\*` (see `TreasuryWizardController`, `TransactionWizardController`)
+  with their step views alongside the resource they belong to (`resources/views/treasuries/wizard-*`,
+  `resources/views/transactions/wizard-*`).
+
+Not every dense page is a violation to fix. A handful are dense *because of what they are*, not by
+neglect, and forcing them into single-field steps would make the underlying task harder, not
+easier:
+
+- **`policies/edit.blade.php`** — one screen per `PolicyConfig` category, deliberately showing
+  related fields (e.g. a loan's minimum and maximum amount) side by side, because
+  `PolicyValidator` checks relationships *between* fields on the same submission. The category
+  list is open-ended by design (see "Policy system" above) — there is no fixed field count to
+  paginate against.
+- **`ledger/adjustment.blade.php`**'s line-item matrix — double-entry requires every debit and
+  credit visible at once to see that they balance; splitting rows across pages breaks the one
+  check the page exists to support.
+- **Filter/search bars** (`transactions/index.blade.php`, `ledger/index.blade.php`) — a `GET` form
+  of entirely optional fields that changes no state, not a commitment a user is walking through.
+- **Pages whose action buttons vary by viewer or record state** (`loans/show.blade.php`'s
+  approve/disburse/repay/reject cards, `transactions/show.blade.php`, `members/index.blade.php`)
+  — each `@can`-gated action is its own small, already-compliant card; the raw count across the
+  whole page is a union of mutually exclusive possibilities, not what any one viewer actually sees.
+- **`exchange-rates/index.blade.php`**'s entry form — gated by the `manage-exchange-rates` Gate
+  (`User::isSystemAdmin()`), so it's system-administrator territory in substance even though the
+  route isn't under `/s`.
+
 ## Locale / preferences
 
 Language, default currency, timezone, and weekend days are per-user preferences
